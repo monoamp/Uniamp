@@ -10,14 +10,13 @@ using System.IO;
 
 namespace Unity.Scene
 {
-	public class SceneDesktop : MonoBehaviour
+	public class ScenePlayer : MonoBehaviour
 	{
 		private int sampleRate;
 		private Dictionary<int, float[]> soundBuffer;
 
 		private Dictionary<string, GUIStyle> guiStyleDictionary;
 
-		public static Camera ObjectCamera{ get; private set; }
 		MeshRenderer meshRenderer;
 		TextMesh textMesh;
 		
@@ -34,7 +33,7 @@ namespace Unity.Scene
 			isSetGuiStyle = false;
 			rectWindow = new Rect( 0.0f, 0.0f, Screen.width, Screen.height );
 
-			ObjectCamera = camera;
+			Unity.Function.Graphic.Gui.camera = camera;
 			GameObject obj = GameObject.Find( "GuiStyleSet" );
 			GuiStyleSet.Reset( obj );
 
