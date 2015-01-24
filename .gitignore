@@ -1,5 +1,6 @@
 .DS_Store
 Assets/StreamingAssets/Config/*
+Assets/StreamingAssets/Sound/Music/*
 Library
 Temp
 *.csproj
