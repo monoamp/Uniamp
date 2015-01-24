@@ -6,7 +6,8 @@ namespace Unity.Function.Graphic
 {
     public static class Gui
     {
-        private static Material material;
+		private static Material material;
+		public static Camera camera;
 
         static Gui()
         {
@@ -157,44 +158,44 @@ namespace Unity.Function.Graphic
 			GL.PopMatrix();
 		}
 		
-		public static void DrawSeekBar( Camera aCamera, Rect aRect, GUIStyle aStyle, float aPositionLoopStart, float aPositionLoopEnd, float aPositionCurrent )
+		public static void DrawSeekBar( Rect aRect, GUIStyle aStyle, float aPositionLoopStart, float aPositionLoopEnd, float aPositionCurrent )
 		{
 			if( aPositionCurrent < aPositionLoopStart )
 			{
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, 0.0f, aPositionCurrent );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionCurrent, aPositionLoopStart );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.active, aPositionLoopStart, aPositionLoopEnd );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aPositionCurrent );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionCurrent, aPositionLoopStart );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.active, aPositionLoopStart, aPositionLoopEnd );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
 			}
 			else if( aPositionCurrent == aPositionLoopStart )
 			{
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, 0.0f, aPositionCurrent );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.active, aPositionCurrent, aPositionLoopEnd );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aPositionCurrent );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.active, aPositionCurrent, aPositionLoopEnd );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
 			}
 			else if( aPositionCurrent < aPositionLoopEnd )
 			{
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionCurrent );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.active, aPositionCurrent, aPositionLoopEnd );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionCurrent );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.active, aPositionCurrent, aPositionLoopEnd );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
 			}
 			else if( aPositionCurrent == aPositionLoopEnd )
 			{
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionCurrent );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionCurrent );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionLoopEnd, 1.0f );
 			}
 			else
 			{
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionLoopEnd );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.onNormal, aPositionLoopEnd, aPositionCurrent );
-				DrawSeekBarPartition( aCamera, aRect, aStyle, aStyle.normal, aPositionCurrent, 1.0f );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aPositionLoopStart );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onActive, aPositionLoopStart, aPositionLoopEnd );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, aPositionLoopEnd, aPositionCurrent );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionCurrent, 1.0f );
 			}
 		}
 
-		public static void DrawSeekBarPartition( Camera aCamera, Rect aRect, GUIStyle aStyle, GUIStyleState aStyleState, float aPositionStart, float aPositionEnd )
+		public static void DrawSeekBarPartition( Rect aRect, GUIStyle aStyle, GUIStyleState aStyleState, float aPositionStart, float aPositionEnd )
 		{
 			RectOffset lBorder = aStyle.border;
 			Texture2D lTexture = aStyleState.background;
@@ -212,25 +213,25 @@ namespace Unity.Function.Graphic
 			float y3 = Screen.height - aRect.y + aRect.height - lBorder.bottom;
 			float y4 = Screen.height - aRect.y + aRect.height;
 			
-			Vector3 vertexS1 = aCamera.ScreenToWorldPoint( new Vector3( xS, y1 ) );
-			Vector3 vertex21 = aCamera.ScreenToWorldPoint( new Vector3( x2, y1 ) );
-			Vector3 vertex31 = aCamera.ScreenToWorldPoint( new Vector3( x3, y1 ) );
-			Vector3 vertexE1 = aCamera.ScreenToWorldPoint( new Vector3( xE, y1 ) );
+			Vector3 vertexS1 = camera.ScreenToWorldPoint( new Vector3( xS, y1 ) );
+			Vector3 vertex21 = camera.ScreenToWorldPoint( new Vector3( x2, y1 ) );
+			Vector3 vertex31 = camera.ScreenToWorldPoint( new Vector3( x3, y1 ) );
+			Vector3 vertexE1 = camera.ScreenToWorldPoint( new Vector3( xE, y1 ) );
 			
-			Vector3 vertexS2 = aCamera.ScreenToWorldPoint( new Vector3( xS, y2 ) );
-			Vector3 vertex22 = aCamera.ScreenToWorldPoint( new Vector3( x2, y2 ) );
-			Vector3 vertex32 = aCamera.ScreenToWorldPoint( new Vector3( x3, y2 ) );
-			Vector3 vertexE2 = aCamera.ScreenToWorldPoint( new Vector3( xE, y2 ) );
+			Vector3 vertexS2 = camera.ScreenToWorldPoint( new Vector3( xS, y2 ) );
+			Vector3 vertex22 = camera.ScreenToWorldPoint( new Vector3( x2, y2 ) );
+			Vector3 vertex32 = camera.ScreenToWorldPoint( new Vector3( x3, y2 ) );
+			Vector3 vertexE2 = camera.ScreenToWorldPoint( new Vector3( xE, y2 ) );
 			
-			Vector3 vertexS3 = aCamera.ScreenToWorldPoint( new Vector3( xS, y3 ) );
-			Vector3 vertex23 = aCamera.ScreenToWorldPoint( new Vector3( x2, y3 ) );
-			Vector3 vertex33 = aCamera.ScreenToWorldPoint( new Vector3( x3, y3 ) );
-			Vector3 vertexE3 = aCamera.ScreenToWorldPoint( new Vector3( xE, y3 ) );
+			Vector3 vertexS3 = camera.ScreenToWorldPoint( new Vector3( xS, y3 ) );
+			Vector3 vertex23 = camera.ScreenToWorldPoint( new Vector3( x2, y3 ) );
+			Vector3 vertex33 = camera.ScreenToWorldPoint( new Vector3( x3, y3 ) );
+			Vector3 vertexE3 = camera.ScreenToWorldPoint( new Vector3( xE, y3 ) );
 			
-			Vector3 vertexS4 = aCamera.ScreenToWorldPoint( new Vector3( xS, y4 ) );
-			Vector3 vertex24 = aCamera.ScreenToWorldPoint( new Vector3( x2, y4 ) );
-			Vector3 vertex34 = aCamera.ScreenToWorldPoint( new Vector3( x3, y4 ) );
-			Vector3 vertexE4 = aCamera.ScreenToWorldPoint( new Vector3( xE, y4 ) );
+			Vector3 vertexS4 = camera.ScreenToWorldPoint( new Vector3( xS, y4 ) );
+			Vector3 vertex24 = camera.ScreenToWorldPoint( new Vector3( x2, y4 ) );
+			Vector3 vertex34 = camera.ScreenToWorldPoint( new Vector3( x3, y4 ) );
+			Vector3 vertexE4 = camera.ScreenToWorldPoint( new Vector3( xE, y4 ) );
 			
 			float u1 = 0.0f;
 			float u2 = ( float )lBorder.left / ( float )lTexture.width;

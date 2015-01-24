@@ -204,17 +204,17 @@ namespace Unity.View
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
 			float lY = /*lHeightMenu +*/ lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top;
 
-			if( Unity.Scene.SceneDesktop.ObjectCamera != null && player != null && player.GetTimeLength().Second != 0.0d )
+			if( player != null && player.GetTimeLength().Second != 0.0d )
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( Unity.Scene.SceneDesktop.ObjectCamera, new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.GetLoopPoint().start.Seconds / player.GetTimeLength().Seconds ), ( float )( player.GetLoopPoint().end.Seconds / player.GetTimeLength().Seconds ), ( float )player.Position );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.GetLoopPoint().start.Seconds / player.GetTimeLength().Seconds ), ( float )( player.GetLoopPoint().end.Seconds / player.GetTimeLength().Seconds ), ( float )player.Position );
 			}
-			else if( Unity.Scene.SceneDesktop.ObjectCamera != null )
+			else
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( Unity.Scene.SceneDesktop.ObjectCamera, new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
 			}
 		}
 
