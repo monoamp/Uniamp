@@ -127,7 +127,7 @@
      <Compile Include="Assets\Scripts\Unity\GuiStyle\StyleSlider.cs" />
      <Compile Include="Assets\Scripts\Unity\GuiStyle\StyleTable.cs" />
      <Compile Include="Assets\Scripts\Unity\GuiStyle\StyleWindow.cs" />
-     <Compile Include="Assets\Scripts\Unity\Scene\SceneDesktop.cs" />
+     <Compile Include="Assets\Scripts\Unity\Scene\ScenePlayer.cs" />
      <Compile Include="Assets\Scripts\Unity\Utility\Graphic\Gui.cs" />
      <Compile Include="Assets\Scripts\Unity\View\ADragWindow.cs" />
      <Compile Include="Assets\Scripts\Unity\View\Application\ApplicationPlayer.cs" />
