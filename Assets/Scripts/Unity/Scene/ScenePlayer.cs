@@ -15,23 +15,12 @@ namespace Unity.Scene
 		private int sampleRate;
 		private Dictionary<int, float[]> soundBuffer;
 
-		private Dictionary<string, GUIStyle> guiStyleDictionary;
-
-		MeshRenderer meshRenderer;
-		TextMesh textMesh;
-		
-		public delegate void DelegateAudioFilter( float[] aSoundBuffer, int aChannels, int aSampleRate );
-		public DelegateAudioFilter delegateAudioFilter;
-
 		private ApplicationPlayer windowLoopPlayer;
 		private bool isSetGuiStyle;
-		
-		private Rect rectWindow;
 
 		void Awake()
 		{
 			isSetGuiStyle = false;
-			rectWindow = new Rect( 0.0f, 0.0f, Screen.width, Screen.height );
 
 			Unity.Function.Graphic.Gui.camera = camera;
 			GameObject obj = GameObject.Find( "GuiStyleSet" );
@@ -44,37 +33,6 @@ namespace Unity.Scene
 
 			soundBuffer = new Dictionary<int, float[]>();
 
-			guiStyleDictionary = new Dictionary<string, GUIStyle>();
-			
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbar.name, GuiStyleSet.StyleScrollbar.verticalbar );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarThumb.name, GuiStyleSet.StyleScrollbar.verticalbarThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarUpButton.name, GuiStyleSet.StyleScrollbar.verticalbarUpButton );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarDownButton.name, GuiStyleSet.StyleScrollbar.verticalbarDownButton );
-			
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbar.name, GuiStyleSet.StyleScrollbar.horizontalbar );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarThumb.name, GuiStyleSet.StyleScrollbar.horizontalbarThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarLeftButton.name, GuiStyleSet.StyleScrollbar.horizontalbarLeftButton );
-			guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarRightButton.name, GuiStyleSet.StyleScrollbar.horizontalbarRightButton );
-			
-			guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbar.name, GuiStyleSet.StylePlayer.seekbar );
-			guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarThumb.name, GuiStyleSet.StylePlayer.seekbarThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarLeftButton.name, GuiStyleSet.StylePlayer.seekbarLeftButton );
-			guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarRightButton.name, GuiStyleSet.StylePlayer.seekbarRightButton );
-			
-			guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbar.name, GuiStyleSet.StyleProgressbar.progressbar );
-			guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarThumb.name, GuiStyleSet.StyleProgressbar.progressbarThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarLeftButton.name, GuiStyleSet.StyleProgressbar.progressbarLeftButton );
-			guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarRightButton.name, GuiStyleSet.StyleProgressbar.progressbarRightButton );
-			
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeader.name, GuiStyleSet.StyleTable.verticalbarHeader );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderThumb.name, GuiStyleSet.StyleTable.verticalbarHeaderThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderUpButton.name, GuiStyleSet.StyleTable.verticalbarHeaderUpButton );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderDownButton.name, GuiStyleSet.StyleTable.verticalbarHeaderDownButton );
-			
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeader.name, GuiStyleSet.StyleTable.horizontalbarHeader );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderThumb.name, GuiStyleSet.StyleTable.horizontalbarHeaderThumb );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderLeftButton.name, GuiStyleSet.StyleTable.horizontalbarHeaderLeftButton );
-			guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderRightButton.name, GuiStyleSet.StyleTable.horizontalbarHeaderRightButton );
 		}
 
 		void Start()
@@ -109,21 +67,6 @@ namespace Unity.Scene
 			{
 				data[i] += soundBuffer[data.Length][i];
 			}
-
-            if( delegateAudioFilter != null )
-			{
-				for( int i = 0; i < soundBuffer[data.Length].Length; i++ )
-				{
-					soundBuffer[data.Length][i] = 0.0f;
-				}
-
-				delegateAudioFilter( soundBuffer[data.Length], 2, sampleRate );
-				
-				for( int i = 0; i < soundBuffer[data.Length].Length; i++ )
-				{
-					data[i] += soundBuffer[data.Length][i];
-				}
-            }
 		}
 
 		void OnAudioSetPosition(int newPosition)
@@ -140,7 +83,7 @@ namespace Unity.Scene
 		{
 			SetGuiStyles();
 
-			GUILayout.BeginArea( rectWindow );
+			GUILayout.BeginArea( new Rect( 0.0f, 0.0f, Screen.width, Screen.height ) );
 			{
 				windowLoopPlayer.OnGUI();
 			}
@@ -154,6 +97,38 @@ namespace Unity.Scene
 			if( isSetGuiStyle == false )
 			{
 				isSetGuiStyle = true;
+				
+				Dictionary<string, GUIStyle> guiStyleDictionary = new Dictionary<string, GUIStyle>();
+				
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbar.name, GuiStyleSet.StyleScrollbar.verticalbar );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarThumb.name, GuiStyleSet.StyleScrollbar.verticalbarThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarUpButton.name, GuiStyleSet.StyleScrollbar.verticalbarUpButton );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.verticalbarDownButton.name, GuiStyleSet.StyleScrollbar.verticalbarDownButton );
+				
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbar.name, GuiStyleSet.StyleScrollbar.horizontalbar );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarThumb.name, GuiStyleSet.StyleScrollbar.horizontalbarThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarLeftButton.name, GuiStyleSet.StyleScrollbar.horizontalbarLeftButton );
+				guiStyleDictionary.Add( GuiStyleSet.StyleScrollbar.horizontalbarRightButton.name, GuiStyleSet.StyleScrollbar.horizontalbarRightButton );
+				
+				guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbar.name, GuiStyleSet.StylePlayer.seekbar );
+				guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarThumb.name, GuiStyleSet.StylePlayer.seekbarThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarLeftButton.name, GuiStyleSet.StylePlayer.seekbarLeftButton );
+				guiStyleDictionary.Add( GuiStyleSet.StylePlayer.seekbarRightButton.name, GuiStyleSet.StylePlayer.seekbarRightButton );
+				
+				guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbar.name, GuiStyleSet.StyleProgressbar.progressbar );
+				guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarThumb.name, GuiStyleSet.StyleProgressbar.progressbarThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarLeftButton.name, GuiStyleSet.StyleProgressbar.progressbarLeftButton );
+				guiStyleDictionary.Add( GuiStyleSet.StyleProgressbar.progressbarRightButton.name, GuiStyleSet.StyleProgressbar.progressbarRightButton );
+				
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeader.name, GuiStyleSet.StyleTable.verticalbarHeader );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderThumb.name, GuiStyleSet.StyleTable.verticalbarHeaderThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderUpButton.name, GuiStyleSet.StyleTable.verticalbarHeaderUpButton );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.verticalbarHeaderDownButton.name, GuiStyleSet.StyleTable.verticalbarHeaderDownButton );
+				
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeader.name, GuiStyleSet.StyleTable.horizontalbarHeader );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderThumb.name, GuiStyleSet.StyleTable.horizontalbarHeaderThumb );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderLeftButton.name, GuiStyleSet.StyleTable.horizontalbarHeaderLeftButton );
+				guiStyleDictionary.Add( GuiStyleSet.StyleTable.horizontalbarHeaderRightButton.name, GuiStyleSet.StyleTable.horizontalbarHeaderRightButton );
 
 				if( GUI.skin.GetStyle( GuiStyleSet.StylePlayer.seekbar.name ).name == "" )
 				{

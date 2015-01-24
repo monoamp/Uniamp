@@ -96,7 +96,11 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			float widthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
+			float lWidthTable = Screen.width;
+			float lWidthValue = 80.0f;
+			float lWidthPartition = GuiStyleSet.StyleTable.partitionVertical.fixedWidth;
+			float lWidthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
+			float lWidthName = lWidthTable - lWidthValue * 4 - lWidthPartition * 4 - lWidthVerticalbar;
 
 			if( Event.current.type != EventType.Repaint )
 			{
@@ -109,22 +113,22 @@ namespace Unity.View
 				{
 					GUILayout.BeginHorizontal();
 					{
-						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( Screen.width - 320.0f - 8.0f - widthVerticalbar ) );
+						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthName ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthValue ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 						
 						GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
 						{
-							GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 244.0f ) );
+							GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader );
 							
 							GUILayout.BeginHorizontal();
 							{
-								GUILayout.Label( new GUIContent( "Start", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
+								GUILayout.Label( new GUIContent( "Start", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.Label( new GUIContent( "End", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
+								GUILayout.Label( new GUIContent( "End", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
+								GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 							}
 							GUILayout.EndHorizontal();
 						}
@@ -146,14 +150,14 @@ namespace Unity.View
 							{
 								if( data.fileInfoList[i] == data.getPlayingMusic() )
 								{
-									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( Screen.width - 320.0f - 8.0f - widthVerticalbar ) ) == false )
+									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( lWidthName ) ) == false )
 									{
 										data.playMusic( data.fileInfoList[i] );
 									}
 								}
 								else
 								{
-									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( Screen.width - 320.0f - 8.0f - widthVerticalbar ) ) == true )
+									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( lWidthName ) ) == true )
 									{
 										data.playMusic(  data.fileInfoList[i] );
 									}
@@ -173,15 +177,7 @@ namespace Unity.View
 
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.BeginVertical( GUILayout.Width( Screen.width - 320.0f - 8.0f - widthVerticalbar ) );
-							{
-								GUILayout.FlexibleSpace( );
-							}
-							GUILayout.EndVertical();
-							
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-							
-							GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+							GUILayout.BeginVertical( GUILayout.Width( lWidthName ) );
 							{
 								GUILayout.FlexibleSpace();
 							}
@@ -189,7 +185,15 @@ namespace Unity.View
 							
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 							
-							GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+							GUILayout.BeginVertical( GUILayout.Width( lWidthValue ) );
+							{
+								GUILayout.FlexibleSpace();
+							}
+							GUILayout.EndVertical();
+							
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+							
+							GUILayout.BeginVertical( GUILayout.Width( lWidthValue ) );
 							{
 								GUILayout.FlexibleSpace();
 							}
@@ -197,7 +201,7 @@ namespace Unity.View
 							
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
-							GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+							GUILayout.BeginVertical( GUILayout.Width( lWidthValue ) );
 							{
 								GUILayout.FlexibleSpace();
 							}
@@ -205,7 +209,7 @@ namespace Unity.View
 							
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 							
-							GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+							GUILayout.BeginVertical( GUILayout.Width( lWidthValue ) );
 							{
 								GUILayout.FlexibleSpace();
 							}
