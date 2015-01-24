@@ -113,12 +113,12 @@ namespace Unity.View
 				{
 					GUILayout.BeginHorizontal();
 					{
-						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthName ) );
+						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.MinWidth( 300.0f ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthValue ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 						
-						GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
+						GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthValue * 3 + lWidthPartition * 2 ) );
 						{
 							GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader );
 							
@@ -150,14 +150,14 @@ namespace Unity.View
 							{
 								if( data.fileInfoList[i] == data.getPlayingMusic() )
 								{
-									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( lWidthName ) ) == false )
+									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
 									{
 										data.playMusic( data.fileInfoList[i] );
 									}
 								}
 								else
 								{
-									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.Width( lWidthName ) ) == true )
+									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
 									{
 										data.playMusic(  data.fileInfoList[i] );
 									}
