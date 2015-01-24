@@ -22,6 +22,7 @@ namespace Monoamp.Common.Component.Sound.Player
 
         public double Position{ get{ return synthesizer.GetPosition(); } set{ synthesizer.SetPosition( value ); } }
 		public float Volume{ get; set; }
+		public bool IsMute{ get; set; }
 		public bool IsLoop{ get{ return synthesizer.isLoop; } set{ synthesizer.isLoop = value; } }
 
 		public PlayerPcm( string aFilePath )
@@ -38,6 +39,8 @@ namespace Monoamp.Common.Component.Sound.Player
 			delegateUpdate = UpdatePlay;
 
 			Volume = 0.5f;
+			IsMute = false;
+			IsLoop = true;
 		}
 
 		public void Play()
@@ -129,9 +132,12 @@ namespace Monoamp.Common.Component.Sound.Player
 			{
 				synthesizer.Update( bufferArray, aChannels, aSampleRate );
 
-				for( int j = 0; j < aChannels; j++ )
+				if( IsMute == false )
 				{
-					aSoundBuffer[i * aChannels + j] = bufferArray[j] * Volume;
+					for( int j = 0; j < aChannels; j++ )
+					{
+						aSoundBuffer[i * aChannels + j] = bufferArray[j] * Volume;
+					}
 				}
 			}
 		}

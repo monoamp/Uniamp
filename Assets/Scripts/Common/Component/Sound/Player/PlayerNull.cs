@@ -12,11 +12,14 @@ namespace Monoamp.Common.Component.Sound.Player
     {
 		public double Position{ get{ return 0.0d; } set{} }
 		public float Volume{ get; set; }
-		public bool IsLoop{ get{ return false; } set{} }
+		public bool IsMute{ get; set; }
+		public bool IsLoop{ get; set; }
 
         public PlayerNull()
 		{
-
+			Volume = 0.5f;
+			IsMute = false;
+			IsLoop = true;
 		}
 
 		public void Play()

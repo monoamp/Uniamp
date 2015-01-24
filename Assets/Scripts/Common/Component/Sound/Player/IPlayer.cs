@@ -5,7 +5,8 @@ namespace Monoamp.Common.Component.Sound.Player
 	public interface IPlayer
 	{
         double Position{ get; set; }
-        float Volume{ set; }
+		float Volume{ get; set; }
+		bool IsMute{ get; set; }
 		bool IsLoop{ get; set; }
 
 		void Play();

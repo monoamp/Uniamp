@@ -18,13 +18,6 @@ namespace Unity.View
 	public class ViewPlayer : IView
 	{
         private IPlayer player;
-		
-		private bool isLoop;
-		private bool isMute;
-		private float volume;
-		private float volumeBefore;
-		private float position;
-		private float positionPre;
 
 		private FileInfo fileInfo;
 		private string title;
@@ -54,19 +47,16 @@ namespace Unity.View
 
 			changeMusicPrevious = aChangeMusicPrevious;
 			changeMusicNext = aChangeMusicNext;
-			
-			isLoop = true;
-			isMute = false;
-			volume = 0.5f;
-			volumeBefore = 0.5f;
-			position = 0.0f;
-			positionPre = 0.0f;
 		}
 		
 		public void SetPlayer( FileInfo aFileInfo )
 		{
+			bool lIsMute = player.IsMute;
+			bool lIsLoop = player.IsLoop;
+			float lVolume = player.Volume;
+
 			fileInfo = aFileInfo;
-			
+
 			if( fileInfo == null )
 			{
 				title = "";
@@ -78,8 +68,9 @@ namespace Unity.View
 				player = LoaderCollection.LoadPlayer( fileInfo.FullName );
 			}
 
-			position = 0.0f;
-			positionPre = 0.0f;
+			player.IsMute = lIsMute;
+			player.IsLoop = lIsLoop;
+			player.Volume = lVolume;
 		}
 
 		public void Awake()
@@ -108,20 +99,12 @@ namespace Unity.View
 					GUILayout.FlexibleSpace();
 					GUILayout.Label( new GUIContent( player.GetTimePosition().MMSSmmm, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
-					if( positionPre == position )
-					{
-						positionPre = ( float )player.Position;
-						position = GUILayout.HorizontalScrollbar( positionPre, 0.01f, 0.0f, 1.01f, "seekbar" );
-					}
-					else
-					{
-						position = GUILayout.HorizontalScrollbar( position, 0.01f, 0.0f, 1.01f, "seekbar" );
+					float lPositionFloat = ( float )player.Position;
+					float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
 
-						if( Input.GetMouseButtonUp( 0 ) == true )
-						{
-							player.Position = position;
-							positionPre = position;
-						}
+					if( lPositionAfter != lPositionFloat )
+					{
+						player.Position = lPositionAfter;
 					}
 
 					GUILayout.Label( new GUIContent( player.GetTimeLength().MMSSmmm, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
@@ -165,36 +148,25 @@ namespace Unity.View
 				{
 					GUILayout.FlexibleSpace();
 
-					bool lIsMuteAfter = GUILayout.Toggle( isMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
+					player.IsMute = GUILayout.Toggle( player.IsMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
 
-					if( lIsMuteAfter != isMute )
+					if( player.IsMute == false )
 					{
-						if( lIsMuteAfter == true )
-						{
-							player.Volume = 0.0f;
-						}
-						else
-						{
-							player.Volume = volume;
-						}
+						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
-						isMute = lIsMuteAfter;
-					}
-
-					if( isMute == false )
-					{
-						volume = GUILayout.HorizontalSlider( volume, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
-						player.Volume = volume;
+						if( player.Volume == 0.0f )
+						{
+							player.IsMute = true;
+						}
 					}
 					else // isMute == true
 					{
-						float volumeAfter = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
-						if( volumeAfter != 0.0f )
+						if( lVolume != 0.0f )
 						{
-							isMute = false;
-							volume = volumeAfter;
-							player.Volume = volume;
+							player.IsMute = false;
+							player.Volume = lVolume;
 						}
 					}
 					
@@ -207,8 +179,7 @@ namespace Unity.View
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
 			float lY = lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + GuiStyleSet.StylePlayer.seekbar.fixedHeight;
 
-			isLoop = GUI.Toggle( new Rect( Screen.width / 2.0f - GuiStyleSet.StylePlayer.seekbar.fixedWidth / 2.0f, lY, 32.0f, 32.0f ), isLoop, "", GuiStyleSet.StylePlayer.toggleLoop );
-			player.IsLoop = isLoop;
+			player.IsLoop = GUI.Toggle( new Rect( Screen.width / 2.0f - GuiStyleSet.StylePlayer.seekbar.fixedWidth / 2.0f, lY, 32.0f, 32.0f ), player.IsLoop, "", GuiStyleSet.StylePlayer.toggleLoop );
 		}
 		
 		public void OnRenderObject()

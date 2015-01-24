@@ -11,6 +11,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 	{
 		private MusicPcm music;
 		private SoundTime timePosition;
+		private SoundTime timePositionPre;
 		private SoundTime timeElapsed;
 
 		public int loopNumber1;
@@ -22,6 +23,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		{
 			music = aMusicPcm;
 			timePosition = new SoundTime( 44100, 0 );
+			timePositionPre = new SoundTime( 44100, 0 );
 			timeElapsed = new SoundTime( 44100, 0 );
 			loopNumber1 = 0;
 			loopNumber2 = 0;
@@ -32,7 +34,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		{
 			LoopInformation lLoop = music.Loop[loopNumber1][loopNumber2];
 
-			if( isLoop == true && lLoop.length.sample > 0 && ( int )timePosition.sample > lLoop.end.sample )
+			if( isLoop == true && lLoop.length.sample > 0 && timePositionPre.sample <= lLoop.end.sample && timePosition.sample > lLoop.end.sample )
 			{
 				Logger.Debug( "Start:" + lLoop.start.sample + ", End:" + lLoop.end.sample );
 
@@ -64,13 +66,15 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 				Logger.Debug( "Start:" + aSoundBuffer[0] );
 			}
 
+			timePositionPre.sample = timePosition.sample;
 			timePosition.sample += ( double )music.Sample.sampleRate / ( double )aSampleRate;
 			timeElapsed.sample += ( double )music.Sample.sampleRate / ( double )aSampleRate;
 		}
 
 		public void SetPosition( double aPosition )
 		{
-			timePosition.sample = ( double )music.Sample.sample * aPosition;
+			timePositionPre.sample = music.Sample.sample * aPosition;
+			timePosition.sample = music.Sample.sample * aPosition;
 		}
 
 		public double GetPosition()
