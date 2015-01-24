@@ -22,7 +22,7 @@ namespace Unity.View
 		private bool isLoop;
 		private bool isMute;
 		private float volume;
-		private float volumePre;
+		private float volumeBefore;
 		private float position;
 		private float positionPre;
 
@@ -58,7 +58,7 @@ namespace Unity.View
 			isLoop = true;
 			isMute = false;
 			volume = 0.5f;
-			volumePre = 0.5f;
+			volumeBefore = 0.5f;
 			position = 0.0f;
 			positionPre = 0.0f;
 		}
@@ -165,25 +165,38 @@ namespace Unity.View
 				{
 					GUILayout.FlexibleSpace();
 
-					bool lIsMutePre = isMute;
-					
-					isMute = GUILayout.Toggle( isMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
+					bool lIsMuteAfter = GUILayout.Toggle( isMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
 
-					if( isMute != lIsMutePre )
+					if( lIsMuteAfter != isMute )
 					{
-						if( isMute == true )
+						if( lIsMuteAfter == true )
 						{
-							volumePre = volume;
-							volume = 0.0f;
+							player.Volume = 0.0f;
 						}
 						else
 						{
-							volume = volumePre;
+							player.Volume = volume;
 						}
+
+						isMute = lIsMuteAfter;
 					}
 
-					volume = GUILayout.HorizontalSlider( volume, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
-					player.Volume = volume;
+					if( isMute == false )
+					{
+						volume = GUILayout.HorizontalSlider( volume, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						player.Volume = volume;
+					}
+					else // isMute == true
+					{
+						float volumeAfter = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+
+						if( volumeAfter != 0.0f )
+						{
+							isMute = false;
+							volume = volumeAfter;
+							player.Volume = volume;
+						}
+					}
 					
 					GUILayout.FlexibleSpace();
 				}
