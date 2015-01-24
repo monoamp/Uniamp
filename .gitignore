@@ -1,4 +1,5 @@
 .DS_Store
+Assets/StreamingAssets/Config/*
 Library
 Temp
 *.csproj
