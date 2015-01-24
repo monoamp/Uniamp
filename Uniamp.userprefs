@@ -1,29 +1,42 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Boundary/Logger.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unity/Scene/ScenePlayer.cs">
     <Files>
-      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Info/RiffInfoIart.cs" Line="27" Column="1" />
-      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Wave/RiffWaveBext.cs" Line="23" Column="3" />
-      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Base/RiffChunk.cs" Line="26" Column="5" />
-      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Wave/RiffWaveFmt_.cs" Line="35" Column="52" />
-      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Base/RiffChunkList.cs" Line="85" Column="5" />
+      <File FileName="Assets/Scripts/Unity/Scene/ScenePlayer.cs" Line="14" Column="3" />
+      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Info/RiffInfoIart.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Wave/RiffWaveBext.cs" Line="23" Column="1" />
+      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Base/RiffChunk.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Wave/RiffWaveFmt_.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Common/Data/Standard/Riff/Base/RiffChunkList.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Unity/View/ADragWindow.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlaylist.cs" Line="127" Column="113" />
-      <File FileName="Assets/Scripts/Unity/Data/GuiStyleSet.cs" Line="18" Column="25" />
-      <File FileName="Assets/Scripts/Unity/GuiStyle/StyleTable.cs" Line="6" Column="3" />
-      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlayer.cs" Line="80" Column="4" />
-      <File FileName="Assets/Scripts/Unity/View/Application/ApplicationPlayer.cs" Line="121" Column="3" />
-      <File FileName="Assets/Scripts/Boundary/Logger.cs" Line="58" Column="6" />
+      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlaylist.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Unity/Data/GuiStyleSet.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Unity/GuiStyle/StyleTable.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlayer.cs" Line="213" Column="8" />
+      <File FileName="Assets/Scripts/Unity/View/Application/ApplicationPlayer.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Boundary/Logger.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Unity/Utility/Graphic/Gui.cs" Line="190" Column="5" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="Assembly-CSharp" expanded="True">
             <Node name="Scripts" expanded="True">
-              <Node name="Boundary" expanded="True">
-                <Node name="Logger.cs" selected="True" />
+              <Node name="Boundary" expanded="True" />
+              <Node name="Common" expanded="True">
+                <Node name="Data" expanded="True" />
               </Node>
-              <Node name="Unity" expanded="True" />
+              <Node name="Unity" expanded="True">
+                <Node name="Scene" expanded="True">
+                  <Node name="ScenePlayer.cs" selected="True" />
+                </Node>
+                <Node name="Utility" expanded="True">
+                  <Node name="Graphic" expanded="True" />
+                </Node>
+                <Node name="View" expanded="True">
+                  <Node name="Component" expanded="True" />
+                </Node>
+              </Node>
             </Node>
           </Node>
         </State>
