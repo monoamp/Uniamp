@@ -15,13 +15,13 @@ namespace Monoamp.Common.Component.Sound.Player
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }
 		public bool IsLoop{ get{ return synthesizer.isLoop; } set{ synthesizer.isLoop = value; } }
-		
-		public LoopInformation Loop{ get{ return synthesizer.Loop; } }
-		public int LoopNumberX{ get{ return synthesizer.GetLoopNumberX(); } }
-		public int LoopNumberY{ get{ return synthesizer.GetLoopNumberY(); } }
 
+		public LoopInformation Loop{ get { return synthesizer.loop; } private set{ synthesizer.loop = value; } }
+		public int LoopNumberX{ get; private set; }
+		public int LoopNumberY{ get; private set; }
 
 		private SynthesizerPcm synthesizer;
+		private IMusic music;
 
 		private delegate void DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
 		private DelegateUpdate delegateUpdate;
@@ -38,6 +38,7 @@ namespace Monoamp.Common.Component.Sound.Player
 
 		public PlayerPcm( MusicPcm aMusic )
 		{
+			music = aMusic;
 			synthesizer = new SynthesizerPcm( aMusic );
             bufferArray = new float[2];
 
@@ -140,24 +141,46 @@ namespace Monoamp.Common.Component.Sound.Player
 			}
 		}
 
-		public void SetPreviousLoop()
+		public int GetLoopNumberX()
 		{
-			synthesizer.SetPreviousLoop();
+			return LoopNumberX;
 		}
-
+		
+		public int GetLoopNumberY()
+		{
+			return LoopNumberY;
+		}
+		
 		public void SetNextLoop()
 		{
-			synthesizer.SetNextLoop();
+			LoopNumberX++;
+			LoopNumberX %= music.GetCountLoopX();
+			LoopNumberY = 0;
+			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
 		}
-
+		
+		public void SetPreviousLoop()
+		{
+			LoopNumberX += music.GetCountLoopX();
+			LoopNumberX--;
+			LoopNumberX %= music.GetCountLoopX();
+			LoopNumberY = 0;
+			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
+		}
+		
 		public void SetUpLoop()
 		{
-			synthesizer.SetUpLoop();
+			LoopNumberY++;
+			LoopNumberY %= music.GetCountLoopY( LoopNumberX );
+			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
 		}
-
+		
 		public void SetDownLoop()
 		{
-			synthesizer.SetDownLoop();
+			LoopNumberY += music.GetCountLoopY( LoopNumberX );
+			LoopNumberY--;
+			LoopNumberY %= music.GetCountLoopY( LoopNumberX );
+			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
 		}
 	}
 }
