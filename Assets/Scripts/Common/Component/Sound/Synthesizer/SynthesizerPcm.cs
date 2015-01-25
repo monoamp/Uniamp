@@ -10,146 +10,140 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 	public class SynthesizerPcm
 	{
 		private MusicPcm music;
-		private SoundTime timePosition;
-		private SoundTime timePositionPre;
-		private SoundTime timeElapsed;
+		private SoundTime position;
+		private SoundTime positionPre;
+		private SoundTime elapsed;
 
-		public int loopNumber1;
-		public int loopNumber2;
+		public LoopInformation Loop{ get; private set; }
+		public int loopNumberX;
+		public int loopNumberY;
 
 		public bool isLoop;
 
 		public SynthesizerPcm( MusicPcm aMusicPcm )
 		{
 			music = aMusicPcm;
-			timePosition = new SoundTime( 44100, 0 );
-			timePositionPre = new SoundTime( 44100, 0 );
-			timeElapsed = new SoundTime( 44100, 0 );
-			loopNumber1 = 0;
-			loopNumber2 = 0;
+			position = new SoundTime( 44100, 0 );
+			positionPre = new SoundTime( 44100, 0 );
+			elapsed = new SoundTime( 44100, 0 );
+			
+			Loop = music.GetLoop( loopNumberX, loopNumberY );
+			loopNumberX = 0;
+			loopNumberY = 0;
+
 			isLoop = false;
 		}
 
 		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			LoopInformation lLoop = music.Loop[loopNumber1][loopNumber2];
-
 			if( isLoop == true )
 			{
-				if( lLoop.length.sample > 0 )
+				if( Loop.length.sample > 0 )
 				{
-					if( timePositionPre.sample <= lLoop.end.sample + 1 && timePosition.sample >= lLoop.end.sample + 1 )
+					if( positionPre.sample <= Loop.end.sample + 1 && position.sample >= Loop.end.sample + 1 )
 					{
-						Logger.Debug( "Loop " + timePosition.sample + " to " + ( lLoop.start.sample + timePositionPre.sample - ( lLoop.end.sample + 1 ) ) );
+						Logger.Debug( "Loop " + position.sample + " to " + ( Loop.start.sample + positionPre.sample - ( Loop.end.sample + 1 ) ) );
 
-						timePosition.sample = lLoop.start.sample + timePositionPre.sample - ( lLoop.end.sample + 1 );
+						position.sample = Loop.start.sample + positionPre.sample - ( Loop.end.sample + 1 );
 					}
 				}
 				else
 				{
-					if( timePosition.sample >= music.Sample.sample )
+					if( position.sample >= music.Length.sample )
 					{
-						Logger.Debug( "Loop " + timePosition.sample + " to " + ( timePositionPre.sample - music.Sample.sample ) );
+						Logger.Debug( "Loop " + position.sample + " to " + ( positionPre.sample - music.Length.sample ) );
 
-						timePosition.sample = timePositionPre.sample - music.Sample.sample;
+						position.sample = positionPre.sample - music.Length.sample;
 					}
 				}
 			}
 
-			if( timePosition.sample + 1 < music.Sample.sample )
+			if( position.sample + 1 < music.Length.sample )
 			{
 				for( int i = 0; i < aChannels; i++ )
 				{
-					aSoundBuffer[i] = MeanInterpolation.Calculate( music, i, timePosition.sample );
+					aSoundBuffer[i] = MeanInterpolation.Calculate( music, i, position.sample );
 				}
 			}
-			else if( timePosition.sample < music.Sample.sample )
+			else if( position.sample < music.Length.sample )
 			{
 				for( int i = 0; i < aChannels; i++ )
 				{
-					aSoundBuffer[i] = MeanInterpolation.Calculate( music, i, timePosition.sample, ( int )lLoop.start.sample );
+					aSoundBuffer[i] = MeanInterpolation.Calculate( music, i, position.sample, Loop.start.sample );
 				}
 			}
 
-			timePositionPre.sample = timePosition.sample;
-			timePosition.sample += ( double )music.Sample.sampleRate / ( double )aSampleRate;
-			timeElapsed.sample += ( double )music.Sample.sampleRate / ( double )aSampleRate;
+			positionPre.sample = position.sample;
+			position.sample += ( double )music.Length.sampleRate / ( double )aSampleRate;
+			elapsed.sample += ( double )music.Length.sampleRate / ( double )aSampleRate;
 		}
 
 		public void SetPosition( double aPosition )
 		{
-			timePositionPre.sample = music.Sample.sample * aPosition;
-			timePosition.sample = music.Sample.sample * aPosition;
+			positionPre.sample = music.Length.sample * aPosition;
+			position.sample = music.Length.sample * aPosition;
 		}
 
 		public double GetPosition()
 		{
-			return timePosition.sample / music.Sample.sample;
+			return position.sample / music.Length.sample;
 		}
 
 		public SoundTime GetTimePosition()
 		{
-			return timePosition;
+			return position;
 		}
 
 		public SoundTime GetTimeElapsed()
 		{
-			return timeElapsed;
+			return elapsed;
 		}
 
 		public SoundTime GetSoundTime()
 		{
-			return music.Sample;
-		}
-
-		public LoopInformation GetLoopPoint()
-		{
-			return music.Loop[loopNumber1][loopNumber2];
-		}
-
-		public int GetLoopCount()
-		{
-			return music.Loop[loopNumber1].Count;
+			return music.Length;
 		}
 
 		public int GetLoopNumberX()
 		{
-			return loopNumber1;
+			return loopNumberX;
 		}
 
 		public int GetLoopNumberY()
 		{
-			return loopNumber2;
+			return loopNumberY;
 		}
 
 		public void SetNextLoop()
 		{
-			loopNumber1++;
-			loopNumber1 %= music.Loop.Count;
-
-			loopNumber2 = 0;
+			loopNumberX++;
+			loopNumberX %= music.GetCountLoopX();
+			loopNumberY = 0;
+			Loop = music.GetLoop( loopNumberX, loopNumberY );
 		}
 
 		public void SetPreviousLoop()
 		{
-			loopNumber1 += music.Loop.Count;
-			loopNumber1--;
-			loopNumber1 %= music.Loop.Count;
-
-			loopNumber2 = 0;
+			loopNumberX += music.GetCountLoopX();
+			loopNumberX--;
+			loopNumberX %= music.GetCountLoopX();
+			loopNumberY = 0;
+			Loop = music.GetLoop( loopNumberX, loopNumberY );
 		}
 
 		public void SetUpLoop()
 		{
-			loopNumber2++;
-			loopNumber2 %= music.Loop[loopNumber1].Count;
+			loopNumberY++;
+			loopNumberY %= music.GetCountLoopY( loopNumberX );
+			Loop = music.GetLoop( loopNumberX, loopNumberY );
 		}
 
 		public void SetDownLoop()
 		{
-			loopNumber2 += music.Loop[loopNumber1].Count;
-			loopNumber2--;
-			loopNumber2 %= music.Loop[loopNumber1].Count;
+			loopNumberY += music.GetCountLoopY( loopNumberX );
+			loopNumberY--;
+			loopNumberY %= music.GetCountLoopY( loopNumberX );
+			Loop = music.GetLoop( loopNumberX, loopNumberY );
 		}
 	}
 }

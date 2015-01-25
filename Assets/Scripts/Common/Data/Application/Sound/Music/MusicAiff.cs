@@ -29,9 +29,9 @@ namespace Monoamp.Common.Data.Application.Music
 			FormAiffComm lChunkComm = ( FormAiffComm )aFormFile.GetChunk( FormAiffComm.ID );
 			Channels = lChunkComm.numberOfChannels;
 			SampleBits = lChunkComm.bitsPerSamples;
-			Sample = new SoundTime( ( int )lChunkComm.sampleRate, ( int )( byteSize / ( SampleBits / 8 ) / Channels ) );
+			Length = new SoundTime( ( int )lChunkComm.sampleRate, ( int )( byteSize / ( SampleBits / 8 ) / Channels ) );
 
-			LengthBuffer = ( int )Sample.sample;
+			LengthBuffer = ( int )Length.sample;
 
 			if( LENGTH_BUFFER != 0 )
 			{
@@ -49,7 +49,7 @@ namespace Monoamp.Common.Data.Application.Music
 
 			Loop = new List<List<LoopInformation>>();
 			Loop.Add( new List<LoopInformation>() );
-			Loop[0].Add( new LoopInformation( Sample.sampleRate, -1, -1 ) );
+			Loop[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 		}
 		
 		protected override ByteArray ConstructByteArray( FileStream aFileStream )

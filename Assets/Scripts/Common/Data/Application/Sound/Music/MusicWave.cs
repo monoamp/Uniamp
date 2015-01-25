@@ -29,9 +29,9 @@ namespace Monoamp.Common.Data.Application.Music
 			RiffWaveFmt_ lRiffWaveFmt_ = ( RiffWaveFmt_ )aRiffFile.GetChunk( RiffWaveFmt_.ID );
 			Channels = lRiffWaveFmt_.channels;
 			SampleBits = lRiffWaveFmt_.bitsPerSample;
-			Sample = new SoundTime( ( int )lRiffWaveFmt_.samplesPerSec, ( int )( byteSize / ( SampleBits / 8 ) / Channels ) );
+			Length = new SoundTime( ( int )lRiffWaveFmt_.samplesPerSec, ( int )( byteSize / ( SampleBits / 8 ) / Channels ) );
 
-			LengthBuffer = ( int )Sample.sample;
+			LengthBuffer = ( int )Length.sample;
 			
 			if( LENGTH_BUFFER != 0 )
 			{
@@ -71,14 +71,14 @@ namespace Monoamp.Common.Data.Application.Music
 						lIndex++;
 					}
 
-					Loop[lIndex].Add( new LoopInformation( Sample.sampleRate, ( int )lLoop.start, ( int )lLoop.end ) );
+					Loop[lIndex].Add( new LoopInformation( Length.sampleRate, ( int )lLoop.start, ( int )lLoop.end ) );
 				}
 			}
 			else
 			{
 				Loop = new List<List<LoopInformation>>();
 				Loop.Add( new List<LoopInformation>() );
-				Loop[0].Add( new LoopInformation( Sample.sampleRate, -1, -1 ) );
+				Loop[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 			}
 		}
 		

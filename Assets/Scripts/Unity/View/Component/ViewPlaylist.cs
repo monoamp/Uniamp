@@ -164,7 +164,7 @@ namespace Unity.View
 								}
 
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( musicDictionary[data.fileInfoList[i].FullName].Sample.MMSS, GuiStyleSet.StyleTable.textRow );
+								GUILayout.TextField( musicDictionary[data.fileInfoList[i].FullName].Length.MMSS, GuiStyleSet.StyleTable.textRow );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 								GUILayout.TextField( data.loopPointList[i].start.String, GuiStyleSet.StyleTable.textRow );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
@@ -262,15 +262,7 @@ namespace Unity.View
 					{
 						musicDictionary.Add( lPath, lMusic );
 						data.fileInfoList.Add( new FileInfo( lPath ) );
-						
-						if( lMusic.Loop != null && lMusic.Loop.Count > 0 )
-						{
-							data.loopPointList.Add( lMusic.Loop[0][0] );
-						}
-						else
-						{
-							data.loopPointList.Add( new LoopInformation( 44100, 0, 0 ) );
-						}
+						data.loopPointList.Add( lMusic.GetLoop( 0, 0 ) );
 					}
 				}
 			}

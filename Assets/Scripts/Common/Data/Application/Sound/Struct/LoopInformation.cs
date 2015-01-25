@@ -2,15 +2,11 @@
 
 namespace Monoamp.Common.Struct
 {
-	public class LoopInformation
+	public struct LoopInformation
 	{
 		public readonly SoundTime start;
 		public readonly SoundTime end;
 		public readonly SoundTime length;
-
-		public readonly string[] stringArrayStart;
-		public readonly string[] stringArrayEnd;
-		public readonly string[] stringArrayLength;
 
 		public LoopInformation( int aSampleRate, int aSampleStart, int aSampleEnd )
 		{
@@ -22,22 +18,6 @@ namespace Monoamp.Common.Struct
 			{
 				length.sample = -1;
 			}
-
-			stringArrayStart = new string[3];
-			stringArrayEnd = new string[3];
-			stringArrayLength = new string[3];
-
-			stringArrayStart[0] = start.sample.ToString();
-			stringArrayEnd[0] = end.sample.ToString();
-			stringArrayLength[0] = length.sample.ToString();
-
-			stringArrayStart[1] = start.Seconds.ToString();
-			stringArrayEnd[1] = end.Seconds.ToString();
-			stringArrayLength[1] = length.Seconds.ToString();
-
-			stringArrayStart [2] = start.MMSSmmm;
-			stringArrayEnd [2] = end.MMSSmmm;
-			stringArrayLength [2] = length.MMSSmmm;
 		}
 	}
 

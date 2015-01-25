@@ -14,6 +14,10 @@ namespace Monoamp.Common.Component.Sound.Player
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }
 		public bool IsLoop{ get; set; }
+		
+		public LoopInformation Loop{ get{ return new LoopInformation( 44100, -1, -1 ); } }
+		public int LoopNumberX{ get{ return 0; } }
+		public int LoopNumberY{ get{ return 0; } }
 
         public PlayerNull()
 		{
@@ -61,26 +65,6 @@ namespace Monoamp.Common.Component.Sound.Player
         {
             return new SoundTime( 44100, 0 );
         }
-
-		public LoopInformation GetLoopPoint()
-		{
-            return null;
-		}
-
-		public int GetLoopCount()
-		{
-            return 0;
-		}
-
-		public int GetLoopNumberX()
-        {
-            return 0;
-		}
-
-		public int GetLoopNumberY()
-        {
-            return 0;
-		}
 
 		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{

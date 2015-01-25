@@ -196,7 +196,7 @@ namespace Unity.View
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.GetLoopPoint().start.Seconds / player.GetTimeLength().Seconds ), ( float )( player.GetLoopPoint().end.Seconds / player.GetTimeLength().Seconds ), ( float )player.Position );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start.Seconds / player.GetTimeLength().Seconds ), ( float )( player.Loop.end.Seconds / player.GetTimeLength().Seconds ), ( float )player.Position );
 			}
 			else
 			{
@@ -219,18 +219,6 @@ namespace Unity.View
 		public void OnApplicationQuit()
 		{
 			
-		}
-
-		public LoopInformation GetLoopPoint()
-		{
-			LoopInformation lLoopPoint = player.GetLoopPoint();
-
-			if( lLoopPoint == null )
-			{
-				lLoopPoint = new LoopInformation( 44100, 0, 0 );
-			}
-
-			return lLoopPoint;
 		}
 
 		public FileInfo GetFileInfo()

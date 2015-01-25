@@ -16,10 +16,10 @@ namespace Monoamp.Common.Component.Sound.Utility
 			return ( float )( a + ( b - a ) * positionDifference );
 		}
 
-		public static float Calculate( MusicPcm aMusic, int aChannel, double aSampleCurrent, int aSampleLoopStart )
+		public static float Calculate( MusicPcm aMusic, int aChannel, double aSampleCurrent, double aSampleLoopStart )
 		{
 			float a = aMusic.GetSample( aChannel, ( int )aSampleCurrent );
-			float b = aMusic.GetSample( aChannel, aSampleLoopStart );
+			float b = aMusic.GetSample( aChannel, ( int )aSampleLoopStart );
 			double positionDifference = aSampleCurrent - ( int )aSampleCurrent;
 
 			return ( float )( a + ( b - a ) * positionDifference );
@@ -34,10 +34,10 @@ namespace Monoamp.Common.Component.Sound.Utility
 			return ( float )( a + ( b - a ) * positionDifference );
 		}
 
-		public static float Calculate( IWaveform aWaveformBase, double aSampleCurrent, int aSampleLoopStart, int aChannel )
+		public static float Calculate( IWaveform aWaveformBase, double aSampleCurrent, double aSampleLoopStart, int aChannel )
 		{
 			float a = aWaveformBase.data.GetSample( aChannel, ( int )aSampleCurrent );
-			float b = aWaveformBase.data.GetSample( aChannel, aSampleLoopStart );
+			float b = aWaveformBase.data.GetSample( aChannel, ( int )aSampleLoopStart );
 			double positionDifference = aSampleCurrent - ( int )aSampleCurrent;
 
 			return ( float )( a + ( b - a ) * positionDifference );

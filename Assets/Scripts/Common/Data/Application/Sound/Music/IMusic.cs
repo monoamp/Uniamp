@@ -8,9 +8,12 @@ namespace Monoamp.Common.Data.Application.Music
 	public interface IMusic
 	{
 		int Channels{ get; }
-		SoundTime Sample{ get; }
+		SoundTime Length{ get; }
 		int Samples{ get; }
 		int SampleRate{ get; }
-		List<List<LoopInformation>> Loop{ get; }
+
+		int GetCountLoopX();
+		int GetCountLoopY( int aIndexX );
+		LoopInformation GetLoop( int aIndexX, int aIndexY );
 	}
 }

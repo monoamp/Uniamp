@@ -11,6 +11,16 @@ namespace Monoamp.Common.Component.Sound.Player
 {
 	public class PlayerPcm : IPlayer
 	{
+		public double Position{ get{ return synthesizer.GetPosition(); } set{ synthesizer.SetPosition( value ); } }
+		public float Volume{ get; set; }
+		public bool IsMute{ get; set; }
+		public bool IsLoop{ get{ return synthesizer.isLoop; } set{ synthesizer.isLoop = value; } }
+		
+		public LoopInformation Loop{ get{ return synthesizer.Loop; } }
+		public int LoopNumberX{ get{ return synthesizer.GetLoopNumberX(); } }
+		public int LoopNumberY{ get{ return synthesizer.GetLoopNumberY(); } }
+
+
 		private SynthesizerPcm synthesizer;
 
 		private delegate void DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
@@ -19,11 +29,6 @@ namespace Monoamp.Common.Component.Sound.Player
 		//private string path;
 
         private float[] bufferArray;
-
-        public double Position{ get{ return synthesizer.GetPosition(); } set{ synthesizer.SetPosition( value ); } }
-		public float Volume{ get; set; }
-		public bool IsMute{ get; set; }
-		public bool IsLoop{ get{ return synthesizer.isLoop; } set{ synthesizer.isLoop = value; } }
 
 		public PlayerPcm( string aFilePath )
 			: this( ( MusicPcm )LoaderCollection.LoadMusic( aFilePath ) )
@@ -97,26 +102,6 @@ namespace Monoamp.Common.Component.Sound.Player
 		public SoundTime GetTimeLength()
 		{
 			return synthesizer.GetSoundTime ();
-		}
-
-		public LoopInformation GetLoopPoint()
-		{
-			return synthesizer.GetLoopPoint();
-		}
-
-		public int GetLoopCount()
-		{
-			return synthesizer.GetLoopCount();
-		}
-
-		public int GetLoopNumberX()
-		{
-			return synthesizer.GetLoopNumberX();
-		}
-
-		public int GetLoopNumberY()
-		{
-			return synthesizer.GetLoopNumberY();
 		}
 
 		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )

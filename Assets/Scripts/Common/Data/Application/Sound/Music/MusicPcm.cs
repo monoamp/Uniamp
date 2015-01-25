@@ -18,11 +18,9 @@ namespace Monoamp.Common.Data.Application.Music
 		protected const int LENGTH_BUFFER = 1024 * 4;
 
 		public int Channels{ get; protected set; }
-		public SoundTime Sample{ get; protected set; }
-		public int Samples{ get{ return ( int )Sample.sample; } }
-		public int SampleRate{ get{ return ( int )Sample.sampleRate; } }
-		public List<List<LoopInformation>> Loop{ get; protected set; }
-		
+		public SoundTime Length{ get; protected set; }
+
+		protected List<List<LoopInformation>> Loop{ get; set; }
 		protected string nameFile{ get; set; }
 		protected int bytePosition{ get; set; }
 		protected int byteSize{ get; set; }
@@ -30,6 +28,38 @@ namespace Monoamp.Common.Data.Application.Music
 		protected float[][] SampleArray{ get; set; }
 		protected int StartPosition{ get; set; }
 		protected int LengthBuffer{ get; set; }
+
+		public int Samples{ get{ return ( int )Length.sample; } }
+		public int SampleRate{ get{ return ( int )Length.sampleRate; } }
+
+		public int GetCountLoopX()
+		{
+			return Loop.Count;
+		}
+		
+		public int GetCountLoopY( int aIndexX )
+		{
+			if( aIndexX < GetCountLoopX() )
+			{
+				return Loop[aIndexX].Count;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		
+		public LoopInformation GetLoop( int aIndexX, int aIndexY )
+		{
+			if( aIndexX < GetCountLoopX() && aIndexY < GetCountLoopY( aIndexX ) )
+			{
+				return Loop[aIndexX][aIndexX];
+			}
+			else
+			{
+				return new LoopInformation( 44100, -1, -1 );
+			}
+		}
 
 		public float GetSample( int aChannel, int aPositionSample )
 		{
@@ -79,7 +109,7 @@ namespace Monoamp.Common.Data.Application.Music
 		{
 			aByteArray.SetPosition( bytePosition + 2 * Channels * aPositionSample );
 			
-			for( int i = 0; i < LengthBuffer && i < ( int )Sample.sample - aPositionSample; i++ )
+			for( int i = 0; i < LengthBuffer && i < ( int )Length.sample - aPositionSample; i++ )
 			{
 				for( int j = 0; j < Channels; j++ )
 				{
@@ -93,7 +123,7 @@ namespace Monoamp.Common.Data.Application.Music
 		{
 			aByteArray.SetPosition( bytePosition + 3 * Channels * aPositionSample );
 			
-			for( int i = 0; i < LengthBuffer && i < ( int )Sample.sample - aPositionSample; i++ )
+			for( int i = 0; i < LengthBuffer && i < ( int )Length.sample - aPositionSample; i++ )
 			{
 				for( int j = 0; j < Channels; j++ )
 				{
