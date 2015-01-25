@@ -1,14 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unity/View/Component/ViewPlayer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Common/Component/Sound/Synthesizer/SynthesizerPcm.cs">
     <Files>
-      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlaylist.cs" Line="123" Column="77" />
+      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlaylist.cs" Line="113" Column="6" />
       <File FileName="Assets/Scripts/Unity/View/Application/ApplicationPlayer.cs" Line="169" Column="24" />
       <File FileName="Assets/Scripts/Unity/Scene/ScenePlayer.cs" Line="53" Column="4" />
-      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlayer.cs" Line="106" Column="7" />
+      <File FileName="Assets/Scripts/Unity/View/Component/ViewPlayer.cs" Line="108" Column="7" />
       <File FileName="Assets/Scripts/Common/Component/Sound/Player/IPlayer.cs" Line="8" Column="22" />
-      <File FileName="Assets/Scripts/Common/Component/Sound/Player/PlayerPcm.cs" Line="27" Column="3" />
+      <File FileName="Assets/Scripts/Common/Component/Sound/Player/PlayerPcm.cs" Line="23" Column="98" />
       <File FileName="Assets/Scripts/Common/Component/Sound/Player/PlayerNull.cs" Line="12" Column="6" />
+      <File FileName="Assets/Scripts/Common/Component/Sound/Synthesizer/SynthesizerPcm.cs" Line="76" Column="23" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -19,15 +20,17 @@
                 <Node name="Component" expanded="True">
                   <Node name="Sound" expanded="True">
                     <Node name="Player" expanded="True" />
+                    <Node name="Synthesizer" expanded="True">
+                      <Node name="SynthesizerPcm.cs" selected="True" />
+                    </Node>
                   </Node>
                 </Node>
               </Node>
               <Node name="Unity" expanded="True">
                 <Node name="Scene" expanded="True" />
                 <Node name="View" expanded="True">
-                  <Node name="Component" expanded="True">
-                    <Node name="ViewPlayer.cs" selected="True" />
-                  </Node>
+                  <Node name="Application" expanded="True" />
+                  <Node name="Component" expanded="True" />
                 </Node>
               </Node>
             </Node>
