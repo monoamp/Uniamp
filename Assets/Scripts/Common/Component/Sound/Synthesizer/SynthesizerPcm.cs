@@ -34,12 +34,26 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		{
 			LoopInformation lLoop = music.Loop[loopNumber1][loopNumber2];
 
-			if( isLoop == true && lLoop.length.sample > 0 && timePositionPre.sample <= lLoop.end.sample && timePosition.sample > lLoop.end.sample )
+			if( isLoop == true )
 			{
-				Logger.Debug( "Start:" + lLoop.start.sample + ", End:" + lLoop.end.sample );
+				if( lLoop.length.sample > 0 )
+				{
+					if( timePositionPre.sample <= lLoop.end.sample + 1 && timePosition.sample >= lLoop.end.sample + 1 )
+					{
+						Logger.Debug( "Loop " + timePosition.sample + " to " + ( lLoop.start.sample + timePositionPre.sample - ( lLoop.end.sample + 1 ) ) );
 
-				double diff = timePosition.sample % 1.0d;
-				timePosition.sample = ( int )lLoop.start.sample + diff;
+						timePosition.sample = lLoop.start.sample + timePositionPre.sample - ( lLoop.end.sample + 1 );
+					}
+				}
+				else
+				{
+					if( timePosition.sample >= music.Sample.sample )
+					{
+						Logger.Debug( "Loop " + timePosition.sample + " to " + ( timePositionPre.sample - music.Sample.sample ) );
+
+						timePosition.sample = timePositionPre.sample - music.Sample.sample;
+					}
+				}
 			}
 
 			if( timePosition.sample + 1 < music.Sample.sample )
@@ -55,15 +69,6 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 				{
 					aSoundBuffer[i] = MeanInterpolation.Calculate( music, i, timePosition.sample, ( int )lLoop.start.sample );
 				}
-			}
-			else
-			{
-				timePosition.sample = 0.0d;
-			}
-
-			if( timePosition.sample == 1 )
-			{
-				Logger.Debug( "Start:" + aSoundBuffer[0] );
 			}
 
 			timePositionPre.sample = timePosition.sample;

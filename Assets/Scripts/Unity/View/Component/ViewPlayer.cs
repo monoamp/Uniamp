@@ -21,6 +21,7 @@ namespace Unity.View
 
 		private FileInfo fileInfo;
 		private string title;
+		private bool mouseButton;
 
 		public delegate void ChangeMusicPrevious();
 		public delegate void ChangeMusicNext();
@@ -33,6 +34,7 @@ namespace Unity.View
 		public ViewPlayer( FileInfo aFileInfo, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
 		{
 			fileInfo = aFileInfo;
+			mouseButton = false;
 
 			if( fileInfo == null )
 			{
@@ -90,6 +92,8 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
+			mouseButton = Input.GetMouseButton( 0 );
+
 			GUILayout.BeginVertical( GuiStyleSet.StyleGeneral.box );
 			{
 				GUILayout.TextArea( title, GuiStyleSet.StylePlayer.labelTitle );
@@ -205,6 +209,11 @@ namespace Unity.View
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
 			player.Update( aSoundBuffer, aChannels, aSampleRate );
+
+			if( player.Position >= 1.0f && mouseButton == false )
+			{
+				changeMusicNext();
+			}
 		}
 		
 		public void OnApplicationQuit()
