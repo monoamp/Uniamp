@@ -4,19 +4,21 @@ using System.IO;
 
 namespace Monoamp.Common.Utility
 {
-	public class Pool
+	public struct Pool
 	{
 		public delegate object Constructor( FileStream aFileStream );
 
-		private Constructor constructor;
+		private readonly Constructor constructor;
+		private readonly Dictionary<string, object> dictionary;
+
 		private object objectLock;
-		private Dictionary<string, object> dictionary;
 
 		public Pool( Constructor aConstructor )
 		{
 			constructor = aConstructor;
-			objectLock = new object();
 			dictionary = new Dictionary<string, object>();
+			
+			objectLock = new object();
 		}
 
 		public object Get( string aPathFile )

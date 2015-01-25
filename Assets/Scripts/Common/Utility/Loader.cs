@@ -6,11 +6,11 @@ using Monoamp.Boundary;
 
 namespace Monoamp.Common.Utility
 {
-	public class Loader
+	public struct Loader
 	{
 		public delegate Object Constructor( string aFilePath );
 		
-		private Dictionary<string, Constructor> constructorDictionary;
+		private readonly Dictionary<string, Constructor> constructorDictionary;
 
 		public Loader( Dictionary<string, Constructor> aConstructorDictionary )
 		{

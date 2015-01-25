@@ -13,7 +13,7 @@ namespace Monoamp.Common.Data.Application.Music
 	public class MusicWave : MusicPcm
 	{
 		public MusicWave( string aPathFile )
-			: this( PoolCollection.GetWav( aPathFile ) )
+			: this( PoolCollection.GetRiffWave( aPathFile ) )
 		{
 			
 		}

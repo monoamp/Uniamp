@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 	public class WaveformAiff : IWaveform
 	{
 		public WaveformAiff( string aPathFile )
-			: this( PoolCollection.GetAif( aPathFile ) )
+			: this( PoolCollection.GetFormAiff( aPathFile ) )
 		{
 			
 		}

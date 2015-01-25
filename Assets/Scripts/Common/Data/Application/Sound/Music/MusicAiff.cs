@@ -13,7 +13,7 @@ namespace Monoamp.Common.Data.Application.Music
 	public class MusicAiff : MusicPcm
 	{
 		public MusicAiff( string aPathFile )
-			: this( PoolCollection.GetAif( aPathFile ) )
+			: this( PoolCollection.GetFormAiff( aPathFile ) )
 		{
 
 		}

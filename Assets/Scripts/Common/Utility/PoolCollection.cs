@@ -9,23 +9,23 @@ namespace Monoamp.Common.Utility
 {
 	public static class PoolCollection
 	{
-		private static readonly Pool poolAif;
-		private static readonly Pool poolWav;
+		private static readonly Pool poolFormAiff;
+		private static readonly Pool poolRiffWave;
 
 		static PoolCollection()
 		{
-			poolAif = new Pool( ( FileStream aFileStream ) => { return new FormAiffForm( aFileStream ); } );
-			poolWav = new Pool( ( FileStream aFileStream ) => { return new RiffWaveRiff( aFileStream ); } );
+			poolFormAiff = new Pool( ( FileStream aFileStream ) => { return new FormAiffForm( aFileStream ); } );
+			poolRiffWave = new Pool( ( FileStream aFileStream ) => { return new RiffWaveRiff( aFileStream ); } );
 		}
 
-		public static FormAiffForm GetAif( string aPathFile )
+		public static FormAiffForm GetFormAiff( string aPathFile )
 		{
-			return ( FormAiffForm )poolAif.Get( aPathFile );
+			return ( FormAiffForm )poolFormAiff.Get( aPathFile );
 		}
 		
-		public static RiffWaveRiff GetWav( string aPathFile )
+		public static RiffWaveRiff GetRiffWave( string aPathFile )
 		{
-			return ( RiffWaveRiff )poolWav.Get( aPathFile );
+			return ( RiffWaveRiff )poolRiffWave.Get( aPathFile );
 		}
 	}
 }
