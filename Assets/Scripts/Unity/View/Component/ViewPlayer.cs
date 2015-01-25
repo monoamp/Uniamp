@@ -101,7 +101,7 @@ namespace Unity.View
 				GUILayout.BeginHorizontal();
 				{
 					GUILayout.FlexibleSpace();
-					GUILayout.Label( new GUIContent( player.GetTimePosition().MMSSmmm, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+					GUILayout.Label( new GUIContent( player.GetTimePosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
 					float lPositionFloat = ( float )player.Position;
 					float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
@@ -111,7 +111,7 @@ namespace Unity.View
 						player.Position = lPositionAfter;
 					}
 
-					GUILayout.Label( new GUIContent( player.GetTimeLength().MMSSmmm, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+					GUILayout.Label( new GUIContent( player.GetTimeLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 					GUILayout.FlexibleSpace();
 				}
 				GUILayout.EndHorizontal();
