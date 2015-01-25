@@ -101,17 +101,17 @@ namespace Unity.View
 				GUILayout.BeginHorizontal();
 				{
 					GUILayout.FlexibleSpace();
-					GUILayout.Label( new GUIContent( player.GetTimePosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+					GUILayout.Label( new GUIContent( player.GetTPosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
-					float lPositionFloat = ( float )player.Position;
+					float lPositionFloat = ( float )player.PositionRate;
 					float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
 
 					if( lPositionAfter != lPositionFloat )
 					{
-						player.Position = lPositionAfter;
+						player.PositionRate = lPositionAfter;
 					}
 
-					GUILayout.Label( new GUIContent( player.GetTimeLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+					GUILayout.Label( new GUIContent( player.GetLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 					GUILayout.FlexibleSpace();
 				}
 				GUILayout.EndHorizontal();
@@ -192,11 +192,11 @@ namespace Unity.View
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
 			float lY = /*lHeightMenu +*/ lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top;
 
-			if( player != null && player.GetTimeLength().Second != 0.0d )
+			if( player != null && player.GetLength().Second != 0.0d )
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start.Seconds / player.GetTimeLength().Seconds ), ( float )( player.Loop.end.Seconds / player.GetTimeLength().Seconds ), ( float )player.Position );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start.Seconds / player.GetLength().Seconds ), ( float )( player.Loop.end.Seconds / player.GetLength().Seconds ), ( float )player.PositionRate );
 			}
 			else
 			{
@@ -210,7 +210,7 @@ namespace Unity.View
 		{
 			player.Update( aSoundBuffer, aChannels, aSampleRate );
 
-			if( player.Position >= 1.0f && mouseButton == false )
+			if( player.PositionRate >= 1.0f && mouseButton == false )
 			{
 				changeMusicNext();
 			}

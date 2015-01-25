@@ -11,7 +11,7 @@ namespace Monoamp.Common.Component.Sound.Player
 {
 	public class PlayerPcm : IPlayer
 	{
-		public double Position{ get{ return synthesizer.GetPosition(); } set{ synthesizer.SetPosition( value ); } }
+		public double PositionRate{ get{ return synthesizer.PositionRate; } set{ synthesizer.PositionRate = value; } }
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }
 		public bool IsLoop{ get{ return synthesizer.isLoop; } set{ synthesizer.isLoop = value; } }
@@ -29,6 +29,15 @@ namespace Monoamp.Common.Component.Sound.Player
 		//private string path;
 
         private float[] bufferArray;
+
+		/*
+		public PlayerPcm()
+		{
+			Volume = 0.5f;
+			IsMute = false;
+			IsLoop = true;
+		}
+		*/
 
 		public PlayerPcm( string aFilePath )
 			: this( ( MusicPcm )LoaderCollection.LoadMusic( aFilePath ) )
@@ -90,19 +99,19 @@ namespace Monoamp.Common.Component.Sound.Player
 			}
 		}
 
-		public SoundTime GetTimePosition()
+		public SoundTime GetTPosition()
 		{
-			return synthesizer.GetTimePosition ();
+			return synthesizer.Position;
 		}
 
-		public SoundTime GetTimeElapsed()
+		public SoundTime GetElapsed()
 		{
-			return synthesizer.GetTimeElapsed ();
+			return synthesizer.Elapsed;
 		}
 
-		public SoundTime GetTimeLength()
+		public SoundTime GetLength()
 		{
-			return synthesizer.GetSoundTime ();
+			return music.Length;
 		}
 
 		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )

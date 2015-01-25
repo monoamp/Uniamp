@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Monoamp.Common.Data.Application.Music;
@@ -10,7 +10,7 @@ namespace Monoamp.Common.Component.Sound.Player
 {
 	public class PlayerNull : IPlayer
     {
-		public double Position{ get{ return 0.0d; } set{} }
+		public double PositionRate{ get{ return 0.0d; } set{} }
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }
 		public bool IsLoop{ get; set; }
@@ -51,17 +51,17 @@ namespace Monoamp.Common.Component.Sound.Player
             return false;
 		}
         
-        public SoundTime GetTimePosition()
+        public SoundTime GetTPosition()
         {
             return new SoundTime( 44100, 0 );
         }
         
-        public SoundTime GetTimeElapsed()
+        public SoundTime GetElapsed()
         {
             return new SoundTime( 44100, 0 );
         }
         
-        public SoundTime GetTimeLength()
+        public SoundTime GetLength()
         {
             return new SoundTime( 44100, 0 );
         }

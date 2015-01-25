@@ -1,10 +1,10 @@
-﻿using Monoamp.Common.Struct;
+using Monoamp.Common.Struct;
 
 namespace Monoamp.Common.Component.Sound.Player
 {
 	public interface IPlayer
 	{
-        double Position{ get; set; }
+        double PositionRate{ get; set; }
 		float Volume{ get; set; }
 		bool IsMute{ get; set; }
 		bool IsLoop{ get; set; }
@@ -22,9 +22,9 @@ namespace Monoamp.Common.Component.Sound.Player
 		void SetNextLoop();
 		void SetUpLoop();
 		void SetDownLoop();
-		SoundTime GetTimePosition();
-		SoundTime GetTimeElapsed();
-		SoundTime GetTimeLength();
+		SoundTime GetTPosition();
+		SoundTime GetElapsed();
+		SoundTime GetLength();
 		void Update( float[] aSoundBuffer, int aChannels, int aSampleRate );
 	}
 }
