@@ -21,7 +21,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		public int LoopNumberY{ get; private set; }
 
 		private SynthesizerPcm synthesizer;
-		private IMusic music;
+		private MusicPcm music;
 
 		private delegate void DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
 		private DelegateUpdate delegateUpdate;
@@ -48,7 +48,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		public PlayerPcm( MusicPcm aMusic )
 		{
 			music = aMusic;
-			synthesizer = new SynthesizerPcm( aMusic );
+			synthesizer = new SynthesizerPcm( music.waveform, music.GetLoop( 0, 0 ) );
             bufferArray = new float[2];
 
 			delegateUpdate = UpdatePlay;

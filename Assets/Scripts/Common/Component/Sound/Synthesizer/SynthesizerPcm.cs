@@ -10,8 +10,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 {
 	public class SynthesizerPcm
 	{
-		private readonly MusicPcm music;
-		private readonly WaveformWave waveform;
+		//private readonly MusicPcm music;
+		private readonly WaveformPcm waveform;
 
 		public SoundTime Position{ get; private set; }
 		public SoundTime PositionPre{ get; private set; }
@@ -20,12 +20,21 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		public LoopInformation loop;
 		public bool isLoop;
 
+		/*
 		public double PositionRate
 		{
 			get { return Position.sample / music.Length.sample; }
 			set { PositionPre.sample = Position.sample = music.Length.sample * value; }
 		}
+		*/
 
+		public double PositionRate
+		{
+			get { return Position.sample / waveform.format.length.sample; }
+ 			set { PositionPre.sample = Position.sample = waveform.format.length.sample * value; }
+		}
+
+		/*
 		public SynthesizerPcm( MusicPcm aMusicPcm )
 		{
 			music = aMusicPcm;
@@ -37,8 +46,9 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			loop = music.GetLoop( 0, 0 );
 			isLoop = false;
 		}
-		
-		public SynthesizerPcm( WaveformWave aWaveform, LoopInformation aLoop )
+		*/
+
+		public SynthesizerPcm( WaveformPcm aWaveform, LoopInformation aLoop )
 		{
 			waveform = aWaveform;
 
@@ -49,7 +59,52 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			loop = aLoop;
 			isLoop = false;
 		}
+		
+		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		{
+			if( isLoop == true )
+			{
+				if( loop.length.sample > 0 )
+				{
+					if( PositionPre.sample <= loop.end.sample + 1 && Position.sample >= loop.end.sample + 1 )
+					{
+						Logger.Debug( "Loop " + Position.sample + " to " + ( loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 ) ) );
+						
+						Position.sample = loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 );
+					}
+				}
+				else
+				{
+					if( Position.sample >= waveform.format.length.sample )
+					{
+						Logger.Debug( "Loop " + Position.sample + " to " + ( PositionPre.sample - waveform.format.length.sample ) );
+						
+						Position.sample = PositionPre.sample - waveform.format.length.sample;
+					}
+				}
+			}
+			
+			if( Position.sample + 1 < waveform.format.length.sample )
+			{
+				for( int i = 0; i < aChannels; i++ )
+				{
+					aSoundBuffer[i] = MeanInterpolation.Calculate( waveform, i, Position.sample );
+				}
+			}
+			else if( Position.sample < waveform.format.length.sample )
+			{
+				for( int i = 0; i < aChannels; i++ )
+				{
+					aSoundBuffer[i] = MeanInterpolation.Calculate( waveform, i, Position.sample, loop.start.sample );
+				}
+			}
+			
+			PositionPre.sample = Position.sample;
+			Position.sample += ( double )waveform.format.length.sampleRate / ( double )aSampleRate;
+			Elapsed.sample += ( double )waveform.format.length.sampleRate / ( double )aSampleRate;
+		}
 
+		/*
 		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
 			if( isLoop == true )
@@ -93,5 +148,6 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			Position.sample += ( double )music.Length.sampleRate / ( double )aSampleRate;
 			Elapsed.sample += ( double )music.Length.sampleRate / ( double )aSampleRate;
 		}
+		*/
 	}
 }

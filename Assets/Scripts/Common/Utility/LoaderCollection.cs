@@ -53,9 +53,9 @@ namespace Monoamp.Common.Utility
 			return ( IMusic )loaderMusic.Load( aPathFile );
 		}
 
-		public static IWaveform LoadWaveform( string aPathFile )
+		public static WaveformPcm LoadWaveform( string aPathFile )
 		{
-			return ( IWaveform )loaderWaveform.Load( aPathFile );
+			return ( WaveformPcm )loaderWaveform.Load( aPathFile );
 		}
 
 		public static IPlayer LoadPlayer( string aPathFile )

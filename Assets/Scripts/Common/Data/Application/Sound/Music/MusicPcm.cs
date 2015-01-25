@@ -2,6 +2,11 @@
 using System.IO;
 using System.Collections.Generic;
 
+using Monoamp.Common.Data.Standard.Form;
+using Monoamp.Common.Data.Standard.Form.Aiff;
+using Monoamp.Common.Data.Standard.Riff;
+using Monoamp.Common.Data.Standard.Riff.Wave;
+using Monoamp.Common.Data.Application.Waveform;
 using Monoamp.Common.system.io;
 using Monoamp.Common.Struct;
 
@@ -15,33 +20,25 @@ namespace Monoamp.Common.Data.Application.Music
 
 	public abstract class MusicPcm : IMusic
 	{
+		public WaveformPcm waveform;
+
 		protected const int LENGTH_BUFFER = 1024 * 4;
 
-		public int Channels{ get; protected set; }
-		public SoundTime Length{ get; protected set; }
+		public SoundTime Length{ get{ return waveform.format.length; } }
 
-		protected List<List<LoopInformation>> Loop{ get; set; }
+		protected List<List<LoopInformation>> LoopList{ get; set; }
 		protected string nameFile{ get; set; }
-		protected int bytePosition{ get; set; }
-		protected int byteSize{ get; set; }
-		protected int SampleBits{ get; set; }
-		protected float[][] SampleArray{ get; set; }
-		protected int StartPosition{ get; set; }
-		protected int LengthBuffer{ get; set; }
-
-		public int Samples{ get{ return ( int )Length.sample; } }
-		public int SampleRate{ get{ return ( int )Length.sampleRate; } }
 
 		public int GetCountLoopX()
 		{
-			return Loop.Count;
+			return LoopList.Count;
 		}
 		
 		public int GetCountLoopY( int aIndexX )
 		{
 			if( aIndexX < GetCountLoopX() )
 			{
-				return Loop[aIndexX].Count;
+				return LoopList[aIndexX].Count;
 			}
 			else
 			{
@@ -53,7 +50,7 @@ namespace Monoamp.Common.Data.Application.Music
 		{
 			if( aIndexX < GetCountLoopX() && aIndexY < GetCountLoopY( aIndexX ) )
 			{
-				return Loop[aIndexX][aIndexX];
+				return LoopList[aIndexX][aIndexX];
 			}
 			else
 			{
@@ -61,75 +58,53 @@ namespace Monoamp.Common.Data.Application.Music
 			}
 		}
 
-		public float GetSample( int aChannel, int aPositionSample )
+		public MusicPcm( FormAiffForm aFormFile )
 		{
-			if( aPositionSample < StartPosition || aPositionSample >= StartPosition + LengthBuffer )
+			nameFile = aFormFile.name;
+			waveform = new WaveformPcm( aFormFile );
+			
+			LoopList = new List<List<LoopInformation>>();
+			LoopList.Add( new List<LoopInformation>() );
+			LoopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
+		}
+		
+		public MusicPcm( RiffWaveRiff aRiffFile )
+		{
+			nameFile = aRiffFile.name;
+			waveform = new WaveformPcm( aRiffFile );
+			
+			RiffWaveSmpl lRiffWaveSmpl = ( RiffWaveSmpl )aRiffFile.GetChunk( RiffWaveSmpl.ID );
+			
+			if( lRiffWaveSmpl != null )
 			{
-				StartPosition = aPositionSample;
+				LoopList = new List<List<LoopInformation>>();
 				
-				ReadSampleArray( StartPosition );
-			}
-
-			if( aPositionSample - StartPosition < 0 && aPositionSample - StartPosition >= SampleArray[aChannel].Length )
-			{
-				UnityEngine.Debug.LogError( "Start:" + StartPosition + ", Position:" + aPositionSample );
-			}
-
-			return SampleArray[aChannel % Channels][aPositionSample - StartPosition];
-		}
-		
-		private void ReadSampleArray( int aPointSample )
-		{
-			if( nameFile != null )
-			{
-				using ( FileStream u = new FileStream( nameFile, FileMode.Open, FileAccess.Read ) )
+				int lIndex = -1;
+				int lLoopLength = -1;
+				
+				for( int i = 0; i < lRiffWaveSmpl.sampleLoops; i++ )
 				{
-					ByteArray lByteArray = ConstructByteArray( u );
+					SampleLoop lLoop = lRiffWaveSmpl.sampleLoopList[i];
 					
-					switch( SampleBits )
+					if( ( int )( lLoop.end - lLoop.start ) == lLoopLength )
 					{
-						case 16:
-							ReadSampleArray16( lByteArray, aPointSample );
-							break;
-							
-						case 24:
-							ReadSampleArray24( lByteArray, aPointSample );
-							break;
-							
-						default:
-							break;
+						
 					}
+					else
+					{
+						LoopList.Add( new List<LoopInformation>() );
+						lLoopLength = ( int )( lLoop.end - lLoop.start );
+						lIndex++;
+					}
+					
+					LoopList[lIndex].Add( new LoopInformation( Length.sampleRate, ( int )lLoop.start, ( int )lLoop.end ) );
 				}
 			}
-		}
-		
-		protected abstract ByteArray ConstructByteArray( FileStream aFileStream );
-
-		private void ReadSampleArray16( ByteArray aByteArray, int aPositionSample )
-		{
-			aByteArray.SetPosition( bytePosition + 2 * Channels * aPositionSample );
-			
-			for( int i = 0; i < LengthBuffer && i < ( int )Length.sample - aPositionSample; i++ )
+			else
 			{
-				for( int j = 0; j < Channels; j++ )
-				{
-					Int32 sample = aByteArray.ReadInt16();
-					SampleArray[j][i] = ( float )sample / ( float )Int16.MaxValue;
-				}
-			}
-		}
-		
-		private void ReadSampleArray24( ByteArray aByteArray, int aPositionSample )
-		{
-			aByteArray.SetPosition( bytePosition + 3 * Channels * aPositionSample );
-			
-			for( int i = 0; i < LengthBuffer && i < ( int )Length.sample - aPositionSample; i++ )
-			{
-				for( int j = 0; j < Channels; j++ )
-				{
-					Int32 sample = aByteArray.ReadInt24();
-					SampleArray[j][i] = ( float )sample / ( float )Int24.MaxValue;
-				}
+				LoopList = new List<List<LoopInformation>>();
+				LoopList.Add( new List<LoopInformation>() );
+				LoopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 			}
 		}
 	}
