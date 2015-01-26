@@ -23,7 +23,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		private SynthesizerPcm synthesizer;
 		private MusicPcm music;
 
-		private delegate int DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
+		private delegate int DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer );
 		private DelegateUpdate delegateUpdate;
 
 		//private string path;
@@ -120,17 +120,17 @@ namespace Monoamp.Common.Component.Sound.Player
 		}
 
 		// Return: End position.
-		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer )
 		{
-			return delegateUpdate( aSoundBuffer, aChannels, aSampleRate );
+			return delegateUpdate( aSoundBuffer, aChannels, aSampleRate, aPositionInBuffer );
 		}
 		
 		// Return: End position.
-		public int UpdatePlay( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int UpdatePlay( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer )
 		{
 			int lLength = aSoundBuffer.Length / aChannels;
 
-			for( int i = 0; i < lLength; i++ )
+			for( int i = aPositionInBuffer; i < lLength; i++ )
 			{
 				bool lIsEnd = synthesizer.Update( bufferArray, aChannels, aSampleRate );
 
@@ -151,14 +151,14 @@ namespace Monoamp.Common.Component.Sound.Player
 			return lLength;
 		}
 
-		public int UpdateRecord( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int UpdateRecord( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer )
 		{
 			delegateUpdate = UpdateSynth;
 			
 			return aSoundBuffer.Length / aChannels;
 		}
 
-		public int UpdateSynth( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int UpdateSynth( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer )
 		{
 			for( int i = 0; i < aSoundBuffer.Length; i++ )
 			{

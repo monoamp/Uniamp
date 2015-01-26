@@ -26,6 +26,6 @@ namespace Monoamp.Common.Component.Sound.Player
 		SoundTime GetTPosition();
 		SoundTime GetElapsed();
 		SoundTime GetLength();
-		int Update( float[] aSoundBuffer, int aChannels, int aSampleRate );
+		int Update( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer );
 	}
 }

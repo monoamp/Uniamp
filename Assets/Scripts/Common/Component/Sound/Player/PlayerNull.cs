@@ -71,7 +71,7 @@ namespace Monoamp.Common.Component.Sound.Player
             return new SoundTime( 44100, 0 );
         }
 
-		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate, int aPositionInBuffer )
 		{
 			return aSoundBuffer.Length / aChannels;
 		}

@@ -73,7 +73,14 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			{
 				for( int i = 0; i < aChannels; i++ )
 				{
-					aSoundBuffer[i] = MeanInterpolation.Calculate( waveform, i, Position.sample, loop.start.sample );
+					if( loop.length.sample > 0 )
+					{
+						aSoundBuffer[i] = MeanInterpolation.Calculate( waveform, i, Position.sample, loop.start.sample );
+					}
+					else
+					{
+						aSoundBuffer[i] = waveform.data.GetSample( i, ( int )Position.sample );
+					}
 				}
 			}
 			else // End position.

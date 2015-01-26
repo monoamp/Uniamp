@@ -30,6 +30,8 @@ namespace Unity.View
 
 		public Rect Rect{ get; set; }
 
+		private int positionInBuffer;
+
 		public ViewPlayer( string aFilePath, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
 		{
 			mouseButton = false;
@@ -47,6 +49,8 @@ namespace Unity.View
 
 			changeMusicPrevious = aChangeMusicPrevious;
 			changeMusicNext = aChangeMusicNext;
+
+			positionInBuffer = 0;
 		}
 		
 		public void SetPlayer( string aFilePath )
@@ -204,12 +208,18 @@ namespace Unity.View
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			int lPositionEnd = player.Update( aSoundBuffer, aChannels, aSampleRate );
+			positionInBuffer = player.Update( aSoundBuffer, aChannels, aSampleRate, positionInBuffer );
 
-			if( lPositionEnd != aSoundBuffer.Length / aChannels && mouseButton == false )
+			int lLength = aSoundBuffer.Length / aChannels;
+
+			if( positionInBuffer != lLength && mouseButton == false )
 			{
 				changeMusicNext();
+
+				positionInBuffer = player.Update( aSoundBuffer, aChannels, aSampleRate, positionInBuffer );
 			}
+
+			positionInBuffer %= lLength;
 		}
 		
 		public void OnApplicationQuit()
