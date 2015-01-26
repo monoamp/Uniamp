@@ -17,6 +17,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		void Stop();
 		void Pause();
 		void Record( string aPath );
+		string GetFilePath();
 		bool GetFlagPlaying();
 		void SetPreviousLoop();
 		void SetNextLoop();
@@ -25,6 +26,6 @@ namespace Monoamp.Common.Component.Sound.Player
 		SoundTime GetTPosition();
 		SoundTime GetElapsed();
 		SoundTime GetLength();
-		void Update( float[] aSoundBuffer, int aChannels, int aSampleRate );
+		int Update( float[] aSoundBuffer, int aChannels, int aSampleRate );
 	}
 }

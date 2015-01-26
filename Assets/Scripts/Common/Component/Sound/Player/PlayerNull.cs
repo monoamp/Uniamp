@@ -50,7 +50,12 @@ namespace Monoamp.Common.Component.Sound.Player
 		{
             return false;
 		}
-        
+		
+		public string GetFilePath()
+		{
+			return "";
+		}
+
         public SoundTime GetTPosition()
         {
             return new SoundTime( 44100, 0 );
@@ -66,24 +71,9 @@ namespace Monoamp.Common.Component.Sound.Player
             return new SoundTime( 44100, 0 );
         }
 
-		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-
-		}
-
-		public void UpdatePlay( float[] aSoundBuffer, int aChannels, int aSampleRate )
-		{
-
-		}
-
-		public void UpdateRecord( float[] aSoundBuffer, int aChannels, int aSampleRate )
-		{
-
-		}
-
-		public void UpdateSynth( float[] aSoundBuffer, int aChannels, int aSampleRate )
-		{
-
+			return aSoundBuffer.Length / aChannels;
 		}
 
 		public void SetPreviousLoop()

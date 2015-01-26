@@ -14,11 +14,11 @@ namespace Monoamp.Common.Data.Application.Music
 {
 	public abstract class MusicPcm : IMusic
 	{
-		private string name;
 		private List<List<LoopInformation>> loopList;
-
-		public WaveformPcm Waveform{ get; private set; }
+		
+		public string Name{ get; private set; }
 		public SoundTime Length{ get; private set; }
+		public WaveformPcm Waveform{ get; private set; }
 
 		public int GetCountLoopX()
 		{
@@ -51,7 +51,7 @@ namespace Monoamp.Common.Data.Application.Music
 
 		public MusicPcm( FormAiffForm aFormFile )
 		{
-			name = aFormFile.name;
+			Name = aFormFile.name;
 			Waveform = new WaveformPcm( aFormFile );
 			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
 
@@ -62,7 +62,7 @@ namespace Monoamp.Common.Data.Application.Music
 		
 		public MusicPcm( RiffWaveRiff aRiffFile )
 		{
-			name = aRiffFile.name;
+			Name = aRiffFile.name;
 			Waveform = new WaveformPcm( aRiffFile );
 			
 			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );

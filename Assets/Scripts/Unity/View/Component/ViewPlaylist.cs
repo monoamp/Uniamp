@@ -19,12 +19,12 @@ namespace Unity.View
 		public DirectoryInfo directoryInfo;
 		public DirectoryInfo directoryInfoRoot;
 
-		public List<FileInfo> fileInfoList;
+		public List<string> fileInfoList;
 		public List<bool> isSelectedList;
 		public List<LoopInformation> loopPointList;
 		
-		public delegate void PlayMusic( FileInfo aFileInfo );
-		public delegate FileInfo GetPlayingMusic();
+		public delegate void PlayMusic( string aName );
+		public delegate string GetPlayingMusic();
 		
 		public PlayMusic playMusic;
 		public GetPlayingMusic getPlayingMusic;
@@ -150,21 +150,21 @@ namespace Unity.View
 							{
 								if( data.fileInfoList[i] == data.getPlayingMusic() )
 								{
-									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
+									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i], "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
 									{
 										data.playMusic( data.fileInfoList[i] );
 									}
 								}
 								else
 								{
-									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i].Name, "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
+									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i], "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
 									{
 										data.playMusic(  data.fileInfoList[i] );
 									}
 								}
 
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( musicDictionary[data.fileInfoList[i].FullName].Length.MMSS, GuiStyleSet.StyleTable.textRow );
+								GUILayout.TextField( musicDictionary[data.fileInfoList[i]].Length.MMSS, GuiStyleSet.StyleTable.textRow );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 								GUILayout.TextField( data.loopPointList[i].start.String, GuiStyleSet.StyleTable.textRow );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
@@ -238,7 +238,7 @@ namespace Unity.View
 
 		private void LoadLoop()
 		{
-			data.fileInfoList = new List<FileInfo>();
+			data.fileInfoList = new List<string>();
 			data.loopPointList = new List<LoopInformation>();
 
 			for( int i = 0; i < pathArray.Length; i++ )
@@ -261,7 +261,7 @@ namespace Unity.View
 					if( lMusic != null )
 					{
 						musicDictionary.Add( lPath, lMusic );
-						data.fileInfoList.Add( new FileInfo( lPath ) );
+						data.fileInfoList.Add( lPath );
 						data.loopPointList.Add( lMusic.GetLoop( 0, 0 ) );
 					}
 				}

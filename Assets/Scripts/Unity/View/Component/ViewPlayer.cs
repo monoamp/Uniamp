@@ -19,7 +19,6 @@ namespace Unity.View
 	{
         private IPlayer player;
 
-		private FileInfo fileInfo;
 		private string title;
 		private bool mouseButton;
 
@@ -31,43 +30,40 @@ namespace Unity.View
 
 		public Rect Rect{ get; set; }
 
-		public ViewPlayer( FileInfo aFileInfo, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
+		public ViewPlayer( string aFilePath, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
 		{
-			fileInfo = aFileInfo;
 			mouseButton = false;
 
-			if( fileInfo == null )
+			if( aFilePath == null )
 			{
 				title = "";
 				player = new PlayerNull();
 			}
 			else
 			{
-				title = fileInfo.Name;
-				player = LoaderCollection.LoadPlayer( fileInfo.FullName );
+				title = "";//System.IO.File..Name;
+				player = LoaderCollection.LoadPlayer( aFilePath );
 			}
 
 			changeMusicPrevious = aChangeMusicPrevious;
 			changeMusicNext = aChangeMusicNext;
 		}
 		
-		public void SetPlayer( FileInfo aFileInfo )
+		public void SetPlayer( string aFilePath )
 		{
 			bool lIsMute = player.IsMute;
 			bool lIsLoop = player.IsLoop;
 			float lVolume = player.Volume;
 
-			fileInfo = aFileInfo;
-
-			if( fileInfo == null )
+			if( aFilePath == null )
 			{
 				title = "";
 				player = new PlayerNull();
 			}
 			else
 			{
-				title = fileInfo.Name;
-				player = LoaderCollection.LoadPlayer( fileInfo.FullName );
+				title = "";//name.Name;
+				player = LoaderCollection.LoadPlayer( aFilePath );
 			}
 
 			player.IsMute = lIsMute;
@@ -208,9 +204,9 @@ namespace Unity.View
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			player.Update( aSoundBuffer, aChannels, aSampleRate );
+			int lPositionEnd = player.Update( aSoundBuffer, aChannels, aSampleRate );
 
-			if( player.PositionRate >= 1.0f && mouseButton == false )
+			if( lPositionEnd != aSoundBuffer.Length / aChannels && mouseButton == false )
 			{
 				changeMusicNext();
 			}
@@ -221,9 +217,9 @@ namespace Unity.View
 			
 		}
 
-		public FileInfo GetFileInfo()
+		public string GetFilePath()
 		{
-			return fileInfo;
+			return player.GetFilePath();
 		}
 	}
 }

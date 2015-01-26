@@ -109,24 +109,24 @@ namespace Unity.View
 			viewLoopPlaylist = new ViewPlaylist( aDirectoryInfo, PlayMusic, GetPlayingMusic );
 		}
 		
-		private void PlayMusic( FileInfo aFileInfo )
+		private void PlayMusic( string aName )
 		{
-			viewLoopPlayer.SetPlayer( aFileInfo );
+			viewLoopPlayer.SetPlayer( aName );
 		}
 		
-		private FileInfo GetPlayingMusic()
+		private string GetPlayingMusic()
 		{
-			return viewLoopPlayer.GetFileInfo();
+			return viewLoopPlayer.GetFilePath();
 		}
 
-		private void SetFileInfoPlaying( FileInfo aFileInfo )
+		private void SetFileInfoPlaying( string aName )
 		{
-			viewLoopPlayer.SetPlayer( aFileInfo );
+			viewLoopPlayer.SetPlayer( aName );
 		}
 		
-		private FileInfo GetFileInfoPlaying()
+		private string GetFileInfoPlaying()
 		{
-			return viewLoopPlayer.GetFileInfo();
+			return viewLoopPlayer.GetFilePath();
 		}
 		
 		private void SetDirectoryInfo( DirectoryInfo aDirectoryInfo )

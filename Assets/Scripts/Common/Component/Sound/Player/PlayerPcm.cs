@@ -23,7 +23,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		private SynthesizerPcm synthesizer;
 		private MusicPcm music;
 
-		private delegate void DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
+		private delegate int DelegateUpdate( float[] aSoundBuffer, int aChannels, int aSampleRate );
 		private DelegateUpdate delegateUpdate;
 
 		//private string path;
@@ -86,6 +86,11 @@ namespace Monoamp.Common.Component.Sound.Player
 
 			delegateUpdate = UpdateRecord;
 		}
+		
+		public string GetFilePath()
+		{
+			return music.Name;
+		}
 
 		public bool GetFlagPlaying()
 		{
@@ -114,18 +119,25 @@ namespace Monoamp.Common.Component.Sound.Player
 			return music.Length;
 		}
 
-		public void Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		// Return: End position.
+		public int Update( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			delegateUpdate( aSoundBuffer, aChannels, aSampleRate );
+			return delegateUpdate( aSoundBuffer, aChannels, aSampleRate );
 		}
-
-		public void UpdatePlay( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		
+		// Return: End position.
+		public int UpdatePlay( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
 			int lLength = aSoundBuffer.Length / aChannels;
 
 			for( int i = 0; i < lLength; i++ )
 			{
-				synthesizer.Update( bufferArray, aChannels, aSampleRate );
+				bool lIsEnd = synthesizer.Update( bufferArray, aChannels, aSampleRate );
+
+				if( lIsEnd == true )
+				{
+					return i;
+				}
 
 				if( IsMute == false )
 				{
@@ -135,19 +147,25 @@ namespace Monoamp.Common.Component.Sound.Player
 					}
 				}
 			}
+
+			return lLength;
 		}
 
-		public void UpdateRecord( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int UpdateRecord( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
 			delegateUpdate = UpdateSynth;
+			
+			return aSoundBuffer.Length / aChannels;
 		}
 
-		public void UpdateSynth( float[] aSoundBuffer, int aChannels, int aSampleRate )
+		public int UpdateSynth( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
 			for( int i = 0; i < aSoundBuffer.Length; i++ )
 			{
 				aSoundBuffer[i] = 0.0f;
 			}
+			
+			return aSoundBuffer.Length / aChannels;
 		}
 
 		public int GetLoopNumberX()

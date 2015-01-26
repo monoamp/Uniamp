@@ -7,6 +7,7 @@ namespace Monoamp.Common.Data.Application.Music
 {
 	public interface IMusic
 	{
+		string Name{ get; }
 		SoundTime Length{ get; }
 
 		int GetCountLoopX();
