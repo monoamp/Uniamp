@@ -150,16 +150,16 @@ namespace Unity.View
 							{
 								if( data.fileInfoList[i] == data.getPlayingMusic() )
 								{
-									if( GUILayout.Toggle( true, new GUIContent( data.fileInfoList[i], "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
+									if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( data.fileInfoList[i] ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
 									{
 										data.playMusic( data.fileInfoList[i] );
 									}
 								}
 								else
 								{
-									if( GUILayout.Toggle( false, new GUIContent( data.fileInfoList[i], "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
+									if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( data.fileInfoList[i] ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
 									{
-										data.playMusic(  data.fileInfoList[i] );
+										data.playMusic( data.fileInfoList[i] );
 									}
 								}
 

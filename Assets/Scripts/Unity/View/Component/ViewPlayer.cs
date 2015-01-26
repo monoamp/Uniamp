@@ -43,7 +43,7 @@ namespace Unity.View
 			}
 			else
 			{
-				title = "";//System.IO.File..Name;
+				title = Path.GetFileNameWithoutExtension( aFilePath );
 				player = LoaderCollection.LoadPlayer( aFilePath );
 			}
 
@@ -66,7 +66,7 @@ namespace Unity.View
 			}
 			else
 			{
-				title = "";//name.Name;
+				title = Path.GetFileNameWithoutExtension( aFilePath );
 				player = LoaderCollection.LoadPlayer( aFilePath );
 			}
 
