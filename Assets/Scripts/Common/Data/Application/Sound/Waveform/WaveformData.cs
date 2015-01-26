@@ -13,7 +13,6 @@ namespace Monoamp.Common.Data.Application.Waveform
 		public readonly int samples;
 		public readonly int sampleRate;
 		public readonly int sampleBits;
-		public readonly SoundTime length;
 		
 		public FormatWaweform( int aChannels, int aSamples, int aSampleRate, int aSampleBits )
 		{
@@ -21,7 +20,6 @@ namespace Monoamp.Common.Data.Application.Waveform
 			samples = aSamples;
 			sampleRate = aSampleRate;
 			sampleBits = aSampleBits;
-			length = new SoundTime( sampleRate, samples );
 		}
 	}
 
@@ -37,23 +35,25 @@ namespace Monoamp.Common.Data.Application.Waveform
 
 		public readonly FormatWaweform format;
 		public readonly string name;
-		public readonly int position;
+		public readonly int basePosition;
+		
+		private readonly int bufferLength;
+		private readonly float[][] sampleArray;
+		private readonly Int32[][] sampleDataArray;
 
-		private float[][] sampleArray;
-		private Int32[][] sampleDataArray;
 		private int startPosition;
 
-		private int bufferLength;
-
-		protected WaveformData( FormatWaweform aFormat, string aName, int aPosition )
+		protected WaveformData( FormatWaweform aFormat, string aName, int aBasePosition, bool aIsOnMemory )
 		{
 			format = aFormat;
 			name = aName;
-			position = aPosition;
+			basePosition = aBasePosition;
 
-			bufferLength = format.samples;
-			
-			if( LENGTH_BUFFER != 0 )
+			if( aIsOnMemory == true || LENGTH_BUFFER == 0 )
+			{
+				bufferLength = format.samples;
+			}
+			else
 			{
 				bufferLength = LENGTH_BUFFER;
 			}
@@ -116,7 +116,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 		
 		private void ReadSampleArray16( ByteArray aByteArray, int aPositionSample )
 		{
-			aByteArray.SetPosition( position + 2 * format.channels * aPositionSample );
+			aByteArray.SetPosition( basePosition + 2 * format.channels * aPositionSample );
 			
 			for( int i = 0; i < bufferLength && i < format.samples - aPositionSample; i++ )
 			{
@@ -131,7 +131,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 		
 		private void ReadSampleArray24( ByteArray aByteArray, int aPositionSample )
 		{
-			aByteArray.SetPosition( position + 3 * format.channels * aPositionSample );
+			aByteArray.SetPosition( basePosition + 3 * format.channels * aPositionSample );
 			
 			for( int i = 0; i < bufferLength && i < format.samples - aPositionSample; i++ )
 			{
@@ -148,7 +148,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 	public class WaveformDataAiff : WaveformData
 	{
 		public WaveformDataAiff( FormatWaweform aFormat, string aName, int aPosition )
-			: base( aFormat, aName, aPosition )
+			: base( aFormat, aName, aPosition, false )
 		{
 			
 		}
@@ -162,7 +162,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 	public class WaveformDataWave : WaveformData
 	{
 		public WaveformDataWave( FormatWaweform aFormat, string aName, int aPosition )
-			: base( aFormat, aName, aPosition )
+			: base( aFormat, aName, aPosition, false )
 		{
 			
 		}

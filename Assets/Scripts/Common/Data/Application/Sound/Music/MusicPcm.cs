@@ -12,33 +12,24 @@ using Monoamp.Common.Struct;
 
 namespace Monoamp.Common.Data.Application.Music
 {
-	public struct Int24
-	{
-		public const int MinValue = -8388608;
-		public const int MaxValue = 8388607;
-	}
-
 	public abstract class MusicPcm : IMusic
 	{
-		public WaveformPcm waveform;
+		private string name;
+		private List<List<LoopInformation>> loopList;
 
-		protected const int LENGTH_BUFFER = 1024 * 4;
-
-		public SoundTime Length{ get{ return waveform.format.length; } }
-
-		protected List<List<LoopInformation>> LoopList{ get; set; }
-		protected string nameFile{ get; set; }
+		public WaveformPcm Waveform{ get; private set; }
+		public SoundTime Length{ get; private set; }
 
 		public int GetCountLoopX()
 		{
-			return LoopList.Count;
+			return loopList.Count;
 		}
 		
 		public int GetCountLoopY( int aIndexX )
 		{
 			if( aIndexX < GetCountLoopX() )
 			{
-				return LoopList[aIndexX].Count;
+				return loopList[aIndexX].Count;
 			}
 			else
 			{
@@ -50,7 +41,7 @@ namespace Monoamp.Common.Data.Application.Music
 		{
 			if( aIndexX < GetCountLoopX() && aIndexY < GetCountLoopY( aIndexX ) )
 			{
-				return LoopList[aIndexX][aIndexX];
+				return loopList[aIndexX][aIndexX];
 			}
 			else
 			{
@@ -60,24 +51,27 @@ namespace Monoamp.Common.Data.Application.Music
 
 		public MusicPcm( FormAiffForm aFormFile )
 		{
-			nameFile = aFormFile.name;
-			waveform = new WaveformPcm( aFormFile );
-			
-			LoopList = new List<List<LoopInformation>>();
-			LoopList.Add( new List<LoopInformation>() );
-			LoopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
+			name = aFormFile.name;
+			Waveform = new WaveformPcm( aFormFile );
+			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
+
+			loopList = new List<List<LoopInformation>>();
+			loopList.Add( new List<LoopInformation>() );
+			loopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 		}
 		
 		public MusicPcm( RiffWaveRiff aRiffFile )
 		{
-			nameFile = aRiffFile.name;
-			waveform = new WaveformPcm( aRiffFile );
+			name = aRiffFile.name;
+			Waveform = new WaveformPcm( aRiffFile );
 			
+			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
+
 			RiffWaveSmpl lRiffWaveSmpl = ( RiffWaveSmpl )aRiffFile.GetChunk( RiffWaveSmpl.ID );
 			
 			if( lRiffWaveSmpl != null )
 			{
-				LoopList = new List<List<LoopInformation>>();
+				loopList = new List<List<LoopInformation>>();
 				
 				int lIndex = -1;
 				int lLoopLength = -1;
@@ -92,19 +86,19 @@ namespace Monoamp.Common.Data.Application.Music
 					}
 					else
 					{
-						LoopList.Add( new List<LoopInformation>() );
+						loopList.Add( new List<LoopInformation>() );
 						lLoopLength = ( int )( lLoop.end - lLoop.start );
 						lIndex++;
 					}
 					
-					LoopList[lIndex].Add( new LoopInformation( Length.sampleRate, ( int )lLoop.start, ( int )lLoop.end ) );
+					loopList[lIndex].Add( new LoopInformation( Length.sampleRate, ( int )lLoop.start, ( int )lLoop.end ) );
 				}
 			}
 			else
 			{
-				LoopList = new List<List<LoopInformation>>();
-				LoopList.Add( new List<LoopInformation>() );
-				LoopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
+				loopList = new List<List<LoopInformation>>();
+				loopList.Add( new List<LoopInformation>() );
+				loopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 			}
 		}
 	}

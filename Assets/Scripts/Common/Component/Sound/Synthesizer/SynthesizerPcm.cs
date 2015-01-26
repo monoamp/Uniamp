@@ -30,8 +30,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 
 		public double PositionRate
 		{
-			get { return Position.sample / waveform.format.length.sample; }
- 			set { PositionPre.sample = Position.sample = waveform.format.length.sample * value; }
+			get { return Position.sample / waveform.format.samples; }
+ 			set { PositionPre.sample = Position.sample = waveform.format.samples * value; }
 		}
 
 		/*
@@ -75,23 +75,23 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 				}
 				else
 				{
-					if( Position.sample >= waveform.format.length.sample )
+					if( Position.sample >= waveform.format.samples )
 					{
-						Logger.Debug( "Loop " + Position.sample + " to " + ( PositionPre.sample - waveform.format.length.sample ) );
+						Logger.Debug( "Loop " + Position.sample + " to " + ( PositionPre.sample - waveform.format.samples ) );
 						
-						Position.sample = PositionPre.sample - waveform.format.length.sample;
+						Position.sample = PositionPre.sample - waveform.format.samples;
 					}
 				}
 			}
 			
-			if( Position.sample + 1 < waveform.format.length.sample )
+			if( Position.sample + 1 < waveform.format.samples )
 			{
 				for( int i = 0; i < aChannels; i++ )
 				{
 					aSoundBuffer[i] = MeanInterpolation.Calculate( waveform, i, Position.sample );
 				}
 			}
-			else if( Position.sample < waveform.format.length.sample )
+			else if( Position.sample < waveform.format.samples )
 			{
 				for( int i = 0; i < aChannels; i++ )
 				{
@@ -100,8 +100,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			}
 			
 			PositionPre.sample = Position.sample;
-			Position.sample += ( double )waveform.format.length.sampleRate / ( double )aSampleRate;
-			Elapsed.sample += ( double )waveform.format.length.sampleRate / ( double )aSampleRate;
+			Position.sample += ( double )waveform.format.sampleRate / ( double )aSampleRate;
+			Elapsed.sample += ( double )waveform.format.sampleRate / ( double )aSampleRate;
 		}
 
 		/*
