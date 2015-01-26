@@ -29,9 +29,9 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		{
 			waveform = aWaveform;
 
-			Position = new SoundTime( 44100, 0 );
-			PositionPre = new SoundTime( 44100, 0 );
-			Elapsed = new SoundTime( 44100, 0 );
+			Position = new SoundTime( waveform.format.sampleRate, 0 );
+			PositionPre = new SoundTime( waveform.format.sampleRate, 0 );
+			Elapsed = new SoundTime( waveform.format.sampleRate, 0 );
 			
 			loop = aLoop;
 			isLoop = false;
@@ -89,8 +89,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			}
 			
 			PositionPre.sample = Position.sample;
-			Position.sample += ( double )waveform.format.sampleRate / ( double )aSampleRate;
-			Elapsed.sample += ( double )waveform.format.sampleRate / ( double )aSampleRate;
+			Position.sample += ( double )Position.sampleRate / ( double )aSampleRate;
+			Elapsed.sample += ( double )Elapsed.sampleRate / ( double )aSampleRate;
 
 			return false;
 		}
