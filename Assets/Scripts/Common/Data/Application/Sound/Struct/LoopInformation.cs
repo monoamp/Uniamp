@@ -8,7 +8,7 @@ namespace Monoamp.Common.Struct
 		public readonly SoundTime end;
 		public readonly SoundTime length;
 
-		public LoopInformation( int aSampleRate, int aSampleStart, int aSampleEnd )
+		public LoopInformation( double aSampleRate, double aSampleStart, double aSampleEnd )
 		{
 			start = new SoundTime( aSampleRate, aSampleStart );
 			end = new SoundTime( aSampleRate, aSampleEnd );
@@ -21,24 +21,20 @@ namespace Monoamp.Common.Struct
 		}
 	}
 
-	public class SoundTime
+	public struct SoundTime
 	{
-		public readonly int sampleRate;
+		public readonly double sampleRate;
 		public double sample;
 
-		public SoundTime( int aSampleRate, int aSample )
-		{
-			sampleRate = aSampleRate;
-			sample = ( double )aSample;
-		}
-
 		public int MilliSecond{ get { return ( int )( sample / sampleRate % 1.0d * 1000 ); } }
-		public int Second{ get { return ( int )sample / sampleRate % 60; } }
-		public double Seconds{ get { return sample / sampleRate; } }
-		public int Minute{ get { return ( int )sample / sampleRate / 60; } }
-		public int Hour{ get { return ( int )sample / sampleRate / 3600; } }
+		public int Second{ get { return ( int )( sample / sampleRate % 60 ); } }
+		//public double Seconds{ get { return sample / sampleRate; } }
+		public int Minute{ get { return ( int )( sample / sampleRate / 60 ); } }
+		public int Hour{ get { return ( int )( sample / sampleRate / 3600 ); } }
 		public string MMSSmmm{ get { return Minute.ToString( "D2" ) + ":" + Second.ToString( "D2" ) + "." + MilliSecond.ToString( "D3"); } }
 		public string MMSS{ get { return Minute.ToString() + ":" + Second.ToString( "D2" ); } }
+
+		private static SoundTime ope = new SoundTime( 44100, 1 );
 
 		public string String
 		{
@@ -53,6 +49,22 @@ namespace Monoamp.Common.Struct
 					return "-";
 				}
 			}
+		}
+
+		public SoundTime( double aSampleRate, double aSample )
+		{
+			sampleRate = aSampleRate;
+			sample = aSample;
+		}
+
+		public static SoundTime operator+( SoundTime a, SoundTime b )
+		{
+			return new SoundTime( a.sampleRate, a.sample + a.sampleRate / b.sampleRate );
+		}
+
+		public static double operator/( SoundTime a, SoundTime b )
+		{
+			return ( a.sample / a.sampleRate ) / ( b.sample / b.sampleRate );
 		}
 	}
 }

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 
-using Monoamp.Common.Data.Application.Music;
 using Monoamp.Common.Data.Application.Waveform;
 using Monoamp.Common.Component.Sound.Utility;
 using Monoamp.Common.Struct;
@@ -14,7 +14,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		
 		public bool isLoop;
 		public LoopInformation loop;
-
+		
+		public Dictionary<int, SoundTime> oneSampelList;
 		public SoundTime Position{ get; private set; }
 		public SoundTime PositionPre{ get; private set; }
 		public SoundTime Elapsed{ get; private set; }
@@ -22,13 +23,14 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 		public double PositionRate
 		{
 			get { return Position.sample / waveform.format.samples; }
- 			set { PositionPre.sample = Position.sample = waveform.format.samples * value; }
+			set { PositionPre = Position = new SoundTime( PositionPre.sampleRate, waveform.format.samples * value ); }
 		}
 
 		public SynthesizerPcm( WaveformPcm aWaveform, LoopInformation aLoop )
 		{
 			waveform = aWaveform;
-
+			
+			oneSampelList = new Dictionary<int, SoundTime>();
 			Position = new SoundTime( waveform.format.sampleRate, 0 );
 			PositionPre = new SoundTime( waveform.format.sampleRate, 0 );
 			Elapsed = new SoundTime( waveform.format.sampleRate, 0 );
@@ -48,7 +50,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 					{
 						Logger.Debug( "Loop " + Position.sample + " to " + ( loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 ) ) );
 						
-						Position.sample = loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 );
+						//Position.sample = loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 );
+						Position = new SoundTime( PositionPre.sampleRate, ( int )( loop.start.sample + PositionPre.sample - ( loop.end.sample + 1 ) ) );
 					}
 				}
 				else
@@ -57,7 +60,8 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 					{
 						Logger.Debug( "Loop " + Position.sample + " to " + ( PositionPre.sample - waveform.format.samples ) );
 						
-						Position.sample = PositionPre.sample - waveform.format.samples;
+						//Position.sample = PositionPre.sample - waveform.format.samples;
+						Position = new SoundTime( Position.sampleRate, ( int )( PositionPre.sample - waveform.format.samples ) );
 					}
 				}
 			}
@@ -88,11 +92,23 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 				return true;
 			}
 			
-			PositionPre.sample = Position.sample;
-			Position.sample += ( double )Position.sampleRate / ( double )aSampleRate;
-			Elapsed.sample += ( double )Elapsed.sampleRate / ( double )aSampleRate;
+			PositionPre = Position;
+			//Position.sample += ( double )Position.sampleRate / ( double )aSampleRate;
+			//Elapsed.sample += ( double )Elapsed.sampleRate / ( double )aSampleRate;
+			Position = Position + GetOneSample( aSampleRate );
+			Elapsed = Elapsed + GetOneSample( aSampleRate );
 
 			return false;
+		}
+
+		public SoundTime GetOneSample( int aSampleRate )
+		{
+			if( oneSampelList.ContainsKey( aSampleRate ) == false )
+			{
+				oneSampelList.Add( aSampleRate, new SoundTime( aSampleRate, 1 ) );
+			}
+			
+			return oneSampelList[aSampleRate];
 		}
 	}
 }

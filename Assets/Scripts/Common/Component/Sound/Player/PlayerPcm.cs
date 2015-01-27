@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Monoamp.Common.Data.Application.Music;
 using Monoamp.Common.Component.Sound.Synthesizer;
