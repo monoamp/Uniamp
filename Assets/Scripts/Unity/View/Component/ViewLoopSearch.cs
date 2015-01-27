@@ -86,6 +86,8 @@ namespace Unity.View
 						thread.Abort();
 					}
 				}
+
+				GUILayout.FlexibleSpace();
 			}
 			GUILayout.EndVertical();
 		}

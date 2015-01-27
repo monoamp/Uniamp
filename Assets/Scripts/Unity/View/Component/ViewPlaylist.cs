@@ -177,7 +177,7 @@ namespace Unity.View
 
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.BeginVertical( GUILayout.Width( lWidthName ) );
+							GUILayout.BeginVertical( GUILayout.MinWidth( 300.0f ) );
 							{
 								GUILayout.FlexibleSpace();
 							}

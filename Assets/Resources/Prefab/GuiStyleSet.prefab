@@ -3368,7 +3368,7 @@ MonoBehaviour:
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 40
+    m_FixedHeight: 44
     m_StretchWidth: 1
     m_StretchHeight: 0
   background:
@@ -3405,8 +3405,8 @@ MonoBehaviour:
     m_Margin:
       m_Left: 0
       m_Right: 0
-      m_Top: 10
-      m_Bottom: 10
+      m_Top: 4
+      m_Bottom: 4
     m_Padding:
       m_Left: 0
       m_Right: 0
@@ -3523,7 +3523,7 @@ MonoBehaviour:
     m_Margin:
       m_Left: 0
       m_Right: 0
-      m_Top: 0
+      m_Top: 2
       m_Bottom: 0
     m_Padding:
       m_Left: 0
@@ -4882,7 +4882,7 @@ MonoBehaviour:
   backgroundInput:
     m_Name: 
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 5a6041fd31070274e986b1e7d5e89e7e, type: 3}
+      m_Background: {fileID: 2800000, guid: 8b9e5e7845b83884ab5c553498dc91f2, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
@@ -4941,7 +4941,7 @@ MonoBehaviour:
   backgroundOutput:
     m_Name: 
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 2e81b31af884c40e3a57231ad1371f19, type: 3}
+      m_Background: {fileID: 2800000, guid: 8b9e5e7845b83884ab5c553498dc91f2, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
