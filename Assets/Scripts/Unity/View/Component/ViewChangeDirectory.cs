@@ -75,7 +75,7 @@ namespace Unity.View
 
 			GUILayout.BeginHorizontal( GuiStyleSet.StyleFolder.background );
 			{
-				GUILayout.TextArea( directoryInfo.FullName, GuiStyleSet.StyleFolder.text, GUILayout.Width( Screen.width - lWidth ) );
+				GUILayout.TextArea( directoryInfo.FullName, GuiStyleSet.StyleFolder.text );
 				
 				if( GUILayout.Button( new GUIContent( "", "StyleFolder.ButtonFolder" ), GuiStyleSet.StyleFolder.buttonFolder ) == true )
 				{

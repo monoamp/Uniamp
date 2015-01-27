@@ -1,4 +1,8 @@
 .DS_Store
+Assets/Scenes/LoopTool.unity
+Assets/Scenes/LoopTool.unity.meta
+Assets/Scripts/Unity/Scene/SceneLoopTool.cs
+Assets/Scripts/Unity/Scene/SceneLoopTool.cs.meta
 Assets/StreamingAssets/Config/*
 Assets/StreamingAssets/Sound/Music/*
 Library

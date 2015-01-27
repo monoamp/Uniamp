@@ -87,6 +87,23 @@ namespace Monoamp.Common.Data.Application.Waveform
 			return sampleArray[aChannel % format.channels][aPositionSample - startPosition];
 		}
 		
+		public Int32 GetSampleData( int aChannel, int aPositionSample )
+		{
+			if( aPositionSample < startPosition || aPositionSample >= startPosition + bufferLength )
+			{
+				startPosition = aPositionSample;
+				
+				ReadSampleArray( startPosition );
+			}
+			
+			if( aPositionSample - startPosition < 0 && aPositionSample - startPosition >= sampleArray[aChannel].Length )
+			{
+				UnityEngine.Debug.LogError( "Start:" + startPosition + ", Position:" + aPositionSample );
+			}
+			
+			return sampleDataArray[aChannel % format.channels][aPositionSample - startPosition];
+		}
+
 		private void ReadSampleArray( int aPointSample )
 		{
 			if( name != null )

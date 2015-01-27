@@ -135,7 +135,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			}
 		}
 
-		protected void OverrideChunk( RiffChunk aChunk )
+		public void OverrideChunk( RiffChunk aChunk )
 		{
 			for( int i = 0; i < chunkList.Count; i++ )
 			{
@@ -221,7 +221,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			return listListDictionary[aType][0];
 		}
 
-		protected void AddChunk( RiffChunk aRiffWave )
+		public void AddChunk( RiffChunk aRiffWave )
 		{
 			chunkList.Add( aRiffWave );
 		}
