@@ -96,11 +96,11 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			float lWidthTable = Screen.width;
+			//float lWidthTable = Screen.width;
 			float lWidthValue = 80.0f;
 			float lWidthPartition = GuiStyleSet.StyleTable.partitionVertical.fixedWidth;
-			float lWidthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
-			float lWidthName = lWidthTable - lWidthValue * 4 - lWidthPartition * 4 - lWidthVerticalbar;
+			//float lWidthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
+			//float lWidthName = lWidthTable - lWidthValue * 4 - lWidthPartition * 4 - lWidthVerticalbar;
 
 			if( Event.current.type != EventType.Repaint )
 			{

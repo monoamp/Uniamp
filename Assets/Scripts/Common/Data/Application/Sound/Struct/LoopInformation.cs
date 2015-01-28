@@ -34,8 +34,6 @@ namespace Monoamp.Common.Struct
 		public string MMSSmmm{ get { return Minute.ToString( "D2" ) + ":" + Second.ToString( "D2" ) + "." + MilliSecond.ToString( "D3"); } }
 		public string MMSS{ get { return Minute.ToString() + ":" + Second.ToString( "D2" ); } }
 
-		private static SoundTime ope = new SoundTime( 44100, 1 );
-
 		public string String
 		{
 			get

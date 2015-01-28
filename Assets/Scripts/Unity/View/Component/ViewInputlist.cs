@@ -89,7 +89,7 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			float widthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
+			//float widthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
 
 			if( Event.current.type != EventType.Repaint )
 			{

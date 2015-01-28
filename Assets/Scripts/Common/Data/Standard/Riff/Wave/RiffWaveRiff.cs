@@ -63,7 +63,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public void WriteByteArray( ByteArray aByteArray )
 		{
 			if( name != null && name != "" )
 			{
@@ -71,10 +71,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 				{
 					ByteArray lByteArray = new ByteArrayLittle( u );
 
-					foreach( RiffChunk lChunk in chunkList )
-					{
-						lChunk.WriteByteArray( lByteArray, aByteArray );
-					}
+					WriteByteArray( lByteArray, aByteArray );
 				}
 			}
 		}

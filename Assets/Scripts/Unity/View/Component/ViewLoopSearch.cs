@@ -4,6 +4,7 @@ using Unity.Data;
 using Unity.GuiStyle;
 
 using System;
+using System.IO;
 using System.Threading;
 
 using Curan.Common.ApplicationComponent.Sound.LoopTool;
@@ -100,7 +101,7 @@ namespace Unity.View
 				{
 					Debug.Log( "Search:" + dataLoopInputlist.filePathList[i] );
 					
-					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], dataLoopPlaylist.directoryInfo.FullName + "/" + dataLoopInputlist.filePathList[i], dataLoopInputlist.progressList, i );
+					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] ), dataLoopInputlist.progressList, i );
 					
 					dataLoopInputlist.isSelectedList[i] = false;
 				}

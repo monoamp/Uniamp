@@ -27,10 +27,8 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, int aIndex )
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
-			List<RiffChunk> lChunkList = lRiffWaveRiff.chunkList;
 
 			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff );
-			//waveform = Loader..Load( aFileInput.FullName );
 
 			SByte[] lSampleArray = new SByte[waveform.format.samples];
 
@@ -40,6 +38,8 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 			}
 
 			List<LoopInformation> lLoopList = null;
+			
+			Logger.BreakDebug( "Exception" );
 
 			try
 			{
@@ -47,9 +47,10 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 			}
 			catch( Exception aExpection )
 			{
-				UnityEngine.Debug.Log( aExpection.ToString() + ":LoopTool Exception" );
+				Logger.BreakDebug( aExpection.ToString() + ":LoopTool Exception" );
 			}
-
+			
+			Logger.BreakDebug( "Exception" );
 			//for( int i = 0; i < lLoopList.Count; i++ )
 			if ( lLoopList.Count >= 1 )
 			{
@@ -84,29 +85,36 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 					lDataArrayWrite[i] = lDataArrayRead[i];
 				}
 			}
-			
-			for( int i = 0; i < 64; i++ )
-			{
-				Logger.BreakDebug( i.ToString() + ":" + lDataArrayWrite[i] );
-			}
 
 			SetDataArray( lRiffWaveRiff, lDataArrayWrite );
+			
+			Logger.BreakDebug( "lMemoryStreamWrite" );
 
 			MemoryStream lMemoryStreamWrite = new MemoryStream( ( int )lRiffWaveRiff.Size + 8 );
 			ByteArrayLittle lByteArray = new ByteArrayLittle( lMemoryStreamWrite );
 
-			//lByteArrayRead.Open();
-			lRiffWaveRiff.WriteByteArray( null, lByteArray );
-			//lByteArrayRead.Close();
-
-			using( FileStream u = new FileStream( aFilePathOutput, FileMode.Create, FileAccess.Write ) )
+			lRiffWaveRiff.WriteByteArray( lByteArray );
+			
+			Logger.BreakDebug( "WriteByteArray" );
+			Logger.BreakDebug( "Out:" + aFilePathOutput );
+			
+			try
 			{
-				u.Write( lMemoryStreamWrite.GetBuffer(), 0, ( int )lMemoryStreamWrite.Length );
+				using( FileStream u = new FileStream( aFilePathOutput, FileMode.Create, FileAccess.Write ) )
+				{
+					u.Write( lMemoryStreamWrite.GetBuffer(), 0, ( int )lMemoryStreamWrite.Length );
+				}
+			}
+			catch( Exception aExpection )
+			{
+				Logger.BreakDebug( "Write Exception" + aExpection );
 			}
 		}
 		
 		public static void AddCuePoint( RiffWaveRiff lRiffWaveRiff, int aStart, int aEnd )
 		{
+			Logger.BreakDebug( "AddCuePoint" );
+
 			RiffWaveCue_ cue_Chunk = ( RiffWaveCue_ )lRiffWaveRiff.GetChunk( RiffWaveCue_.ID );
 
 			if( cue_Chunk == null )
@@ -135,6 +143,8 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 
 		public static void AddSampleLoop( RiffWaveRiff lRiffWaveRiff, int aStart, int aEnd )
 		{
+			Logger.BreakDebug( "AddSampleLoop" );
+
 			RiffWaveSmpl smplChunk = ( RiffWaveSmpl )lRiffWaveRiff.GetChunk( RiffWaveSmpl.ID );
 
 			if( smplChunk == null )
@@ -159,6 +169,8 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 		
 		public static void SetDataArray( RiffWaveRiff lRiffWaveRiff, Byte[] aSampleData )
 		{
+			Logger.BreakDebug( "SetDataArray" );
+
 			RiffWaveData dataChunk = ( RiffWaveData )lRiffWaveRiff.GetChunk( RiffWaveData.ID );
 
 			if( dataChunk == null )
