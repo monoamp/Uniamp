@@ -142,7 +142,7 @@ namespace Monoamp.Common.Component.Sound.Player
 				{
 					for( int j = 0; j < aChannels; j++ )
 					{
-						aSoundBuffer[i * aChannels + j] = bufferArray[j] * Volume;
+						aSoundBuffer[i * aChannels + j] = bufferArray[j] * Volume * Volume;
 					}
 				}
 			}
