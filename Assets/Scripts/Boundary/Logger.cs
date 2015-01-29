@@ -40,7 +40,7 @@ namespace Monoamp.Boundary
 		
 		public static void BreakNormal( object message )
 		{
-			UnityEngine.Debug.Log( message );
+			//UnityEngine.Debug.Log( message );
 		}
 
 		public static void BreakWarning( object message )

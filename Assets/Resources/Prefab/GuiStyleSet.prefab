@@ -2015,13 +2015,13 @@ MonoBehaviour:
     m_Margin:
       m_Left: 0
       m_Right: 0
-      m_Top: 4
-      m_Bottom: 4
+      m_Top: 0
+      m_Bottom: 0
     m_Padding:
       m_Left: 0
       m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
+      m_Top: 2
+      m_Bottom: 2
     m_Overflow:
       m_Left: 0
       m_Right: 0
@@ -2072,10 +2072,10 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Margin:
-      m_Left: 4
-      m_Right: 3
-      m_Top: 4
-      m_Bottom: 2
+      m_Left: 0
+      m_Right: 2
+      m_Top: 5
+      m_Bottom: 0
     m_Padding:
       m_Left: 0
       m_Right: 0

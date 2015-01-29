@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using Monoamp.Boundary;
+
 namespace Unity.View
 {
 	public class ViewDirectorySelector : IView
@@ -29,6 +31,12 @@ namespace Unity.View
 			closeWindow = aCloseWindow;
 			viewDirectoryTree = aViewDirectoryTree;
 			directoryInfo = aDirectoryInfo;
+
+			int position = viewDirectoryTree.GetItemPositionDisplay() - 2;
+			
+			float lHeightLine = GuiStyleSet.StyleList.toggleLine.CalcSize( new GUIContent( "" ) ).y;
+
+			positionScrollDirectory.y = ( float )position * lHeightLine;
 		}
 
 		public void Awake()

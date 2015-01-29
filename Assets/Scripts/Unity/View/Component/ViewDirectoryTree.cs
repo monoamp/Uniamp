@@ -51,11 +51,6 @@ namespace Unity.View
 
 		private void LoadChildren()
 		{
-			if( root.DirectoryInfoSelected.FullName.IndexOf( directoryInfoSelf.FullName ) == 0 )
-			{
-				isDisplayChildren = true;
-			}
-
 			try
 			{
 				DirectoryInfo[] lDirectoryInfoArray = directoryInfoSelf.GetDirectories( "*", SearchOption.TopDirectoryOnly );
@@ -63,6 +58,18 @@ namespace Unity.View
 				if( lDirectoryInfoArray.Length > 0 )
 				{
 					haveChildren = true;
+					
+					if( root.DirectoryInfoSelected.FullName.IndexOf( directoryInfoSelf.FullName ) == 0 )
+					{
+						isDisplayChildren = true;
+						
+						for( int i = 0; i < lDirectoryInfoArray.Length; i++ )
+						{
+							ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( root, lDirectoryInfoArray[i] );
+							
+							childList.Add( lViewDirectoryTree );
+						}
+					}
 				}
 			}
 			catch( Exception aExpection )
@@ -70,6 +77,37 @@ namespace Unity.View
 				Logger.BreakDebug( "Exception:" + aExpection );
 				Logger.BreakDebug( "FullName:" + directoryInfoSelf.FullName );
 			}
+		}
+
+		public int GetItemCountDisplay()
+		{
+			int count = 1;
+
+			if( isDisplayChildren == true )
+			{
+				for( int i = 0; i < childList.Count; i++ )
+				{
+					count += childList[i].GetItemCountDisplay();
+				}
+			}
+
+			return count;
+		}
+		
+		public int GetItemPositionDisplay()
+		{
+			if( isDisplayChildren == true )
+			{
+				for( int i = 0; i < childList.Count; i++ )
+				{
+					if( childList[i].isDisplayChildren == true )
+					{
+						return 1 + i + childList[i].GetItemPositionDisplay();
+					}
+				}
+			}
+			
+			return 1;
 		}
 
 		public void Awake()
@@ -124,7 +162,7 @@ namespace Unity.View
 
 					GUILayout.BeginHorizontal();
 					{
-						GUILayout.Space( 10.0f );
+						GUILayout.Space( GuiStyleSet.StyleList.toggleOpenClose.fixedWidth + GuiStyleSet.StyleList.toggleOpenClose.margin.left + GuiStyleSet.StyleList.toggleOpenClose.margin.right );
 
 						GUILayout.BeginVertical();
 						{
@@ -146,11 +184,11 @@ namespace Unity.View
 			{
 				if( haveChildren == true )
 				{
-					isDisplayChildren = GUILayout.Toggle( isDisplayChildren, new GUIContent( "", "StyleList.ToggleOpenClose" ), GuiStyleSet.StyleList.toggleOpenClose, GUILayout.Width( 16.0f ) );
+					isDisplayChildren = GUILayout.Toggle( isDisplayChildren, new GUIContent( "", "StyleList.ToggleOpenClose" ), GuiStyleSet.StyleList.toggleOpenClose );
 				}
 				else
 				{
-					GUILayout.Toggle( true, new GUIContent( "", "StyleGeneral.None" ), GuiStyleSet.StyleGeneral.none, GUILayout.Width( 16.0f ) );
+					GUILayout.Toggle( true, new GUIContent( "", "StyleGeneral.None" ), GuiStyleSet.StyleGeneral.none, GUILayout.Width( GuiStyleSet.StyleList.toggleOpenClose.fixedWidth ) );
 				}
 
 				if( directoryInfoSelf.FullName == root.DirectoryInfoSelected.FullName )

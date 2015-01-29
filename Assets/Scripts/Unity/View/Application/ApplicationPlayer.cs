@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Monoamp.Boundary;
@@ -15,44 +16,40 @@ namespace Unity.View
 		
 		public Rect Rect{ get; set; }
 
+		private List<DirectoryInfo> directoryInfoRecentList;
+
 		public ApplicationPlayer( DirectoryInfo aDirectoryInfo )
 		{
 			DirectoryInfo lDirectoryInfoInput = aDirectoryInfo;
+			directoryInfoRecentList = new List<DirectoryInfo>();
 
 			try
 			{
 				using( StreamReader u = new StreamReader( Application.streamingAssetsPath + "/Config/Player.ini" ) )
 				{
+					int count = 0;
+
 					for( string line = u.ReadLine(); line != null; line = u.ReadLine() )
 					{
-						if( line.IndexOf( "//" ) != 0 && line.Split( '=' ).Length >= 2 )
+						if( Directory.Exists( line ) == true )
 						{
-							string opcode = line.Split( '=' )[0];
-							string value = line.Split( '=' )[1];
-
-							switch( opcode )
+							if( count == 0 )
 							{
-								case "Input":
-									if( Directory.Exists( value ) == true )
-									{
-										lDirectoryInfoInput = new DirectoryInfo( value );
-									}
-									break;
-									
-								default:
-									break;
+								lDirectoryInfoInput = new DirectoryInfo( line );
 							}
+
+							directoryInfoRecentList.Add( new DirectoryInfo( line ) );
 						}
 					}
 				}
 			}
 			catch( Exception aExpection )
 			{
-				Logger.Debug( "Exception:" + aExpection );
+				Logger.BreakDebug( "Exception:" + aExpection );
 
 				using( StreamWriter u = new StreamWriter( Application.streamingAssetsPath + "/Config/Player.ini" ) )
 				{
-					Debug.LogWarning( "Create Player.ini" );
+					Logger.BreakDebug( "Create Player.ini" );
 				}
 			}
 
@@ -73,24 +70,11 @@ namespace Unity.View
 				{
 					using( StreamReader uStreamReader = new StreamReader( Application.streamingAssetsPath + "/Config/Player.ini" ) )
 					{
-						bool lIsWrote = false;
+						uStreamWriter.WriteLine( aDirectoryInfo.FullName );
 						
 						for( string line = uStreamReader.ReadLine(); line != null; line = uStreamReader.ReadLine() )
 						{
-							if( line.Split( '=' ).Length >= 1 && line.Split( '=' )[0] == "Input" )
-							{
-								uStreamWriter.WriteLine( "Input=" + aDirectoryInfo.FullName );
-								lIsWrote = true;
-							}
-							else
-							{
-								uStreamWriter.WriteLine( line );
-							}
-						}
-						
-						if( lIsWrote == false )
-						{
-							uStreamWriter.WriteLine( "Input=" + aDirectoryInfo.FullName );
+							uStreamWriter.WriteLine( line );
 						}
 					}
 					
