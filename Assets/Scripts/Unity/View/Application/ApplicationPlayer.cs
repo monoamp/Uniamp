@@ -38,7 +38,12 @@ namespace Unity.View
 								lDirectoryInfoInput = new DirectoryInfo( line );
 							}
 
-							directoryInfoRecentList.Add( new DirectoryInfo( line ) );
+							if( count < 5 )
+							{
+								directoryInfoRecentList.Add( new DirectoryInfo( line ) );
+							}
+
+							count++;
 						}
 					}
 				}
@@ -57,7 +62,7 @@ namespace Unity.View
 			viewLoopPlaylist = new ViewPlaylist( lDirectoryInfoInput, SetFileInfoPlaying, GetFileInfoPlaying );
 			
 			DirectoryInfo lDirectoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
-			viewChangeDirectory = new ViewChangeDirectory( lDirectoryInfoRoot, lDirectoryInfoInput, SetDirectoryInfo );
+			viewChangeDirectory = new ViewChangeDirectory( lDirectoryInfoRoot, lDirectoryInfoInput, SetDirectoryInfo, directoryInfoRecentList );
 
 			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}

@@ -22,7 +22,7 @@ namespace Unity.View
 		private bool isDisplayChildren;
 		private bool haveChildren;
 
-		public DirectoryInfo DirectoryInfoSelected{ get; private set; }
+		public DirectoryInfo DirectoryInfoSelected{ get; set; }
 		public Rect Rect{ get; set; }
 
 		// ルート用のコンストラクタ.

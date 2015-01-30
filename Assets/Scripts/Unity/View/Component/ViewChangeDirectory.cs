@@ -24,14 +24,16 @@ namespace Unity.View
 		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
 		
 		private SetDirectoryInfo setDirectoryInfo;
+		private List<DirectoryInfo> directoryInfoRecentList;
 
 		public Rect Rect{ get; set; }
 
-		public ViewChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo )
+		public ViewChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			directoryInfoRoot = aDirectoryInfoRoot;
 			directoryInfo = aDirectoryInfo;
 			setDirectoryInfo = aSetDirectoryInfo;
+			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}
 		
 		public void Awake()
@@ -81,7 +83,7 @@ namespace Unity.View
 				{
 					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot.Root, directoryInfo );
 					
-					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, lViewDirectoryTree, directoryInfo );
+					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, lViewDirectoryTree, directoryInfo, directoryInfoRecentList );
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -89,8 +91,11 @@ namespace Unity.View
 
 		private void ChangeDirectory( DirectoryInfo aDirectoryInfo )
 		{
-			directoryInfo = aDirectoryInfo;
-			setDirectoryInfo( directoryInfo );
+			if( aDirectoryInfo != null )
+			{
+				directoryInfo = aDirectoryInfo;
+				setDirectoryInfo( directoryInfo );
+			}
 			
 			dialogDirectorySelector = null;
 		}

@@ -177,11 +177,7 @@ namespace Unity.View
 
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.BeginVertical( GUILayout.MinWidth( 300.0f ) );
-							{
-								GUILayout.FlexibleSpace();
-							}
-							GUILayout.EndVertical();
+							GUILayout.FlexibleSpace();
 							
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 							

@@ -75,7 +75,7 @@ namespace Unity.View
 				{
 					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot, directoryInfo );
 					
-					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, lViewDirectoryTree, directoryInfo );
+					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, lViewDirectoryTree, directoryInfo, null );
 
 					isShowMenu = false;
 				}
@@ -83,7 +83,7 @@ namespace Unity.View
 				{
 					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot, directoryInfo );
 					
-					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryOutput, lViewDirectoryTree, directoryInfo );
+					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryOutput, lViewDirectoryTree, directoryInfo, null );
 					
 					isShowMenu = false;
 				}

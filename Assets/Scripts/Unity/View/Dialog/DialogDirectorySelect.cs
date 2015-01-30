@@ -4,6 +4,7 @@ using Unity.Data;
 using Unity.GuiStyle;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Unity.View
@@ -12,10 +13,10 @@ namespace Unity.View
 	{
 		private ViewDirectorySelector viewDirectorySelector;
 
-		public DialogDirectorySelect( ViewDirectorySelector.CloseWindow aCloseWindow, ViewDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo )
+		public DialogDirectorySelect( ViewDirectorySelector.CloseWindow aCloseWindow, ViewDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
             : base( null, new Rect( 10.0f, 10.0f, Screen.width / 2.0f, Screen.height * 2.0f / 3.0f ) )
 		{
-            viewDirectorySelector = new ViewDirectorySelector( aCloseWindow, aViewDirectoryTree, aDirectoryInfo );
+			viewDirectorySelector = new ViewDirectorySelector( aCloseWindow, aViewDirectoryTree, aDirectoryInfo, aDirectoryInfoRecentList );
 		}
 		
         public override void OnGUI()
