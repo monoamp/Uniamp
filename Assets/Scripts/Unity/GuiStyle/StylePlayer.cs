@@ -20,5 +20,8 @@ namespace Unity.GuiStyle
 		public GUIStyle seekbarThumb;
 		public GUIStyle seekbarLeftButton;
 		public GUIStyle seekbarRightButton;
+		public GUIStyle volumebar;
+		public GUIStyle volumebarImage;
+		public GUIStyle volumebarThumb;
 	}
 }

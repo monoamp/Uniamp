@@ -156,7 +156,7 @@ namespace Unity.View
 
 					if( player.IsMute == false )
 					{
-						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
 						if( player.Volume == 0.0f )
 						{
@@ -165,7 +165,7 @@ namespace Unity.View
 					}
 					else // isMute == true
 					{
-						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StyleSlider.horizontalbar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
 						if( lVolume != 0.0f )
 						{
@@ -204,6 +204,11 @@ namespace Unity.View
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
 				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
 			}
+			
+			float lYVolume = lHeightTitle + GuiStyleSet.StylePlayer.toggleStartPause.fixedHeight + GuiStyleSet.StylePlayer.seekbar.fixedHeight + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + 18;
+			float lWidthVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedWidth;
+			float lHeightVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedHeight;
+			Gui.DrawVolumeBar( new Rect( Screen.width / 2 - lWidthVolume / 2, lYVolume + lHeightVolume, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )

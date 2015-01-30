@@ -194,6 +194,23 @@ namespace Unity.Function.Graphic
 				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aPositionCurrent, 1.0f );
 			}
 		}
+		
+		public static void DrawVolumeBar( Rect aRect, GUIStyle aStyle, float aVolume )
+		{
+			if( aVolume <= 0 )
+			{
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, 0.0f, 1.0f );
+			}
+			else if( aVolume < 1.0f )
+			{
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, aVolume );
+				DrawSeekBarPartition( aRect, aStyle, aStyle.normal, aVolume, 1.0f );
+			}
+			else
+			{
+				DrawSeekBarPartition( aRect, aStyle, aStyle.onNormal, 0.0f, 1.0f );
+			}
+		}
 
 		public static void DrawSeekBarPartition( Rect aRect, GUIStyle aStyle, GUIStyleState aStyleState, float aPositionStart, float aPositionEnd )
 		{
