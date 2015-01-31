@@ -3150,8 +3150,8 @@ MonoBehaviour:
       m_Top: 14
       m_Bottom: 14
     m_Padding:
-      m_Left: -11
-      m_Right: -11
+      m_Left: -8
+      m_Right: -13
       m_Top: 0
       m_Bottom: 0
     m_Overflow:
