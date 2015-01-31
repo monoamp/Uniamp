@@ -20,9 +20,7 @@ namespace Unity.View
 		
 		private DirectoryInfo directoryInfo;
 		private DirectoryInfo directoryInfoRoot;
-		
 		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
-		
 		private SetDirectoryInfo setDirectoryInfo;
 		private List<DirectoryInfo> directoryInfoRecentList;
 
@@ -30,8 +28,8 @@ namespace Unity.View
 
 		public ComponentChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
-			directoryInfoRoot = aDirectoryInfoRoot;
 			directoryInfo = aDirectoryInfo;
+			directoryInfoRoot = aDirectoryInfoRoot;
 			setDirectoryInfo = aSetDirectoryInfo;
 			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}

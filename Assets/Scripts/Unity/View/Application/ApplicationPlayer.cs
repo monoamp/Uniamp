@@ -69,32 +69,24 @@ namespace Unity.View
 		
 		private void SetInput( DirectoryInfo aDirectoryInfo )
 		{
-			using( MemoryStream uMemoryStream = new MemoryStream() )
+			directoryInfoRecentList.Insert( 0, aDirectoryInfo );
+			
+			try
 			{
-				using( StreamWriter uStreamWriter = new StreamWriter( uMemoryStream ) )
+				using( StreamWriter u = new StreamWriter( Application.streamingAssetsPath + "/Config/Player.ini", false ) )
 				{
-					using( StreamReader uStreamReader = new StreamReader( Application.streamingAssetsPath + "/Config/Player.ini" ) )
+					foreach( DirectoryInfo l in directoryInfoRecentList )
 					{
-						uStreamWriter.WriteLine( aDirectoryInfo.FullName );
-						
-						for( string line = uStreamReader.ReadLine(); line != null; line = uStreamReader.ReadLine() )
-						{
-							uStreamWriter.WriteLine( line );
-						}
-					}
-					
-					uStreamWriter.Flush();
-
-					using( FileStream uFileStream = new FileStream( Application.streamingAssetsPath + "/Config/Player.ini", FileMode.Create, FileAccess.Write ) )
-					{
-						byte[] lBuffer = new byte[uMemoryStream.Length];
-						uMemoryStream.Position = 0;
-						int lLength = uMemoryStream.Read( lBuffer, 0, ( int )uMemoryStream.Length );
-						uFileStream.Write( lBuffer, 0, lLength );
+						u.WriteLine( l.FullName );
 					}
 				}
 			}
-			
+			catch( Exception aExpection )
+			{
+				Logger.BreakDebug( "Exception:" + aExpection );
+				Logger.BreakDebug( "Failed write Player.ini" );
+			}
+
 			componentPlaylist = new ComponentPlaylist( aDirectoryInfo, PlayMusic, GetPlayingMusic );
 		}
 		

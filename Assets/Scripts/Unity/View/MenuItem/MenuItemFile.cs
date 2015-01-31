@@ -9,28 +9,34 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ComponentMenuFile : IView
+	public class MenuItemFile : IView
 	{
 		public Rect rectMenu;
 		private bool isShowMenu;
 		private DialogDirectorySelect windowDirectorySelector;
+
+		public Rect Rect{ get; set; }
 		
 		private DirectoryInfo directoryInfo;
 		private DirectoryInfo directoryInfoRoot;
-		
-		public Rect Rect{ get; set; }
+		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
+		private SetDirectoryInfo setDirectoryInfo;
+		private List<DirectoryInfo> directoryInfoRecentList;
 
-		public ComponentMenuFile()
+		public MenuItemFile( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			rectMenu = new Rect( 0, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, 200.0f );
 			isShowMenu = false;
+			
+			directoryInfo = aDirectoryInfo;
+			directoryInfoRoot = aDirectoryInfoRoot;
+			setDirectoryInfo = aSetDirectoryInfo;
+			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}
 
 		public void Awake()
 		{
 			isShowMenu = true;
-			directoryInfo = new DirectoryInfo( Application.streamingAssetsPath );
-			directoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
 		}
 		
 		public void Start()
@@ -75,16 +81,8 @@ namespace Unity.View
 				{
 					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot, directoryInfo );
 					
-					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, lViewDirectoryTree, directoryInfo, null );
+					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, lViewDirectoryTree, directoryInfo, directoryInfoRecentList );
 
-					isShowMenu = false;
-				}
-				if( GUILayout.Button( new GUIContent( "Output", "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
-				{
-					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot, directoryInfo );
-					
-					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryOutput, lViewDirectoryTree, directoryInfo, null );
-					
 					isShowMenu = false;
 				}
 			}
@@ -108,18 +106,9 @@ namespace Unity.View
 		
 		private void ChangeDirectoryInput( DirectoryInfo aDirectoryInfo )
 		{
-			directoryInfo = aDirectoryInfo;
-			//setDirectoryInfo( directoryInfo );
-            Debug.Log( "Change Input" );
+			Debug.Log( "Change Input" );
 			windowDirectorySelector = null;
-		}
-		
-		private void ChangeDirectoryOutput( DirectoryInfo aDirectoryInfo )
-		{
-			directoryInfo = aDirectoryInfo;
-			//setDirectoryInfo( directoryInfo );
-			Debug.Log( "Change Output" );
-			windowDirectorySelector = null;
+			setDirectoryInfo( aDirectoryInfo );
 		}
 	}
 }
