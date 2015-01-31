@@ -19,17 +19,15 @@ namespace Unity.View
 		private DialogDirectorySelect dialogDirectorySelector;
 		
 		private DirectoryInfo directoryInfo;
-		private DirectoryInfo directoryInfoRoot;
 		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
 		private SetDirectoryInfo setDirectoryInfo;
 		private List<DirectoryInfo> directoryInfoRecentList;
 
 		public Rect Rect{ get; set; }
 
-		public ComponentChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public ComponentChangeDirectory( DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			directoryInfo = aDirectoryInfo;
-			directoryInfoRoot = aDirectoryInfoRoot;
 			setDirectoryInfo = aSetDirectoryInfo;
 			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}
@@ -79,7 +77,7 @@ namespace Unity.View
 				
 				if( GUILayout.Button( new GUIContent( "", "StyleFolder.ButtonFolder" ), GuiStyleSet.StyleFolder.buttonFolder ) == true )
 				{
-					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot.Root, directoryInfo );
+					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfo.Root, directoryInfo );
 					
 					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, lViewDirectoryTree, directoryInfo, directoryInfoRecentList );
 				}

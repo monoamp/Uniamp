@@ -4,22 +4,39 @@ using Unity.Data;
 using Unity.GuiStyle;
 
 using System;
+using System.Collections.Generic;
 
 namespace Unity.View
 {
 	public class MenuBox
 	{
+		public Rect rect;
+		
 		public readonly string title;
 
-		public Rect rect;
+		protected readonly List<IMenuItem> menuItemList;
 
 		private bool isShow;
-		private IMenuItem[] menuItemArray;
 
-		public MenuBox( string aTitle, IMenuItem[] aMenuItemArray )
+		public MenuBox( string aTitle )
 		{
 			title = aTitle;
-			menuItemArray = aMenuItemArray;
+			menuItemList = new List<IMenuItem>();
+		}
+
+		public float GetWidth()
+		{
+			float lWidthMax = 0.0f;
+
+			foreach( IMenuItem l in menuItemList )
+			{
+				if( l.GetWidth() > lWidthMax )
+				{
+					lWidthMax = l.GetWidth();
+				}
+			}
+
+			return lWidthMax;
 		}
 
 		public void Select()
@@ -45,7 +62,7 @@ namespace Unity.View
 				}
 			}
 			
-			foreach( IMenuItem l in menuItemArray )
+			foreach( IMenuItem l in menuItemList )
 			{
 				l.OnGUI();
 			}
@@ -55,9 +72,9 @@ namespace Unity.View
 		{
 			GUILayout.BeginVertical();
 			{
-				foreach( IMenuItem l in menuItemArray )
+				foreach( IMenuItem l in menuItemList )
 				{
-					if( GUILayout.Button( new GUIContent( l.title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
+					if( GUILayout.Button( new GUIContent( l.Title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
 					{
 						l.Select();
 						

@@ -4,8 +4,9 @@ namespace Unity.View
 {
 	public interface IMenuItem
 	{
-		string title{ get; }
-
+		string Title{ get; }
+		
+		float GetWidth();
 		void Select();
 		void OnGUI();
 	}

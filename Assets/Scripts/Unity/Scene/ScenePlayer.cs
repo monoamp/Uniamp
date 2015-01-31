@@ -15,7 +15,7 @@ namespace Unity.Scene
 		private int sampleRate;
 		private Dictionary<int, float[]> soundBuffer;
 
-		private ApplicationPlayer windowLoopPlayer;
+		private ApplicationPlayer applicationPlayer;
 		private bool isSetGuiStyle;
 
 		void Awake()
@@ -29,14 +29,14 @@ namespace Unity.Scene
 			AudioSettings.outputSampleRate = 44100;
 			sampleRate = AudioSettings.outputSampleRate;
 
-			windowLoopPlayer = new ApplicationPlayer( new DirectoryInfo( Application.streamingAssetsPath + "/Sound/Music" ) );
+			applicationPlayer = new ApplicationPlayer( new DirectoryInfo( Application.streamingAssetsPath + "/Sound/Music" ) );
 
 			soundBuffer = new Dictionary<int, float[]>();
 		}
 
 		void Start()
 		{
-			windowLoopPlayer.Start();
+			applicationPlayer.Start();
 			
 			AudioClip myClip = AudioClip.Create("MySinoid", 8820, 2, 44100, false, true, OnAudioRead, OnAudioSetPosition);
 			audio.clip = myClip;
@@ -78,7 +78,7 @@ namespace Unity.Scene
 				soundBuffer[data.Length][i] = 0.0f;
 			}
 					
-			windowLoopPlayer.OnAudioFilterRead( soundBuffer[data.Length], 2, sampleRate );
+			applicationPlayer.OnAudioFilterRead( soundBuffer[data.Length], 2, sampleRate );
 					
 			for( int i = 0; i < soundBuffer[data.Length].Length; i++ )
 			{
@@ -105,7 +105,7 @@ namespace Unity.Scene
 				Debug.Log( data[1].ToString() );
 			}
 */
-			windowLoopPlayer.Update();
+			applicationPlayer.Update();
 		}
 
 		void OnGUI()
@@ -114,7 +114,7 @@ namespace Unity.Scene
 
 			GUILayout.BeginArea( new Rect( 0.0f, 0.0f, Screen.width, Screen.height ) );
 			{
-				windowLoopPlayer.OnGUI();
+				applicationPlayer.OnGUI();
 			}
 			GUILayout.EndArea();
 
@@ -195,12 +195,12 @@ namespace Unity.Scene
 
 		void OnRenderObject()
 		{
-			windowLoopPlayer.OnRenderObject();
+			applicationPlayer.OnRenderObject();
 		}
 		
 		void OnApplicationQuit()
 		{
-			windowLoopPlayer.OnApplicationQuit();
+			applicationPlayer.OnApplicationQuit();
 		}
 	}
 }

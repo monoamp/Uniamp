@@ -9,15 +9,15 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ComponentMenu : IView
+	public abstract class AMenu : IView
 	{
-		private MenuBox[] menuBoxArray;
+		protected readonly List<MenuBox> menuBoxList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentMenu( MenuBox[] aMenuBoxArray )
+		public AMenu()
 		{
-			menuBoxArray = aMenuBoxArray;
+			menuBoxList = new List<MenuBox>();
 		}
 
 		public void Select()
@@ -42,11 +42,13 @@ namespace Unity.View
 				float lX = GuiStyleSet.StyleMenu.button.margin.left;
 				float lY = GuiStyleSet.StyleMenu.bar.fixedHeight;
 				float lHeightItem = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
-				float lHeightBox = lHeightItem + menuBoxArray.Length + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
-				
-				foreach( MenuBox l in menuBoxArray )
+				float lHeightBox = lHeightItem + menuBoxList.Count + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
+
+				foreach( MenuBox l in menuBoxList )
 				{
-					l.rect = new Rect( lX, lY, 100.0f, lHeightBox );
+					float lWidthMax = l.GetWidth();
+
+					l.rect = new Rect( lX, lY, lWidthMax, lHeightBox );
 
 					if( GUILayout.Button( new GUIContent( l.title, "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
 					{
@@ -59,7 +61,7 @@ namespace Unity.View
 			}
 			GUILayout.EndHorizontal();
 
-			foreach( MenuBox l in menuBoxArray )
+			foreach( MenuBox l in menuBoxList )
 			{
 				l.OnGUI();
 			}

@@ -13,7 +13,7 @@ namespace Unity.View
 {
 	public class ApplicationPlayer : IView
 	{
-		private ComponentMenu componentMenu;
+		private MenuPlayer menu;
 		private ComponentPlayer componentPlayer;
 		private ComponentPlaylist componentPlaylist;
 		private ComponentChangeDirectory componentChangeDirectory;
@@ -24,30 +24,41 @@ namespace Unity.View
 
 		public ApplicationPlayer( DirectoryInfo aDirectoryInfo )
 		{
-			DirectoryInfo lDirectoryInfo = aDirectoryInfo;
 			directoryInfoRecentList = new List<DirectoryInfo>();
 
+			ReadListDirectoryInfoRecent();
+			
+			DirectoryInfo lDirectoryInfo = aDirectoryInfo;
+
+			if( directoryInfoRecentList.Count > 0 )
+			{
+				lDirectoryInfo = directoryInfoRecentList[0];
+			}
+
+			menu = new MenuPlayer( Application.streamingAssetsPath + "/Language/Player/Menu.language", lDirectoryInfo, SetInput, directoryInfoRecentList );
+			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
+			componentPlaylist = new ComponentPlaylist( lDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
+			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfo, SetDirectoryInfo, directoryInfoRecentList );
+
+			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
+		}
+
+		private void ReadListDirectoryInfoRecent()
+		{
 			try
 			{
 				using( StreamReader u = new StreamReader( Application.streamingAssetsPath + "/Config/Player.ini" ) )
 				{
-					int count = 0;
-
 					for( string line = u.ReadLine(); line != null; line = u.ReadLine() )
 					{
 						if( Directory.Exists( line ) == true )
 						{
-							if( count == 0 )
-							{
-								lDirectoryInfo = new DirectoryInfo( line );
-							}
+							directoryInfoRecentList.Add( new DirectoryInfo( line ) );
 
-							if( count < 5 )
+							if( directoryInfoRecentList.Count >= 5 )
 							{
-								directoryInfoRecentList.Add( new DirectoryInfo( line ) );
+								break;
 							}
-
-							count++;
 						}
 					}
 				}
@@ -55,30 +66,23 @@ namespace Unity.View
 			catch( Exception aExpection )
 			{
 				Logger.BreakDebug( "Exception:" + aExpection );
-
+				
 				using( StreamWriter u = new StreamWriter( Application.streamingAssetsPath + "/Config/Player.ini" ) )
 				{
 					Logger.BreakDebug( "Create Player.ini" );
 				}
 			}
-			
-			MenuItemChangeDirectory lMenuItemChangeDirectory = new MenuItemChangeDirectory( "Input", lDirectoryInfo.Root, lDirectoryInfo, SetInput, directoryInfoRecentList );
-			MenuBox lMenuBoxFile = new MenuBox( "File", new IMenuItem[]{ lMenuItemChangeDirectory } );
-			componentMenu = new ComponentMenu( new MenuBox[]{ lMenuBoxFile } );
-
-			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
-			componentPlaylist = new ComponentPlaylist( lDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
-			
-			DirectoryInfo lDirectoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
-			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfoRoot, lDirectoryInfo, SetDirectoryInfo, directoryInfoRecentList );
-
-			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}
-		
+
 		private void SetInput( DirectoryInfo aDirectoryInfo )
 		{
 			directoryInfoRecentList.Insert( 0, aDirectoryInfo );
-			
+
+			if( directoryInfoRecentList.Count > 5 )
+			{
+				directoryInfoRecentList.RemoveAt( 5 );
+			}
+
 			try
 			{
 				using( StreamWriter u = new StreamWriter( Application.streamingAssetsPath + "/Config/Player.ini", false ) )
@@ -152,7 +156,7 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			componentMenu.OnGUI();
+			menu.OnGUI();
 
 			GUILayout.BeginVertical();
 			{
