@@ -62,7 +62,7 @@ namespace Unity.View
 			data.directoryInfo = aDirectoryInfo;
 		}
 		
-		public void Awake()
+		public void Select()
 		{
 			
 		}

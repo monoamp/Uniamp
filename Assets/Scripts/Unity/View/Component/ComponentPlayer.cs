@@ -75,7 +75,7 @@ namespace Unity.View
 			player.Volume = lVolume;
 		}
 
-		public void Awake()
+		public void Select()
 		{
 
 		}

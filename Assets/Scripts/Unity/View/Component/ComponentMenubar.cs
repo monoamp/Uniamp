@@ -11,16 +11,16 @@ namespace Unity.View
 {
 	public class ComponentMenubar : IView
 	{
-		private MenuBoxFile menuBoxFile;
+		private MenuBox[] menuBoxArray;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentMenubar( MenuBoxFile sMenuItemFile )
+		public ComponentMenubar( MenuBox[] aMenuBoxArray )
 		{
-			menuBoxFile = sMenuItemFile;
+			menuBoxArray = aMenuBoxArray;
 		}
 
-		public void Awake()
+		public void Select()
 		{
 
 		}
@@ -39,28 +39,29 @@ namespace Unity.View
 		{
 			GUILayout.BeginHorizontal( GuiStyleSet.StyleMenu.bar );
 			{
-				float lHeightMenu = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
+				float lX = GuiStyleSet.StyleMenu.button.margin.left;
+				float lY = GuiStyleSet.StyleMenu.bar.fixedHeight;
+				float lHeightItem = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
 				
-				menuBoxFile.rectMenu = new Rect( GuiStyleSet.StyleMenu.button.margin.left, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, lHeightMenu * 2 );
-
-				if( GUILayout.Button( new GUIContent( menuBoxFile.title, "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
+				foreach( MenuBox l in menuBoxArray )
 				{
-					menuBoxFile.Awake();
-				}
+					l.rectMenu = new Rect( lX, lY, 100.0f, lHeightItem * 2 );
 
-				//float lWidthMenu = GuiStyleSet.StyleMenu.button.CalcSize( new GUIContent( "File" ) ).x + GuiStyleSet.StyleMenu.button.margin.left * 2 + GuiStyleSet.StyleMenu.button.margin.right;
-				
-				if( GUILayout.Button( new GUIContent( "Config", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
-				{
-					menuBoxFile.Awake();
-				}
+					if( GUILayout.Button( new GUIContent( l.title, "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
+					{
+						l.Select();
+					}
 
-				GUILayout.Button( new GUIContent( "Help", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button );
+					lX += GuiStyleSet.StyleMenu.button.CalcSize( new GUIContent( l.title ) ).x;
+				}
 				GUILayout.FlexibleSpace();
 			}
 			GUILayout.EndHorizontal();
 
-			menuBoxFile.OnGUI();
+			foreach( MenuBox l in menuBoxArray )
+			{
+				l.OnGUI();
+			}
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )

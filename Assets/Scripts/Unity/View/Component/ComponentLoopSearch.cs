@@ -29,7 +29,7 @@ namespace Unity.View
 			isOnSearch = false;
 		}
 
-		public void Awake()
+		public void Select()
 		{
 			
 		}

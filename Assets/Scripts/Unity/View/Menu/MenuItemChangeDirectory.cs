@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class MenuItemChangeDirectory : IView
+	public class MenuItemChangeDirectory : IMenuItem
 	{
 		public string title{ get; private set; }
 		private DialogDirectorySelect dialogDirectorySelector;
@@ -45,42 +45,12 @@ namespace Unity.View
 			setDirectoryInfo( aDirectoryInfo );
 		}
 
-		public void Awake()
-		{
-
-		}
-		
-		public void Start()
-		{
-			
-		}
-		
-		public void Update()
-		{
-			
-		}
-
 		public void OnGUI()
 		{
 			if( dialogDirectorySelector != null )
 			{
 				dialogDirectorySelector.OnGUI();
 			}
-		}
-
-		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
-		{
-
-		}
-
-		public void OnApplicationQuit()
-		{
-
-		}
-
-		public void OnRenderObject()
-		{
-
 		}
 	}
 }

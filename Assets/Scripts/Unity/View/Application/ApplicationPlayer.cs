@@ -127,9 +127,9 @@ namespace Unity.View
 			componentPlaylist.ChangeMusicNext();
 		}
 		
-		public void Awake()
+		public void Select()
 		{
-			componentPlayer.Awake();
+			componentPlayer.Select();
 		}
 
 		public void Start()
