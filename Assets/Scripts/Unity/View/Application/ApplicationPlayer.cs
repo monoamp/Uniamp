@@ -10,9 +10,9 @@ namespace Unity.View
 {
 	public class ApplicationPlayer : IView
 	{
-		private ViewPlayer viewLoopPlayer;
-		private ViewPlaylist viewLoopPlaylist;
-		private ViewChangeDirectory viewChangeDirectory;
+		private ComponentPlayer componentPlayer;
+		private ComponentPlaylist componentPlaylist;
+		private ComponentChangeDirectory componentChangeDirectory;
 		
 		public Rect Rect{ get; set; }
 
@@ -58,11 +58,11 @@ namespace Unity.View
 				}
 			}
 
-			viewLoopPlayer = new ViewPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
-			viewLoopPlaylist = new ViewPlaylist( lDirectoryInfoInput, SetFileInfoPlaying, GetFileInfoPlaying );
+			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
+			componentPlaylist = new ComponentPlaylist( lDirectoryInfoInput, SetFileInfoPlaying, GetFileInfoPlaying );
 			
 			DirectoryInfo lDirectoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
-			viewChangeDirectory = new ViewChangeDirectory( lDirectoryInfoRoot, lDirectoryInfoInput, SetDirectoryInfo, directoryInfoRecentList );
+			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfoRoot, lDirectoryInfoInput, SetDirectoryInfo, directoryInfoRecentList );
 
 			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}
@@ -95,49 +95,49 @@ namespace Unity.View
 				}
 			}
 			
-			viewLoopPlaylist = new ViewPlaylist( aDirectoryInfo, PlayMusic, GetPlayingMusic );
+			componentPlaylist = new ComponentPlaylist( aDirectoryInfo, PlayMusic, GetPlayingMusic );
 		}
 		
 		private void PlayMusic( string aName )
 		{
-			viewLoopPlayer.SetPlayer( aName );
+			componentPlayer.SetPlayer( aName );
 		}
 		
 		private string GetPlayingMusic()
 		{
-			return viewLoopPlayer.GetFilePath();
+			return componentPlayer.GetFilePath();
 		}
 
 		private void SetFileInfoPlaying( string aName )
 		{
-			viewLoopPlayer.SetPlayer( aName );
+			componentPlayer.SetPlayer( aName );
 		}
 		
 		private string GetFileInfoPlaying()
 		{
-			return viewLoopPlayer.GetFilePath();
+			return componentPlayer.GetFilePath();
 		}
 		
 		private void SetDirectoryInfo( DirectoryInfo aDirectoryInfo )
 		{
 			Cursor.SetCursor( null, Vector2.zero, CursorMode.Auto );
 			SetInput( aDirectoryInfo );
-			viewLoopPlaylist = new ViewPlaylist( aDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
+			componentPlaylist = new ComponentPlaylist( aDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
 		}
 
 		public void ChangeMusicPrevious()
 		{
-			viewLoopPlaylist.ChangeMusicPrevious();
+			componentPlaylist.ChangeMusicPrevious();
 		}
 		
 		public void ChangeMusicNext()
 		{
-			viewLoopPlaylist.ChangeMusicNext();
+			componentPlaylist.ChangeMusicNext();
 		}
 		
 		public void Awake()
 		{
-			viewLoopPlayer.Awake();
+			componentPlayer.Awake();
 		}
 
 		public void Start()
@@ -154,26 +154,27 @@ namespace Unity.View
 		{
 			GUILayout.BeginVertical();
 			{
-				viewLoopPlayer.OnGUI();
-				viewLoopPlaylist.OnGUI();
-				viewChangeDirectory.OnGUI();
+				componentPlayer.OnGUI();
+				componentPlaylist.OnGUI();
+				componentChangeDirectory.OnGUI();
 			}
 			GUILayout.EndVertical();
-		}
-		
-		public void OnApplicationQuit()
-		{
-
 		}
 
 		public void OnRenderObject()
 		{
-			viewLoopPlayer.OnRenderObject();
+			componentPlayer.Rect = new Rect( 0.0f, 0.0f, Screen.width, Screen.height );
+			componentPlayer.OnRenderObject();
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			viewLoopPlayer.OnAudioFilterRead( aSoundBuffer, aChannels, aSampleRate );
+			componentPlayer.OnAudioFilterRead( aSoundBuffer, aChannels, aSampleRate );
+		}
+
+		public void OnApplicationQuit()
+		{
+			
 		}
 	}
 }

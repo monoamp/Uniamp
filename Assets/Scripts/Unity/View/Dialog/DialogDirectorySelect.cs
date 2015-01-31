@@ -9,14 +9,14 @@ using System.IO;
 
 namespace Unity.View
 {
-    public class DialogDirectorySelect : ADragWindow
+    public class DialogDirectorySelect : AViewDrag
 	{
-		private ViewDirectorySelector viewDirectorySelector;
+		private ComponentDirectorySelector viewDirectorySelector;
 
-		public DialogDirectorySelect( ViewDirectorySelector.CloseWindow aCloseWindow, ViewDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public DialogDirectorySelect( ComponentDirectorySelector.CloseWindow aCloseWindow, ComponentDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
             : base( null, new Rect( 10.0f, 10.0f, Screen.width / 2.0f, Screen.height * 2.0f / 3.0f ) )
 		{
-			viewDirectorySelector = new ViewDirectorySelector( aCloseWindow, aViewDirectoryTree, aDirectoryInfo, aDirectoryInfoRecentList );
+			viewDirectorySelector = new ComponentDirectorySelector( aCloseWindow, aViewDirectoryTree, aDirectoryInfo, aDirectoryInfoRecentList );
 		}
 		
         public override void OnGUI()

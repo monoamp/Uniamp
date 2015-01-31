@@ -15,7 +15,7 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class ViewPlayer : IView
+	public class ComponentPlayer : IView
 	{
         private IPlayer player;
 
@@ -32,7 +32,7 @@ namespace Unity.View
 
 		private int positionInBuffer;
 
-		public ViewPlayer( string aFilePath, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
+		public ComponentPlayer( string aFilePath, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
 		{
 			mouseButton = false;
 
@@ -94,7 +94,7 @@ namespace Unity.View
 		{
 			mouseButton = Input.GetMouseButton( 0 );
 
-			GUILayout.BeginVertical( GuiStyleSet.StyleGeneral.box );
+			GUILayout.BeginVertical( GuiStyleSet.StylePlayer.box );
 			{
 				GUILayout.TextArea( title, GuiStyleSet.StylePlayer.labelTitle );
 				
@@ -181,34 +181,33 @@ namespace Unity.View
 			GUILayout.EndVertical();
 			
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
-			float lY = lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + GuiStyleSet.StylePlayer.seekbar.fixedHeight;
+			float lY = Rect.y + lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + GuiStyleSet.StylePlayer.seekbar.fixedHeight;
 
 			player.IsLoop = GUI.Toggle( new Rect( Screen.width / 2.0f - GuiStyleSet.StylePlayer.seekbar.fixedWidth / 2.0f, lY, 32.0f, 32.0f ), player.IsLoop, "", GuiStyleSet.StylePlayer.toggleLoop );
 		}
 		
 		public void OnRenderObject()
 		{
-			//float lHeightMenu = GuiStyleSet.StyleMenu.button.CalcSize( new GUIContent( "" ) ).y;
-			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
-			float lY = /*lHeightMenu +*/ lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top;
+			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y + GuiStyleSet.StylePlayer.labelTitle.margin.top + GuiStyleSet.StylePlayer.labelTitle.margin.bottom;
+			float lY = Rect.y + lHeightTitle;
 
 			if( player != null && player.GetLength().Second != 0.0d )
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start / player.GetLength() ), ( float )( player.Loop.end / player.GetLength() ), ( float )player.PositionRate );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start / player.GetLength() ), ( float )( player.Loop.end / player.GetLength() ), ( float )player.PositionRate );
 			}
 			else
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY + lHeight, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
 			}
 			
-			float lYVolume = lHeightTitle + GuiStyleSet.StylePlayer.toggleStartPause.fixedHeight + GuiStyleSet.StylePlayer.seekbar.fixedHeight + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + 18;
+			float lYVolume = Rect.y + lHeightTitle + GuiStyleSet.StylePlayer.toggleStartPause.fixedHeight + GuiStyleSet.StylePlayer.seekbar.fixedHeight + 18;
 			float lWidthVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedWidth;
 			float lHeightVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedHeight;
-			Gui.DrawVolumeBar( new Rect( Screen.width / 2 - lWidthVolume / 2, lYVolume + lHeightVolume, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
+			Gui.DrawVolumeBar( new Rect( Screen.width / 2 - lWidthVolume / 2, lYVolume, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )

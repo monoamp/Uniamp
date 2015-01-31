@@ -32,7 +32,6 @@ namespace Unity.Scene
 			windowLoopPlayer = new ApplicationPlayer( new DirectoryInfo( Application.streamingAssetsPath + "/Sound/Music" ) );
 
 			soundBuffer = new Dictionary<int, float[]>();
-
 		}
 
 		void Start()
@@ -42,6 +41,24 @@ namespace Unity.Scene
 			AudioClip myClip = AudioClip.Create("MySinoid", 8820, 2, 44100, false, true, OnAudioRead, OnAudioSetPosition);
 			audio.clip = myClip;
 			audio.Play();
+
+			/*
+			WWW www = new WWW( "file:///" + Application.streamingAssetsPath + "/Sound/Music/tam-n17.mp3" );
+			
+			if( www.error != null )
+			{
+				Debug.Log( www.error );
+			}
+			
+			AudioClip audioClip = www.GetAudioClip( false, false );
+			audio.clip = audioClip;
+*/
+			/*
+			float[] data = new float[audioClip.samples  * audioClip.channels];
+			audioClip.GetData( data, 0 );
+				
+				Debug.Log( data[0].ToString() );
+				Debug.Log( data[1].ToString() );*/
 		}
 		
 		void OnAudioRead( float[] data )
@@ -76,6 +93,18 @@ namespace Unity.Scene
 
 		void Update()
 		{
+			/*
+			if( !audio.isPlaying && audio.clip.isReadyToPlay )
+			{
+				audio.Play();
+
+				float[] data = new float[audio.clip.samples  * audio.clip.channels];
+				audio.clip.GetData( data, 0 );
+				
+				Debug.Log( data[0].ToString() );
+				Debug.Log( data[1].ToString() );
+			}
+*/
 			windowLoopPlayer.Update();
 		}
 

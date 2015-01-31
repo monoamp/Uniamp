@@ -11,9 +11,9 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class ViewDirectorySelector : IView
+	public class ComponentDirectorySelector : IView
 	{
-		private ViewDirectoryTree viewDirectoryTree;
+		private ComponentDirectoryTree viewDirectoryTree;
 
 		private Vector2 positionScrollDirectory;
 
@@ -27,7 +27,7 @@ namespace Unity.View
 
 		public Rect Rect{ get; set; }
 
-		public ViewDirectorySelector( CloseWindow aCloseWindow, ViewDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public ComponentDirectorySelector( CloseWindow aCloseWindow, ComponentDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			closeWindow = aCloseWindow;
 			viewDirectoryTree = aViewDirectoryTree;

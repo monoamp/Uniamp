@@ -39,7 +39,7 @@ namespace Unity.View
 		}
 	}
 
-	public class ViewPlaylist : IView
+	public class ComponentPlaylist : IView
 	{
 		public DataLoopPlaylist data;
         private Dictionary<string, IMusic> musicDictionary;
@@ -48,7 +48,7 @@ namespace Unity.View
 		
 		public Rect Rect{ get; set; }
 
-		public ViewPlaylist( DirectoryInfo aDirectoryInfo, DataLoopPlaylist.PlayMusic aSetFileInfoPlaying, DataLoopPlaylist.GetPlayingMusic aGetFileInfoPlaying )
+		public ComponentPlaylist( DirectoryInfo aDirectoryInfo, DataLoopPlaylist.PlayMusic aSetFileInfoPlaying, DataLoopPlaylist.GetPlayingMusic aGetFileInfoPlaying )
 		{
 			data = new DataLoopPlaylist( aDirectoryInfo, aSetFileInfoPlaying, aGetFileInfoPlaying );
 

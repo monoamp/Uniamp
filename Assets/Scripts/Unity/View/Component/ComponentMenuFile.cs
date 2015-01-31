@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ViewMenuFile : IView
+	public class ComponentMenuFile : IView
 	{
 		public Rect rectMenu;
 		private bool isShowMenu;
@@ -20,7 +20,7 @@ namespace Unity.View
 		
 		public Rect Rect{ get; set; }
 
-		public ViewMenuFile()
+		public ComponentMenuFile()
 		{
 			rectMenu = new Rect( 0, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, 200.0f );
 			isShowMenu = false;
@@ -73,7 +73,7 @@ namespace Unity.View
 			{
 				if( GUILayout.Button( new GUIContent( "Input", "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
 				{
-					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot, directoryInfo );
+					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot, directoryInfo );
 					
 					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, lViewDirectoryTree, directoryInfo, null );
 
@@ -81,7 +81,7 @@ namespace Unity.View
 				}
 				if( GUILayout.Button( new GUIContent( "Output", "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
 				{
-					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot, directoryInfo );
+					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot, directoryInfo );
 					
 					windowDirectorySelector = new DialogDirectorySelect( ChangeDirectoryOutput, lViewDirectoryTree, directoryInfo, null );
 					

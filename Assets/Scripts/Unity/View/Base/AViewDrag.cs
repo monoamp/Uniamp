@@ -9,7 +9,7 @@ using System;
 
 namespace Unity.View
 {
-	public abstract class ADragWindow
+	public abstract class AViewDrag
 	{
         public abstract void Awake();
         public abstract void Start();
@@ -36,7 +36,7 @@ namespace Unity.View
 		protected delegate void CloseWindow();
 		private CloseWindow closeWindow;
 
-		protected ADragWindow( CloseWindow aCloseWindow, Rect aRectWindow )
+		protected AViewDrag( CloseWindow aCloseWindow, Rect aRectWindow )
 		{
             closeWindow = aCloseWindow;
             rectWindow = aRectWindow;

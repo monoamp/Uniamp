@@ -9,15 +9,15 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ViewMenu : IView
+	public class ComponentMenu : IView
 	{
-		private ViewMenuFile viewMenuFile;
+		private ComponentMenuFile viewMenuFile;
 		
 		public Rect Rect{ get; set; }
 
-		public ViewMenu()
+		public ComponentMenu()
 		{
-            viewMenuFile = new ViewMenuFile();
+            viewMenuFile = new ComponentMenuFile();
 		}
 
 		public void Awake()
@@ -49,6 +49,11 @@ namespace Unity.View
 				}
 
 				//float lWidthMenu = GuiStyleSet.StyleMenu.button.CalcSize( new GUIContent( "File" ) ).x + GuiStyleSet.StyleMenu.button.margin.left * 2 + GuiStyleSet.StyleMenu.button.margin.right;
+				
+				if( GUILayout.Button( new GUIContent( "Config", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
+				{
+					viewMenuFile.Awake();
+				}
 
 				GUILayout.Button( new GUIContent( "Help", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button );
 				GUILayout.FlexibleSpace();

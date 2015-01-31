@@ -14,7 +14,7 @@ using Monoamp.Common.Struct;
 
 namespace Unity.View
 {
-	public class ViewChangeDirectory : IView
+	public class ComponentChangeDirectory : IView
 	{
 		private DialogDirectorySelect dialogDirectorySelector;
 		
@@ -28,7 +28,7 @@ namespace Unity.View
 
 		public Rect Rect{ get; set; }
 
-		public ViewChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public ComponentChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			directoryInfoRoot = aDirectoryInfoRoot;
 			directoryInfo = aDirectoryInfo;
@@ -81,7 +81,7 @@ namespace Unity.View
 				
 				if( GUILayout.Button( new GUIContent( "", "StyleFolder.ButtonFolder" ), GuiStyleSet.StyleFolder.buttonFolder ) == true )
 				{
-					ViewDirectoryTree lViewDirectoryTree = new ViewDirectoryTree( directoryInfoRoot.Root, directoryInfo );
+					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfoRoot.Root, directoryInfo );
 					
 					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, lViewDirectoryTree, directoryInfo, directoryInfoRecentList );
 				}

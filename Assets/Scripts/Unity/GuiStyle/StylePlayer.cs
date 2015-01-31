@@ -4,6 +4,7 @@ namespace Unity.GuiStyle
 {
 	public class StylePlayer : MonoBehaviour
 	{
+		public GUIStyle box;
 		public GUIStyle labelTitle;
 		public GUIStyle labelTime;
 		public GUIStyle toggleStartPause;

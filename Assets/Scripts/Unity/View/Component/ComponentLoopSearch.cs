@@ -11,7 +11,7 @@ using Curan.Common.ApplicationComponent.Sound.LoopTool;
 
 namespace Unity.View
 {
-	public class ViewLoopSearch : IView
+	public class ComponentLoopSearch : IView
 	{
 		private Thread thread;
 		private bool isOnSearch;
@@ -21,7 +21,7 @@ namespace Unity.View
 		
 		public Rect Rect{ get; set; }
 
-		public ViewLoopSearch( DataLoopPlaylist aDataLoopPlaylist, DataLoopInputlist aDataLoopDetector )
+		public ComponentLoopSearch( DataLoopPlaylist aDataLoopPlaylist, DataLoopInputlist aDataLoopDetector )
 		{
 			dataLoopPlaylist = aDataLoopPlaylist;
 			dataLoopInputlist = aDataLoopDetector;

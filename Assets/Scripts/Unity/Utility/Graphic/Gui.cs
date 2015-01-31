@@ -27,10 +27,10 @@ namespace Unity.Function.Graphic
 			float x3 = aRect.x + aRect.width - lBorder.right;
 			float x4 = aRect.x + aRect.width;
 			
-			float y1 = Screen.height - aRect.y;
-			float y2 = Screen.height - aRect.y + lBorder.top;
-			float y3 = Screen.height - aRect.y + aRect.height - lBorder.bottom;
-			float y4 = Screen.height - aRect.y + aRect.height;
+			float y4 = Screen.height - aRect.y;
+			float y3 = Screen.height - aRect.y - lBorder.top;
+			float y2 = Screen.height - aRect.y - aRect.height + lBorder.bottom;
+			float y1 = Screen.height - aRect.y - aRect.height;
 
 			Vector3 vertex11 = aCamera.ScreenToWorldPoint( new Vector3( x1, y1 ) );
 			Vector3 vertex21 = aCamera.ScreenToWorldPoint( new Vector3( x2, y1 ) );
@@ -225,10 +225,10 @@ namespace Unity.Function.Graphic
 			float xS = aRect.x + aRect.width * aPositionStart;
 			float xE = aRect.x + aRect.width * aPositionEnd;
 
-			float y1 = Screen.height - aRect.y;
-			float y2 = Screen.height - aRect.y + lBorder.top;
-			float y3 = Screen.height - aRect.y + aRect.height - lBorder.bottom;
-			float y4 = Screen.height - aRect.y + aRect.height;
+			float y4 = Screen.height - aRect.y;
+			float y3 = Screen.height - aRect.y - lBorder.top;
+			float y2 = Screen.height - aRect.y - aRect.height + lBorder.bottom;
+			float y1 = Screen.height - aRect.y - aRect.height;
 			
 			Vector3 vertexS1 = camera.ScreenToWorldPoint( new Vector3( xS, y1 ) );
 			Vector3 vertex21 = camera.ScreenToWorldPoint( new Vector3( x2, y1 ) );

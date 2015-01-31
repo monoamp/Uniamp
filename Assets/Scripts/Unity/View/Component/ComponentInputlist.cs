@@ -36,7 +36,7 @@ namespace Unity.View
 		}
 	}
 
-	public class ViewInputlist : IView
+	public class ComponentInputlist : IView
     {
 		public DataLoopInputlist data;
 		private Vector2 scrollPosition;
@@ -47,7 +47,7 @@ namespace Unity.View
 		
 		public Rect Rect{ get; set; }
 
-		public ViewInputlist( DirectoryInfo aDirectoryInfo, DataLoopInputlist.PlayMusic aPlayMusic, DataLoopInputlist.GetPlayingMusic aGetPlayingMusic )
+		public ComponentInputlist( DirectoryInfo aDirectoryInfo, DataLoopInputlist.PlayMusic aPlayMusic, DataLoopInputlist.GetPlayingMusic aGetPlayingMusic )
 		{
 			data = new DataLoopInputlist( aDirectoryInfo, aPlayMusic, aGetPlayingMusic );
 
