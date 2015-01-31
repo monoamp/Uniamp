@@ -11,6 +11,7 @@ namespace Unity.View
 {
 	public class MenuItemChangeDirectory : IView
 	{
+		public string title{ get; private set; }
 		private DialogDirectorySelect dialogDirectorySelector;
 
 		public Rect Rect{ get; set; }
@@ -21,8 +22,9 @@ namespace Unity.View
 		private SetDirectoryInfo setDirectoryInfo;
 		private List<DirectoryInfo> directoryInfoRecentList;
 
-		public MenuItemChangeDirectory( DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
-		{	
+		public MenuItemChangeDirectory( string aTitle, DirectoryInfo aDirectoryInfoRoot, DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		{
+			title = aTitle;
 			directoryInfo = aDirectoryInfo;
 			directoryInfoRoot = aDirectoryInfoRoot;
 			setDirectoryInfo = aSetDirectoryInfo;

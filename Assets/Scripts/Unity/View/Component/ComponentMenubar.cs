@@ -43,7 +43,7 @@ namespace Unity.View
 				
 				menuBoxFile.rectMenu = new Rect( GuiStyleSet.StyleMenu.button.margin.left, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, lHeightMenu * 2 );
 
-				if( GUILayout.Button( new GUIContent( "File", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
+				if( GUILayout.Button( new GUIContent( menuBoxFile.title, "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
 				{
 					menuBoxFile.Awake();
 				}

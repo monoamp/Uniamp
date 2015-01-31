@@ -11,15 +11,19 @@ namespace Unity.View
 {
 	public class MenuBoxFile : IView
 	{
-		public Rect rectMenu;
+		public string title{ get; private set; }
 		private bool isShow;
-		private MenuItemChangeDirectory menuItemChangeDirectory;
+		public Rect rectMenu;
+		private MenuItemChangeDirectory menuItemChangeDirectoryInput;
+		private MenuItemChangeDirectory menuItemChangeDirectoryOutput;
 
 		public Rect Rect{ get; set; }
 
-		public MenuBoxFile( MenuItemChangeDirectory aMenuItemChangeDirectory )
+		public MenuBoxFile( MenuItemChangeDirectory aMenuItemChangeDirectoryInput, MenuItemChangeDirectory aMenuItemChangeDirectoryOutput )
 		{
-			menuItemChangeDirectory = aMenuItemChangeDirectory;
+			title = "File";
+			menuItemChangeDirectoryInput = aMenuItemChangeDirectoryInput;
+			menuItemChangeDirectoryOutput = aMenuItemChangeDirectoryOutput;
 			rectMenu = new Rect( 0, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, 200.0f );
 			isShow = false;
 		}
@@ -56,18 +60,26 @@ namespace Unity.View
 					isShow = false;
 				}
 			}
-
-			menuItemChangeDirectory.OnGUI();
+			
+			menuItemChangeDirectoryInput.OnGUI();
+			menuItemChangeDirectoryOutput.OnGUI();
 		}
 
 		public void SelectItemWindow( int windowID )
 		{
 			GUILayout.BeginVertical();
 			{
-				if( GUILayout.Button( new GUIContent( "Input", "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
+				if( GUILayout.Button( new GUIContent( menuItemChangeDirectoryInput.title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
 				{
-					menuItemChangeDirectory.Select();
+					menuItemChangeDirectoryInput.Select();
 
+					isShow = false;
+				}
+				
+				if( GUILayout.Button( new GUIContent( menuItemChangeDirectoryOutput.title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
+				{
+					menuItemChangeDirectoryOutput.Select();
+					
 					isShow = false;
 				}
 			}
