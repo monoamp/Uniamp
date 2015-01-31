@@ -9,13 +9,13 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ComponentMenubar : IView
+	public class ComponentMenu : IView
 	{
 		private MenuBox[] menuBoxArray;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentMenubar( MenuBox[] aMenuBoxArray )
+		public ComponentMenu( MenuBox[] aMenuBoxArray )
 		{
 			menuBoxArray = aMenuBoxArray;
 		}
@@ -42,10 +42,11 @@ namespace Unity.View
 				float lX = GuiStyleSet.StyleMenu.button.margin.left;
 				float lY = GuiStyleSet.StyleMenu.bar.fixedHeight;
 				float lHeightItem = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
+				float lHeightBox = lHeightItem + menuBoxArray.Length + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
 				
 				foreach( MenuBox l in menuBoxArray )
 				{
-					l.rectMenu = new Rect( lX, lY, 100.0f, lHeightItem * 2 );
+					l.rect = new Rect( lX, lY, 100.0f, lHeightBox );
 
 					if( GUILayout.Button( new GUIContent( l.title, "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
 					{

@@ -10,7 +10,8 @@ namespace Unity.View
 	public class MenuBox
 	{
 		public readonly string title;
-		public Rect rectMenu;
+
+		public Rect rect;
 
 		private bool isShow;
 		private IMenuItem[] menuItemArray;
@@ -30,15 +31,15 @@ namespace Unity.View
 		{
 			if( isShow == true )
 			{
-				GUI.Window( 0, rectMenu, SelectItemWindow, "", GuiStyleSet.StyleMenu.window );
+				GUI.Window( 0, rect, SelectItemWindow, "", GuiStyleSet.StyleMenu.window );
 			}
 			
 			if( Input.GetMouseButtonDown( 0 ) == true )
 			{
 				float lY = Screen.height - 1 - Input.mousePosition.y;
 				
-				if( Input.mousePosition.x < rectMenu.x || Input.mousePosition.x >= rectMenu.x + rectMenu.width ||
-				   lY < rectMenu.y || lY >= rectMenu.y + rectMenu.height )
+				if( Input.mousePosition.x < rect.x || Input.mousePosition.x >= rect.x + rect.width ||
+				   lY < rect.y || lY >= rect.y + rect.height )
 				{
 					isShow = false;
 				}

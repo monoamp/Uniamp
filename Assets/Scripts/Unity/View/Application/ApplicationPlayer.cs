@@ -1,5 +1,8 @@
 using UnityEngine;
 
+using Unity.Data;
+using Unity.GuiStyle;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +13,7 @@ namespace Unity.View
 {
 	public class ApplicationPlayer : IView
 	{
+		private ComponentMenu componentMenu;
 		private ComponentPlayer componentPlayer;
 		private ComponentPlaylist componentPlaylist;
 		private ComponentChangeDirectory componentChangeDirectory;
@@ -20,7 +24,7 @@ namespace Unity.View
 
 		public ApplicationPlayer( DirectoryInfo aDirectoryInfo )
 		{
-			DirectoryInfo lDirectoryInfoInput = aDirectoryInfo;
+			DirectoryInfo lDirectoryInfo = aDirectoryInfo;
 			directoryInfoRecentList = new List<DirectoryInfo>();
 
 			try
@@ -35,7 +39,7 @@ namespace Unity.View
 						{
 							if( count == 0 )
 							{
-								lDirectoryInfoInput = new DirectoryInfo( line );
+								lDirectoryInfo = new DirectoryInfo( line );
 							}
 
 							if( count < 5 )
@@ -57,12 +61,16 @@ namespace Unity.View
 					Logger.BreakDebug( "Create Player.ini" );
 				}
 			}
+			
+			MenuItemChangeDirectory lMenuItemChangeDirectory = new MenuItemChangeDirectory( "Input", lDirectoryInfo.Root, lDirectoryInfo, SetInput, directoryInfoRecentList );
+			MenuBox lMenuBoxFile = new MenuBox( "File", new IMenuItem[]{ lMenuItemChangeDirectory } );
+			componentMenu = new ComponentMenu( new MenuBox[]{ lMenuBoxFile } );
 
 			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
-			componentPlaylist = new ComponentPlaylist( lDirectoryInfoInput, SetFileInfoPlaying, GetFileInfoPlaying );
+			componentPlaylist = new ComponentPlaylist( lDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
 			
 			DirectoryInfo lDirectoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
-			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfoRoot, lDirectoryInfoInput, SetDirectoryInfo, directoryInfoRecentList );
+			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfoRoot, lDirectoryInfo, SetDirectoryInfo, directoryInfoRecentList );
 
 			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}
@@ -144,6 +152,8 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
+			componentMenu.OnGUI();
+
 			GUILayout.BeginVertical();
 			{
 				componentPlayer.OnGUI();
@@ -155,7 +165,8 @@ namespace Unity.View
 
 		public void OnRenderObject()
 		{
-			componentPlayer.Rect = new Rect( 0.0f, 0.0f, Screen.width, Screen.height );
+			float lHeightMenubar = GuiStyleSet.StyleMenu.bar.fixedHeight;
+			componentPlayer.Rect = new Rect( 0.0f, lHeightMenubar, Screen.width, Screen.height - lHeightMenubar );
 			componentPlayer.OnRenderObject();
 		}
 
