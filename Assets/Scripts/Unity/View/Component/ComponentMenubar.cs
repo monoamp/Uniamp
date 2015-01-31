@@ -9,15 +9,15 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ComponentMenu : IView
+	public class ComponentMenubar : IView
 	{
-		private MenuItemFile menuItemFile;
+		private MenuBoxFile menuBoxFile;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentMenu( MenuItemFile sMenuItemFile )
+		public ComponentMenubar( MenuBoxFile sMenuItemFile )
 		{
-			menuItemFile = sMenuItemFile;
+			menuBoxFile = sMenuItemFile;
 		}
 
 		public void Awake()
@@ -41,18 +41,18 @@ namespace Unity.View
 			{
 				float lHeightMenu = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
 				
-				menuItemFile.rectMenu = new Rect( GuiStyleSet.StyleMenu.button.margin.left, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, lHeightMenu * 2 );
+				menuBoxFile.rectMenu = new Rect( GuiStyleSet.StyleMenu.button.margin.left, GuiStyleSet.StyleMenu.bar.fixedHeight, 100.0f, lHeightMenu * 2 );
 
 				if( GUILayout.Button( new GUIContent( "File", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
 				{
-					menuItemFile.Awake();
+					menuBoxFile.Awake();
 				}
 
 				//float lWidthMenu = GuiStyleSet.StyleMenu.button.CalcSize( new GUIContent( "File" ) ).x + GuiStyleSet.StyleMenu.button.margin.left * 2 + GuiStyleSet.StyleMenu.button.margin.right;
 				
 				if( GUILayout.Button( new GUIContent( "Config", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button ) == true )
 				{
-					menuItemFile.Awake();
+					menuBoxFile.Awake();
 				}
 
 				GUILayout.Button( new GUIContent( "Help", "StyleMenu.Button" ), GuiStyleSet.StyleMenu.button );
@@ -60,7 +60,7 @@ namespace Unity.View
 			}
 			GUILayout.EndHorizontal();
 
-			menuItemFile.OnGUI();
+			menuBoxFile.OnGUI();
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
