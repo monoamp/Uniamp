@@ -14,7 +14,7 @@ namespace Unity.View.Player
 		{
 			Dictionary<string, string> lDictionaryDescription = ReadDictionaryLanguage( aFilePathLanguage );
 
-			MenuBoxFile lMenuBoxFile = new MenuBoxFile( lDictionaryDescription["FILE"], Application.streamingAssetsPath + "/Language/Player/Menu/ManuBar/MenuBoxFile.language", aSetDirectoryInfo, aDirectoryInfoRecentList );
+			MenuBoxFile lMenuBoxFile = new MenuBoxFile( lDictionaryDescription["FILE"], Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar/MenuBoxFile.language", aSetDirectoryInfo, aDirectoryInfoRecentList );
 
 			menuBoxList.Add( lMenuBoxFile );
 

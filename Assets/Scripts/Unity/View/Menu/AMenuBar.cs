@@ -49,7 +49,7 @@ namespace Unity.View
 			}
 			catch( Exception aExpection )
 			{
-				Logger.BreakDebug( "Exception:" + aExpection );
+				Logger.BreakError( "Exception:" + aExpection );
 			}
 			
 			return lDictionaryDescription;
