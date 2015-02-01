@@ -9,11 +9,11 @@ using System.IO;
 
 using Monoamp.Boundary;
 
-namespace Unity.View
+namespace Unity.View.Player
 {
 	public class ApplicationPlayer : IView
 	{
-		private MenuBarPlayer menu;
+		private MenuBar menu;
 		private ComponentPlayer componentPlayer;
 		private ComponentPlaylist componentPlaylist;
 		private ComponentChangeDirectory componentChangeDirectory;
@@ -33,7 +33,7 @@ namespace Unity.View
 				directoryInfoRecentList.Add( aDirectoryInfo );
 			}
 
-			menu = new MenuBarPlayer( Application.streamingAssetsPath + "/Language/Player/Menu.language", SetInput, directoryInfoRecentList );
+			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", SetInput, directoryInfoRecentList );
 			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
 			componentChangeDirectory = new ComponentChangeDirectory( SetDirectoryInfo, directoryInfoRecentList );

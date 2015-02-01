@@ -2,13 +2,12 @@ using UnityEngine;
 
 using Unity.Data;
 using Unity.GuiStyle;
-using Unity.View;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Unity.Scene
+namespace Unity.View.Player
 {
 	public class ScenePlayer : MonoBehaviour
 	{

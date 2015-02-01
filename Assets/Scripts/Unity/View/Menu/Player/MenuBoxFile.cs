@@ -9,7 +9,7 @@ using System.IO;
 
 using Monoamp.Boundary;
 
-namespace Unity.View
+namespace Unity.View.Player
 {
 	public class MenuBoxFile : AMenuBox
 	{

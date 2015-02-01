@@ -9,11 +9,11 @@ using System.IO;
 
 using Monoamp.Boundary;
 
-namespace Unity.View
+namespace Unity.View.LoopTool
 {
-	public class MenuBoxFileLoopTool : AMenuBox
+	public class MenuBoxFile : AMenuBox
 	{
-		public MenuBoxFileLoopTool( string aTitle, string aFilePathLanguage, ApplicationLoopTool aApplicationLoopTool )
+		public MenuBoxFile( string aTitle, string aFilePathLanguage, ApplicationLoopTool aApplicationLoopTool )
 			: base( aTitle )
 		{
 			Dictionary<string, string> lDictionaryDescription = ReadDictionaryLanguage( aFilePathLanguage );
