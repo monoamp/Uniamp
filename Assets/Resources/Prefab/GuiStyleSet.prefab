@@ -5000,7 +5000,7 @@ MonoBehaviour:
   buttonSearch:
     m_Name: 
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 92804caa736235641bba0f8d89b7c9da, type: 3}
+      m_Background: {fileID: 2800000, guid: 172849bb1cffb4742b85c08a1004bcb5, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 2800000, guid: 9a561794c16f26d4cb154e24adac64b5, type: 3}
@@ -5118,7 +5118,7 @@ MonoBehaviour:
   backgroundInput:
     m_Name: 
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 8b9e5e7845b83884ab5c553498dc91f2, type: 3}
+      m_Background: {fileID: 2800000, guid: 839bc9d59e8880144898b27ebbfb5156, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
@@ -5171,13 +5171,13 @@ MonoBehaviour:
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 0
+    m_FixedHeight: 4
     m_StretchWidth: 1
     m_StretchHeight: 0
   backgroundOutput:
     m_Name: 
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 8b9e5e7845b83884ab5c553498dc91f2, type: 3}
+      m_Background: {fileID: 2800000, guid: e3eb06c13e5472a4b9263c1e760964f9, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
@@ -5230,14 +5230,14 @@ MonoBehaviour:
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 0
+    m_FixedHeight: 4
     m_StretchWidth: 1
     m_StretchHeight: 0
   labelInput:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+      m_TextColor: {r: .36470589, g: .670588255, b: .819607854, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -5296,7 +5296,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+      m_TextColor: {r: .90196079, g: .521568656, b: .505882382, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}

@@ -5,9 +5,11 @@ namespace Unity.GuiStyle
 	public class StyleTable : MonoBehaviour
 	{
 		public GUIStyle labelHeader;
+		public GUIStyle labelHeaderTop;
 		public GUIStyle textHeader;
 		public GUIStyle toggleCheckHeader;
 		public GUIStyle partitionVertical;
+		public GUIStyle partitionVerticalHeader;
 		public GUIStyle toggleRow;
 		public GUIStyle viewRowA;
 		public GUIStyle viewRowB;
