@@ -38,6 +38,11 @@ namespace Unity.View
 
 			return lWidthMax;
 		}
+		
+		public int GetCount()
+		{
+			return menuItemList.Count;
+		}
 
 		public void Select()
 		{

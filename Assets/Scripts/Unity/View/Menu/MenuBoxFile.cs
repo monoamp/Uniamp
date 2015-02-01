@@ -14,13 +14,13 @@ namespace Unity.View
 	public class MenuBoxFile : MenuBox
 	{
 		private List<string> descriptionMenuItemList;
-
+		
 		public MenuBoxFile( string aTitle, string aFilePathLanguage, DirectoryInfo aDirectoryInfo, MenuItemChangeDirectory.SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 			: base( aTitle )
 		{
 			descriptionMenuItemList = new List<string>();
 			ReadLanguageList( aFilePathLanguage );
-
+			
 			foreach( string l in descriptionMenuItemList )
 			{
 				menuItemList.Add( new MenuItemChangeDirectory( l, aDirectoryInfo, aSetDirectoryInfo, aDirectoryInfoRecentList ) );

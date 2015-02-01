@@ -42,11 +42,11 @@ namespace Unity.View
 				float lX = GuiStyleSet.StyleMenu.button.margin.left;
 				float lY = GuiStyleSet.StyleMenu.bar.fixedHeight;
 				float lHeightItem = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
-				float lHeightBox = lHeightItem + menuBoxList.Count + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
 
 				foreach( MenuBox l in menuBoxList )
 				{
 					float lWidthMax = l.GetWidth();
+					float lHeightBox = lHeightItem * l.GetCount() + menuBoxList.Count + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
 
 					l.rect = new Rect( lX, lY, lWidthMax, lHeightBox );
 
