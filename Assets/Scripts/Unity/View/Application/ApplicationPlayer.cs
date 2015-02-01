@@ -13,7 +13,7 @@ namespace Unity.View
 {
 	public class ApplicationPlayer : IView
 	{
-		private MenuPlayer menu;
+		private MenuBarPlayer menu;
 		private ComponentPlayer componentPlayer;
 		private ComponentPlaylist componentPlaylist;
 		private ComponentChangeDirectory componentChangeDirectory;
@@ -27,18 +27,16 @@ namespace Unity.View
 			directoryInfoRecentList = new List<DirectoryInfo>();
 
 			ReadListDirectoryInfoRecent();
-			
-			DirectoryInfo lDirectoryInfo = aDirectoryInfo;
 
-			if( directoryInfoRecentList.Count > 0 )
+			if( directoryInfoRecentList.Count == 0 )
 			{
-				lDirectoryInfo = directoryInfoRecentList[0];
+				directoryInfoRecentList.Add( aDirectoryInfo );
 			}
 
-			menu = new MenuPlayer( Application.streamingAssetsPath + "/Language/Player/Menu.language", lDirectoryInfo, SetInput, directoryInfoRecentList );
+			menu = new MenuBarPlayer( Application.streamingAssetsPath + "/Language/Player/Menu.language", SetInput, directoryInfoRecentList );
 			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
-			componentPlaylist = new ComponentPlaylist( lDirectoryInfo, SetFileInfoPlaying, GetFileInfoPlaying );
-			componentChangeDirectory = new ComponentChangeDirectory( lDirectoryInfo, SetDirectoryInfo, directoryInfoRecentList );
+			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
+			componentChangeDirectory = new ComponentChangeDirectory( SetDirectoryInfo, directoryInfoRecentList );
 
 			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}

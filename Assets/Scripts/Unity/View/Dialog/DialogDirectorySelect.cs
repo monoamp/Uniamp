@@ -11,25 +11,25 @@ namespace Unity.View
 {
     public class DialogDirectorySelect : AViewDrag
 	{
-		private ComponentDirectorySelector viewDirectorySelector;
+		private ComponentDirectorySelector componentDirectorySelector;
 
-		public DialogDirectorySelect( ComponentDirectorySelector.CloseWindow aCloseWindow, ComponentDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public DialogDirectorySelect( ComponentDirectorySelector.CloseWindow aCloseWindow, List<DirectoryInfo> aDirectoryInfoRecentList )
             : base( null, new Rect( 10.0f, 10.0f, Screen.width / 2.0f, Screen.height * 2.0f / 3.0f ) )
 		{
-			viewDirectorySelector = new ComponentDirectorySelector( aCloseWindow, aViewDirectoryTree, aDirectoryInfo, aDirectoryInfoRecentList );
+			componentDirectorySelector = new ComponentDirectorySelector( aCloseWindow, aDirectoryInfoRecentList );
 		}
 		
         public override void OnGUI()
 		{
 			ResizeWindow();
 			rectWindow = GUI.Window( 2, rectWindow, Window, "Select Directory", GuiStyleSet.StyleWindow.window );
-			viewDirectorySelector.Rect = rectWindow;
+			componentDirectorySelector.Rect = rectWindow;
 		}
 
 		private void Window( int windowID )
         {
             ControlWindow();
-			viewDirectorySelector.OnGUI();
+			componentDirectorySelector.OnGUI();
 			//GUI.Label( new Rect( 0, 0, rectWindow.width, rectWindow.height ), new GUIContent( GUI.tooltip ), GuiStyleSet.StyleGeneral.tooltip );
 		}
 		

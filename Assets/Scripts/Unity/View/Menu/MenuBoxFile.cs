@@ -11,11 +11,11 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class MenuBoxFile : MenuBox
+	public class MenuBoxFile : AMenuBox
 	{
 		private List<string> descriptionMenuItemList;
 		
-		public MenuBoxFile( string aTitle, string aFilePathLanguage, DirectoryInfo aDirectoryInfo, MenuItemChangeDirectory.SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public MenuBoxFile( string aTitle, string aFilePathLanguage, MenuItemChangeDirectory.SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 			: base( aTitle )
 		{
 			descriptionMenuItemList = new List<string>();
@@ -23,7 +23,7 @@ namespace Unity.View
 			
 			foreach( string l in descriptionMenuItemList )
 			{
-				menuItemList.Add( new MenuItemChangeDirectory( l, aDirectoryInfo, aSetDirectoryInfo, aDirectoryInfoRecentList ) );
+				menuItemList.Add( new MenuItemChangeDirectory( l, aSetDirectoryInfo, aDirectoryInfoRecentList ) );
 			}
 		}
 		

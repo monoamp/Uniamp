@@ -17,17 +17,15 @@ namespace Unity.View
 	public class ComponentChangeDirectory : IView
 	{
 		private DialogDirectorySelect dialogDirectorySelector;
-		
-		private DirectoryInfo directoryInfo;
+
 		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
 		private SetDirectoryInfo setDirectoryInfo;
 		private List<DirectoryInfo> directoryInfoRecentList;
 
 		public Rect Rect{ get; set; }
 
-		public ComponentChangeDirectory( DirectoryInfo aDirectoryInfo, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public ComponentChangeDirectory( SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
-			directoryInfo = aDirectoryInfo;
 			setDirectoryInfo = aSetDirectoryInfo;
 			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}
@@ -73,13 +71,11 @@ namespace Unity.View
 
 			GUILayout.BeginHorizontal( GuiStyleSet.StyleFolder.background );
 			{
-				GUILayout.TextArea( directoryInfo.FullName, GuiStyleSet.StyleFolder.text, GUILayout.Width( Screen.width / 2.0f - lWidth ) );
+				GUILayout.TextArea( directoryInfoRecentList[0].FullName, GuiStyleSet.StyleFolder.text, GUILayout.Width( Screen.width / 2.0f - lWidth ) );
 				
 				if( GUILayout.Button( new GUIContent( "", "StyleFolder.ButtonFolder" ), GuiStyleSet.StyleFolder.buttonFolder ) == true )
 				{
-					ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( directoryInfo.Root, directoryInfo );
-					
-					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, lViewDirectoryTree, directoryInfo, directoryInfoRecentList );
+					dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectory, directoryInfoRecentList );
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -89,8 +85,7 @@ namespace Unity.View
 		{
 			if( aDirectoryInfo != null )
 			{
-				directoryInfo = aDirectoryInfo;
-				setDirectoryInfo( directoryInfo );
+				setDirectoryInfo( aDirectoryInfo );
 			}
 			
 			dialogDirectorySelector = null;

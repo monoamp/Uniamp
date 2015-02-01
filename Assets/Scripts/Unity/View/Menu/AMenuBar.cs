@@ -7,17 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using Monoamp.Boundary;
+
 namespace Unity.View
 {
-	public abstract class AMenu : IView
+	public abstract class AMenuBar : IView
 	{
-		protected readonly List<MenuBox> menuBoxList;
+		protected readonly List<AMenuBox> menuBoxList;
 		
 		public Rect Rect{ get; set; }
 
-		public AMenu()
+		public AMenuBar()
 		{
-			menuBoxList = new List<MenuBox>();
+			menuBoxList = new List<AMenuBox>();
 		}
 
 		public void Select()
@@ -25,6 +27,34 @@ namespace Unity.View
 
 		}
 		
+		protected Dictionary<string, string> ReadDictionaryLanguage( string aFilePathLanguage )
+		{
+			Dictionary<string, string> lDictionaryDescription = new Dictionary<string, string>();
+			
+			try
+			{
+				using( StreamReader u = new StreamReader( aFilePathLanguage ) )
+				{
+					for( string line = u.ReadLine(); line != null; line = u.ReadLine() )
+					{
+						if( line.IndexOf( "//" ) != 0 && line.Split( ':' ).Length == 2 )
+						{
+							string key = line.Split( ':' )[0];
+							string description = line.Split( ':' )[1];
+							
+							lDictionaryDescription.Add( key, description );
+						}
+					}
+				}
+			}
+			catch( Exception aExpection )
+			{
+				Logger.BreakDebug( "Exception:" + aExpection );
+			}
+			
+			return lDictionaryDescription;
+		}
+
 		public void Start()
 		{
 			
@@ -43,7 +73,7 @@ namespace Unity.View
 				float lY = GuiStyleSet.StyleMenu.bar.fixedHeight;
 				float lHeightItem = GuiStyleSet.StyleMenu.item.CalcSize( new GUIContent( "" ) ).y;
 
-				foreach( MenuBox l in menuBoxList )
+				foreach( AMenuBox l in menuBoxList )
 				{
 					float lWidthMax = l.GetWidth();
 					float lHeightBox = lHeightItem * l.GetCount() + menuBoxList.Count + GuiStyleSet.StyleMenu.window.padding.left + GuiStyleSet.StyleMenu.window.padding.right;
@@ -61,7 +91,7 @@ namespace Unity.View
 			}
 			GUILayout.EndHorizontal();
 
-			foreach( MenuBox l in menuBoxList )
+			foreach( AMenuBox l in menuBoxList )
 			{
 				l.OnGUI();
 			}

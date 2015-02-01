@@ -17,22 +17,21 @@ namespace Unity.View
 
 		private Vector2 positionScrollDirectory;
 
-		private DirectoryInfo directoryInfo;
+		private DirectoryInfo directoryInfoSelected;
 
 		public delegate void CloseWindow( DirectoryInfo aDirectoryInfo );
-		
 		private CloseWindow closeWindow;
 		
 		private List<DirectoryInfo> directoryInfoRecentList;
 
 		public Rect Rect{ get; set; }
 
-		public ComponentDirectorySelector( CloseWindow aCloseWindow, ComponentDirectoryTree aViewDirectoryTree, DirectoryInfo aDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
+		public ComponentDirectorySelector( CloseWindow aCloseWindow, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			closeWindow = aCloseWindow;
-			viewDirectoryTree = aViewDirectoryTree;
-			directoryInfo = aDirectoryInfo;
+			viewDirectoryTree = new ComponentDirectoryTree( aDirectoryInfoRecentList[0].Root, aDirectoryInfoRecentList[0] );
 			directoryInfoRecentList = aDirectoryInfoRecentList;
+			directoryInfoSelected = aDirectoryInfoRecentList[0];
 
 			int position = viewDirectoryTree.GetItemPositionDisplay() - 2;
 			
@@ -97,7 +96,7 @@ namespace Unity.View
 
 			if( viewDirectoryTree.DirectoryInfoSelected != lDirectoryInfo )
 			{
-				directoryInfo = viewDirectoryTree.DirectoryInfoSelected;
+				directoryInfoSelected = viewDirectoryTree.DirectoryInfoSelected;
 			}
 		}
 		
@@ -109,7 +108,7 @@ namespace Unity.View
 			{
 				foreach( DirectoryInfo l in directoryInfoRecentList )
 				{
-					if( l == directoryInfo )
+					if( l == directoryInfoSelected )
 					{
 						GUILayout.Toggle( true, new GUIContent( l.Name, l.FullName ), GuiStyleSet.StyleList.toggleLine );
 					}
@@ -119,8 +118,8 @@ namespace Unity.View
 							
 						if( lIsSeledted == true )
 						{
-							directoryInfo = l;
-							viewDirectoryTree.DirectoryInfoSelected = directoryInfo;
+							directoryInfoSelected = l;
+							viewDirectoryTree.DirectoryInfoSelected = directoryInfoSelected;
 						}
 					}
 				}
@@ -136,7 +135,7 @@ namespace Unity.View
 				
 				if( GUILayout.Button( new GUIContent( "OK", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
 				{
-					closeWindow( directoryInfo );
+					closeWindow( directoryInfoSelected );
 				}
 
 				if( GUILayout.Button( new GUIContent( "Cancel", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )

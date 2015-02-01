@@ -8,27 +8,27 @@ using System.Collections.Generic;
 
 namespace Unity.View
 {
-	public class MenuBox
+	public abstract class AMenuBox
 	{
 		public Rect rect;
 		
 		public readonly string title;
 
-		protected readonly List<IMenuItem> menuItemList;
+		protected readonly List<AMenuItem> menuItemList;
 
 		private bool isShow;
 
-		public MenuBox( string aTitle )
+		public AMenuBox( string aTitle )
 		{
 			title = aTitle;
-			menuItemList = new List<IMenuItem>();
+			menuItemList = new List<AMenuItem>();
 		}
 
 		public float GetWidth()
 		{
 			float lWidthMax = 0.0f;
 
-			foreach( IMenuItem l in menuItemList )
+			foreach( AMenuItem l in menuItemList )
 			{
 				if( l.GetWidth() > lWidthMax )
 				{
@@ -67,7 +67,7 @@ namespace Unity.View
 				}
 			}
 			
-			foreach( IMenuItem l in menuItemList )
+			foreach( AMenuItem l in menuItemList )
 			{
 				l.OnGUI();
 			}
@@ -77,9 +77,9 @@ namespace Unity.View
 		{
 			GUILayout.BeginVertical();
 			{
-				foreach( IMenuItem l in menuItemList )
+				foreach( AMenuItem l in menuItemList )
 				{
-					if( GUILayout.Button( new GUIContent( l.Title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
+					if( GUILayout.Button( new GUIContent( l.title, "StyleMenu.Item" ), GuiStyleSet.StyleMenu.item ) == true )
 					{
 						l.Select();
 						
