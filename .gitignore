@@ -7,6 +7,7 @@ Assets/Scripts/Unity/View/Application/ApplicationLoopTool.cs
 Assets/Scripts/Unity/View/Application/ApplicationLoopTool.cs.meta
 Assets/StreamingAssets/Config/*
 Assets/StreamingAssets/Sound/Music/*
+Assets/UnityTestTools/*
 Library
 Temp
 *.csproj
