@@ -1,10 +1,10 @@
 .DS_Store
 Assets/Scenes/LoopTool.unity
 Assets/Scenes/LoopTool.unity.meta
-Assets/Scripts/Unity/Scene/SceneLoopTool.cs
-Assets/Scripts/Unity/Scene/SceneLoopTool.cs.meta
 Assets/Scripts/Unity/View/Application/ApplicationLoopTool.cs
 Assets/Scripts/Unity/View/Application/ApplicationLoopTool.cs.meta
+Assets/Scripts/Unity/View/Scene/SceneLoopTool.cs
+Assets/Scripts/Unity/View/Scene/SceneLoopTool.cs.meta
 Assets/StreamingAssets/Config/*
 Assets/StreamingAssets/Sound/Music/*
 Assets/UnityTestTools/*
