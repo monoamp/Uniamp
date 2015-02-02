@@ -7,6 +7,7 @@ namespace Unity.GuiStyle
 		public GUIStyle none;
 		public GUIStyle label;
 		public GUIStyle labelCenter;
+		public GUIStyle labelCaption;
 		public GUIStyle button;
 		public GUIStyle toggleCheck;
 		public GUIStyle toggleRadio;

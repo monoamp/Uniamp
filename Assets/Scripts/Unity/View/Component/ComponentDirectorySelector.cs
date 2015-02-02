@@ -76,7 +76,7 @@ namespace Unity.View
 			{
 				GUILayout.TextArea( viewDirectoryTree.DirectoryInfoSelected.FullName, GuiStyleSet.StyleFolder.barAddress );
 				DisplayDirectoryTree();
-				GUILayout.Label( new GUIContent( "", "StyleGeneral.PartitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
+				//GUILayout.Label( new GUIContent( "", "StyleGeneral.PartitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
 				DisplayRecentDirectories();
 				GUILayout.FlexibleSpace();
 				DisplayButton();
@@ -102,7 +102,7 @@ namespace Unity.View
 		
 		private void DisplayRecentDirectories()
 		{
-			GUILayout.Label( "Open Recent", GuiStyleSet.StyleGeneral.label );
+			GUILayout.Label( "Open Recent", GuiStyleSet.StyleGeneral.labelCaption );
 
 			GUILayout.BeginVertical();
 			{
