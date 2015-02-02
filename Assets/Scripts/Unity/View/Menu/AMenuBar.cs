@@ -22,7 +22,7 @@ namespace Unity.View
 			menuBoxList = new List<AMenuBox>();
 		}
 
-		public void Select()
+		public void Awake()
 		{
 
 		}

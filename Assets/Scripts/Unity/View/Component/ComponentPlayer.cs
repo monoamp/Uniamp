@@ -75,7 +75,7 @@ namespace Unity.View
 			player.Volume = lVolume;
 		}
 
-		public void Select()
+		public void Awake()
 		{
 
 		}
@@ -234,6 +234,16 @@ namespace Unity.View
 		public string GetFilePath()
 		{
 			return player.GetFilePath();
+		}
+		
+		public bool GetIsLoop()
+		{
+			return player.IsLoop;
+		}
+
+		public void SetIsLoop( bool aIsLoop )
+		{
+			player.IsLoop = aIsLoop;
 		}
 	}
 }

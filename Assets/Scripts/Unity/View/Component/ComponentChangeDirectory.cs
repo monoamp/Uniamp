@@ -30,7 +30,7 @@ namespace Unity.View
 			directoryInfoRecentList = aDirectoryInfoRecentList;
 		}
 		
-		public void Select()
+		public void Awake()
 		{
 			
 		}

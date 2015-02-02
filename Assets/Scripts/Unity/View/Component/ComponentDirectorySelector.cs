@@ -40,7 +40,7 @@ namespace Unity.View
 			positionScrollDirectory.y = ( float )position * lHeightLine;
 		}
 
-		public void Select()
+		public void Awake()
 		{
 			
 		}

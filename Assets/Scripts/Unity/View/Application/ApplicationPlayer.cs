@@ -20,7 +20,7 @@ namespace Unity.View.Player
 		
 		public Rect Rect{ get; set; }
 
-		private List<DirectoryInfo> directoryInfoRecentList;
+		public readonly List<DirectoryInfo> directoryInfoRecentList;
 
 		public ApplicationPlayer( DirectoryInfo aDirectoryInfo )
 		{
@@ -33,7 +33,7 @@ namespace Unity.View.Player
 				directoryInfoRecentList.Add( aDirectoryInfo );
 			}
 
-			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", SetInput, directoryInfoRecentList );
+			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", this );
 			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
 			componentChangeDirectory = new ComponentChangeDirectory( SetDirectoryInfo, directoryInfoRecentList );
@@ -72,7 +72,7 @@ namespace Unity.View.Player
 			}
 		}
 
-		private void SetInput( DirectoryInfo aDirectoryInfo )
+		public void SetInput( DirectoryInfo aDirectoryInfo )
 		{
 			directoryInfoRecentList.Insert( 0, aDirectoryInfo );
 
@@ -137,9 +137,9 @@ namespace Unity.View.Player
 			componentPlaylist.ChangeMusicNext();
 		}
 		
-		public void Select()
+		public void Awake()
 		{
-			componentPlayer.Select();
+			componentPlayer.Awake();
 		}
 
 		public void Start()
@@ -180,6 +180,16 @@ namespace Unity.View.Player
 		public void OnApplicationQuit()
 		{
 			
+		}
+		
+		public bool GetIsLoop()
+		{
+			return componentPlayer.GetIsLoop();
+		}
+		
+		public void SetIsLoop( bool aIsLoop )
+		{
+			componentPlayer.SetIsLoop( aIsLoop );
 		}
 	}
 }

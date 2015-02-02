@@ -4,7 +4,8 @@ namespace Unity.View
 {
     public interface IView
     {
-        Rect Rect{ get; set; }
+		Rect Rect{ get; set; }
+		void Awake();
         void Start();
         void Update();
         void OnGUI();

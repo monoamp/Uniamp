@@ -110,7 +110,7 @@ namespace Unity.View
 			return 1;
 		}
 
-		public void Select()
+		public void Awake()
 		{
 			
 		}
