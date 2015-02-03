@@ -14,7 +14,7 @@ namespace Unity.View
 		private ComponentDirectorySelector componentDirectorySelector;
 
 		public DialogDirectorySelect( ComponentDirectorySelector.CloseWindow aCloseWindow, List<DirectoryInfo> aDirectoryInfoRecentList )
-            : base( null, new Rect( 10.0f, 10.0f, Screen.width / 2.0f, Screen.height * 2.0f / 3.0f ) )
+            : base( null, new Rect( 10.0f, 10.0f, Screen.width / 2.0f, Screen.height - 20.0f ) )
 		{
 			componentDirectorySelector = new ComponentDirectorySelector( aCloseWindow, aDirectoryInfoRecentList );
 		}

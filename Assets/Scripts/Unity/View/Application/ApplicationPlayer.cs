@@ -74,6 +74,15 @@ namespace Unity.View.Player
 
 		public void SetInput( DirectoryInfo aDirectoryInfo )
 		{
+			for( int i = directoryInfoRecentList.Count - 1; i >= 0; i-- )
+			{
+				if( directoryInfoRecentList[i].FullName == aDirectoryInfo.FullName )
+				{
+					directoryInfoRecentList.RemoveAt( i );
+					i--;
+				}
+			}
+
 			directoryInfoRecentList.Insert( 0, aDirectoryInfo );
 
 			if( directoryInfoRecentList.Count > 5 )
