@@ -30,7 +30,6 @@ namespace Unity.View
         {
             ControlWindow();
 			viewConfigLoopTool.OnGUI();
-			//GUI.Label( new Rect( 0, 0, rectWindow.width, rectWindow.height ), new GUIContent( GUI.tooltip ), GuiStyleSet.StyleGeneral.tooltip );
 		}
 		
         public override void Awake()

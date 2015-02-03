@@ -16,7 +16,7 @@ namespace Unity.View.Player
 		private MenuBar menu;
 		private ComponentPlayer componentPlayer;
 		private ComponentPlaylist componentPlaylist;
-		private ComponentChangeDirectory componentChangeDirectory;
+		private ComponentDirectoryBar componentDirectoryBar;
 		
 		public Rect Rect{ get; set; }
 
@@ -36,7 +36,7 @@ namespace Unity.View.Player
 			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", this );
 			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
-			componentChangeDirectory = new ComponentChangeDirectory( SetDirectoryInfo, directoryInfoRecentList );
+			componentDirectoryBar = new ComponentDirectoryBar( SetDirectoryInfo, directoryInfoRecentList );
 
 			Rect = new Rect( 0.0f, 0.0f, 0.0f, 0.0f );
 		}
@@ -160,7 +160,7 @@ namespace Unity.View.Player
 			{
 				componentPlayer.OnGUI();
 				componentPlaylist.OnGUI();
-				componentChangeDirectory.OnGUI();
+				componentDirectoryBar.OnGUI();
 			}
 			GUILayout.EndVertical();
 		}

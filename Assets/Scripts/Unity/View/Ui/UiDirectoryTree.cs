@@ -11,13 +11,13 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class ComponentDirectoryTree : IView
+	public class UiDirectoryTree : IView
 	{
 		private DirectoryInfo directoryInfoSelf;
 		//private DirectoryInfo directoryInfoSelected;
 
-		private readonly ComponentDirectoryTree root;
-		private readonly List<ComponentDirectoryTree> childList;
+		private readonly UiDirectoryTree root;
+		private readonly List<UiDirectoryTree> childList;
 
 		private bool isDisplayChildren;
 		private bool haveChildren;
@@ -26,25 +26,25 @@ namespace Unity.View
 		public Rect Rect{ get; set; }
 
 		// ルート用のコンストラクタ.
-		public ComponentDirectoryTree( DirectoryInfo aDirectoryInfo, DirectoryInfo aDirectoryInfoCurrent )
+		public UiDirectoryTree( DirectoryInfo aDirectoryInfo, DirectoryInfo aDirectoryInfoCurrent )
 		{
 			isDisplayChildren = false;
 			haveChildren = false;
 			directoryInfoSelf = aDirectoryInfo;
 			DirectoryInfoSelected = aDirectoryInfoCurrent;
 			root = this;
-			childList = new List<ComponentDirectoryTree>();
+			childList = new List<UiDirectoryTree>();
 
 			LoadChildren();
 		}
 
-		public ComponentDirectoryTree( ComponentDirectoryTree aRoot, DirectoryInfo aDirectoryInfo )
+		private UiDirectoryTree( UiDirectoryTree aRoot, DirectoryInfo aDirectoryInfo )
 		{
 			isDisplayChildren = false;
 			haveChildren = false;
 			directoryInfoSelf = aDirectoryInfo;
 			root = aRoot;
-			childList = new List<ComponentDirectoryTree>();
+			childList = new List<UiDirectoryTree>();
 
 			LoadChildren();
 		}
@@ -65,7 +65,7 @@ namespace Unity.View
 						
 						for( int i = 0; i < lDirectoryInfoArray.Length; i++ )
 						{
-							ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( root, lDirectoryInfoArray[i] );
+							UiDirectoryTree lViewDirectoryTree = new UiDirectoryTree( root, lDirectoryInfoArray[i] );
 							
 							childList.Add( lViewDirectoryTree );
 						}
@@ -154,7 +154,7 @@ namespace Unity.View
 
 						for( int i = 0; i < lDirectoryInfoArray.Length; i++ )
 						{
-							ComponentDirectoryTree lViewDirectoryTree = new ComponentDirectoryTree( root, lDirectoryInfoArray[i] );
+							UiDirectoryTree lViewDirectoryTree = new UiDirectoryTree( root, lDirectoryInfoArray[i] );
 							
 							childList.Add( lViewDirectoryTree );
 						}

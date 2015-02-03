@@ -15,13 +15,14 @@ namespace Unity.View
 
 		public delegate void SetDirectoryInfo( DirectoryInfo aDirectoryInfo );
 		private SetDirectoryInfo setDirectoryInfo;
-		private List<DirectoryInfo> directoryInfoRecentList;
+		private bool isShow;
 
 		public MenuItemChangeDirectory( string aTitle, SetDirectoryInfo aSetDirectoryInfo, List<DirectoryInfo> aDirectoryInfoRecentList )
 			: base( aTitle )
 		{
 			setDirectoryInfo = aSetDirectoryInfo;
-			directoryInfoRecentList = aDirectoryInfoRecentList;
+			dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, aDirectoryInfoRecentList );
+			isShow = false;
 		}
 		
 		private void ChangeDirectoryInput( DirectoryInfo aDirectoryInfo )
@@ -31,17 +32,18 @@ namespace Unity.View
 				setDirectoryInfo( aDirectoryInfo );
 			}
 			
-			dialogDirectorySelector = null;
+			isShow = false;
 		}
-
+		
 		public override void Select()
 		{
-			dialogDirectorySelector = new DialogDirectorySelect( ChangeDirectoryInput, directoryInfoRecentList );
+			isShow = true;
+			dialogDirectorySelector.Awake();
 		}
 
 		public override void OnGUI()
 		{
-			if( dialogDirectorySelector != null )
+			if( isShow == true )
 			{
 				dialogDirectorySelector.OnGUI();
 			}

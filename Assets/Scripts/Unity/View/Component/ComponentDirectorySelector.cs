@@ -13,7 +13,7 @@ namespace Unity.View
 {
 	public class ComponentDirectorySelector : IView
 	{
-		private ComponentDirectoryTree viewDirectoryTree;
+		private UiDirectoryTree uiDirectoryTree;
 
 		private Vector2 positionScrollDirectory;
 
@@ -29,20 +29,16 @@ namespace Unity.View
 		public ComponentDirectorySelector( CloseWindow aCloseWindow, List<DirectoryInfo> aDirectoryInfoRecentList )
 		{
 			closeWindow = aCloseWindow;
-			viewDirectoryTree = new ComponentDirectoryTree( aDirectoryInfoRecentList[0].Root, aDirectoryInfoRecentList[0] );
 			directoryInfoRecentList = aDirectoryInfoRecentList;
-			directoryInfoSelected = aDirectoryInfoRecentList[0];
-
-			int position = viewDirectoryTree.GetItemPositionDisplay() - 2;
-			
-			float lHeightLine = GuiStyleSet.StyleList.toggleLine.CalcSize( new GUIContent( "" ) ).y;
-
-			positionScrollDirectory.y = ( float )position * lHeightLine;
 		}
 
 		public void Awake()
 		{
-			
+			uiDirectoryTree = new UiDirectoryTree( directoryInfoRecentList[0].Root, directoryInfoRecentList[0] );
+			directoryInfoSelected = directoryInfoRecentList[0];
+			int position = uiDirectoryTree.GetItemPositionDisplay() - 2;
+			float lHeightLine = GuiStyleSet.StyleList.toggleLine.CalcSize( new GUIContent( "" ) ).y;
+			positionScrollDirectory.y = ( float )position * lHeightLine;
 		}
 		
 		public void Start()
@@ -74,7 +70,7 @@ namespace Unity.View
 		{
 			GUILayout.BeginVertical();
 			{
-				GUILayout.TextArea( viewDirectoryTree.DirectoryInfoSelected.FullName, GuiStyleSet.StyleFolder.barAddress );
+				GUILayout.TextArea( uiDirectoryTree.DirectoryInfoSelected.FullName, GuiStyleSet.StyleFolder.barAddress );
 				DisplayDirectoryTree();
 				//GUILayout.Label( new GUIContent( "", "StyleGeneral.PartitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
 				DisplayRecentDirectories();
@@ -86,17 +82,17 @@ namespace Unity.View
 
 		private void DisplayDirectoryTree()
 		{
-			DirectoryInfo lDirectoryInfo = viewDirectoryTree.DirectoryInfoSelected;
+			DirectoryInfo lDirectoryInfo = uiDirectoryTree.DirectoryInfoSelected;
 
 			positionScrollDirectory = GUILayout.BeginScrollView( positionScrollDirectory, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar );
 			{
-				viewDirectoryTree.OnGUI();
+				uiDirectoryTree.OnGUI();
 			}
 			GUILayout.EndScrollView();
 
-			if( viewDirectoryTree.DirectoryInfoSelected != lDirectoryInfo )
+			if( uiDirectoryTree.DirectoryInfoSelected != lDirectoryInfo )
 			{
-				directoryInfoSelected = viewDirectoryTree.DirectoryInfoSelected;
+				directoryInfoSelected = uiDirectoryTree.DirectoryInfoSelected;
 			}
 		}
 		
@@ -119,7 +115,7 @@ namespace Unity.View
 						if( lIsSeledted == true )
 						{
 							directoryInfoSelected = l;
-							viewDirectoryTree.DirectoryInfoSelected = directoryInfoSelected;
+							uiDirectoryTree.DirectoryInfoSelected = directoryInfoSelected;
 						}
 					}
 				}

@@ -21,6 +21,7 @@ namespace Unity.View.Player
 			Dictionary<string, string> lDictionaryDescription = ReadDictionaryLanguage( aFilePathLanguage );
 			dialogSettings = new DialogSettings( ChangeSettings, lDictionaryDescription );
 			applicationPlayer = aApplicationPlayer;
+			isShow = false;
 		}
 		
 		private void ChangeSettings( int a )
