@@ -1,6 +1,7 @@
 using System;
 
 using Monoamp.Common.system.io;
+
 using Monoamp.Boundary;
 
 namespace Monoamp.Common.Data.Standard.Riff.Wave
@@ -18,8 +19,8 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			name = aByteArray.ReadUInt32();
 			data = aByteArray.ReadString( ( int )Size - 4 );
 			
-			Logger.Debug( "    Name:" + name );
-			Logger.Debug( "    Data:" + data );
+			Logger.BreakDebug( "    Name:" + name );
+			Logger.BreakDebug( "    Data:" + data );
 
 			informationList.Add( "    Name:" + name );
 			informationList.Add( "    Data:" + data );

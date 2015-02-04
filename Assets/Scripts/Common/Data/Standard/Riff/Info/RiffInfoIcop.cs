@@ -2,6 +2,8 @@ using System;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff
 {
 	public class RiffInfoIcop : RiffChunk
@@ -16,6 +18,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			corporation = aByteArray.ReadString( ( int )Size );
 
 			informationList.Add( "Corporation:" + corporation );
+			Logger.BreakDebug( "Corporation:" + corporation );
 		}
 		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )

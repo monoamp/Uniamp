@@ -2,6 +2,8 @@ using System;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff
 {
 	public class RiffInfoIcmt : RiffChunk
@@ -16,6 +18,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			comment = aByteArray.ReadString( ( int )Size );
 
 			informationList.Add( "Comment:" + comment );
+			Logger.BreakDebug( "Comment:" + comment );
 		}
 		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )

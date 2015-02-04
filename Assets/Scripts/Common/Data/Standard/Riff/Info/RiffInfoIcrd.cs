@@ -2,6 +2,8 @@ using System;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff
 {
 	public class RiffInfoIcrd : RiffChunk
@@ -16,6 +18,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			creationDate = aByteArray.ReadString( ( int )Size );
 
 			informationList.Add( "Creation Date:" + creationDate );
+			Logger.BreakDebug( "Creation Date:" + creationDate );
 		}
 		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )

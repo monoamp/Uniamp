@@ -2,6 +2,8 @@ using System;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff.Wave
 {
 	public class RiffWaveFmt_ : RiffChunk
@@ -32,7 +34,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			informationList.Add( "Block Align:" + blockAlign );
 			informationList.Add( "Bits Per Sample:" + bitsPerSample );
 			
-			Monoamp.Boundary.Logger.Debug( "Size" + aSize );
+			Logger.BreakDebug( "Size" + aSize );
 		}
 
 		public RiffWaveFmt_( FormatTag aTag, UInt16 aChannels, UInt32 aSamplesPerSec, UInt32 aAverageBytesPerSec, UInt16 aBlockAlign, UInt16 aBitsPerSample, RiffChunkList aParent )

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff
 {
 	public class RiffInfoIsng : RiffChunk
@@ -17,6 +19,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			unknown = aByteArray.ReadString( ( int )Size );
 
 			informationList.Add( "Unknown:" + unknown );
+			Logger.BreakDebug( "Unknown:" + unknown );
 		}
 		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )

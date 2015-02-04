@@ -4,6 +4,8 @@ using System.IO;
 
 using Monoamp.Common.system.io;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Standard.Riff.Wave
 {
 	public class RiffWaveRiff : RiffChunkList
