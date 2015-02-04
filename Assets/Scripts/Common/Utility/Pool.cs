@@ -29,7 +29,7 @@ namespace Monoamp.Common.Utility
 				{
 					try
 					{
-						using( FileStream u = new FileStream( aPathFile, FileMode.Open, FileAccess.Read ) )
+						using( FileStream u = new FileStream( aPathFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
 						{
 							object l = constructor( u );
 

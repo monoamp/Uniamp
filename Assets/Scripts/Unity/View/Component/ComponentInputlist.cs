@@ -12,6 +12,8 @@ using Monoamp.Common.Component.Sound;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
 
+using Monoamp.Boundary;
+
 namespace Unity.View
 {
 	public class DataLoopInputlist
@@ -39,6 +41,7 @@ namespace Unity.View
 	public class ComponentInputlist : IView
     {
 		public DataLoopInputlist data;
+		private Dictionary<string, IMusic> musicDictionary;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 		private string[] pathArray;
@@ -50,6 +53,7 @@ namespace Unity.View
 		public ComponentInputlist( DirectoryInfo aDirectoryInfo, DataLoopInputlist.PlayMusic aPlayMusic, DataLoopInputlist.GetPlayingMusic aGetPlayingMusic )
 		{
 			data = new DataLoopInputlist( aDirectoryInfo, aPlayMusic, aGetPlayingMusic );
+			musicDictionary = new Dictionary<string, IMusic>();
 
 			UpdateFileList();
 			
@@ -115,6 +119,8 @@ namespace Unity.View
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
 						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.MinWidth( 300.0f ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
 						GUILayout.Label( new GUIContent( "Progress", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 140.0f ) );
 					}
 					GUILayout.EndHorizontal();
@@ -149,6 +155,8 @@ namespace Unity.View
 									}
 								}
 								
+								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+								GUILayout.TextField( musicDictionary[data.filePathList[i]].Length.MMSS, GuiStyleSet.StyleTable.textRow );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 								if( data.isSelectedList[i] == true )
@@ -214,11 +222,31 @@ namespace Unity.View
 
 				for( int i = 0; i < pathArray.Length; i++ )
 				{
-					string extentionLower = Path.GetExtension( pathArray[i] ).ToLower();
+					string lPath = pathArray[i];
+					Logger.BreakDebug( "Input:" + lPath );
 
-					if( extentionLower == ".wav" || extentionLower == ".aif" || extentionLower == ".mp3" || extentionLower == ".ogg" )
-                    {
-						data.filePathList.Add( pathArray[i] );
+					if( musicDictionary.ContainsKey( lPath ) == false )
+					{
+						IMusic lMusic = null;
+						
+						try
+						{
+							lMusic = LoaderCollection.LoadMusic( lPath );
+						}
+						catch( Exception aExpection )
+						{
+							Logger.BreakError( "LoopInputlist Exception:" + aExpection.ToString() + ":" + lPath );
+						}
+						
+						if( lMusic != null )
+						{
+							musicDictionary.Add( lPath, lMusic );
+						}
+					}
+					
+					if( musicDictionary.ContainsKey( lPath ) == true )
+					{
+						data.filePathList.Add( lPath );
 						data.loopSetList.Add( new LoopInformation( 44100, 0, 0 ) );
 						data.isSelectedList.Add( false );
 						data.progressList.Add( 0.0d );

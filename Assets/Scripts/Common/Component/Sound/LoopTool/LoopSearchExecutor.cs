@@ -21,7 +21,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 		static LoopSearchExecutor()
 		{
-			IsCutLast = true;
+			IsCutLast = false;
 		}
 
 		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, List<LoopInformation> aLoopInformation, int aIndex )
@@ -84,6 +84,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			if( IsCutLast == true )
 			{
 				int lLength = ( int )( lLoopList[0].end.sample + 1 ) * waveform.format.channels * ( waveform.format.sampleBits / 8 );
+				Logger.BreakError( "End:" + lLoopList[0].end.sample );
 
 				lDataArrayWrite = new Byte[lLength];
 
