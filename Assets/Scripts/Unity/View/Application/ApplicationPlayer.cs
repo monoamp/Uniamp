@@ -79,7 +79,6 @@ namespace Unity.View.Player
 				if( directoryInfoRecentList[i].FullName == aDirectoryInfo.FullName )
 				{
 					directoryInfoRecentList.RemoveAt( i );
-					i--;
 				}
 			}
 
