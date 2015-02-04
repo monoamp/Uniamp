@@ -4,10 +4,14 @@ using Unity.Data;
 using Unity.GuiStyle;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
 using Monoamp.Common.Component.Sound.LoopTool;
+using Monoamp.Common.Struct;
+
+using Monoamp.Boundary;
 
 namespace Unity.View
 {
@@ -76,7 +80,15 @@ namespace Unity.View
 					{
 						isOnSearch = true;
 						thread = new Thread( Execute );
-						thread.Start();
+
+						try
+						{
+							thread.Start();
+						}
+						catch( Exception aExpection )
+						{
+							Logger.BreakError( aExpection.ToString() + ":LoopTool Exception" );
+						}
 					}
 				}
 				else
@@ -100,8 +112,10 @@ namespace Unity.View
 				if( dataLoopInputlist.isSelectedList[i] == true )
 				{
 					Debug.Log( "Search:" + dataLoopInputlist.filePathList[i] );
-					
-					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] ), dataLoopInputlist.progressList, i );
+
+					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
+					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] ), dataLoopInputlist.progressList, lLoopInformationList, i );
+					dataLoopPlaylist.loopPointListList.Add( lLoopInformationList );
 					
 					dataLoopInputlist.isSelectedList[i] = false;
 				}

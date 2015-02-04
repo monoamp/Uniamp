@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Collections.Generic;
 
 using Monoamp.Common.Data.Application;
 using Monoamp.Common.Data.Application.Waveform;
@@ -24,7 +24,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			IsCutLast = true;
 		}
 
-		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, int aIndex )
+		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, List<LoopInformation> aLoopInformation, int aIndex )
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
 
@@ -47,15 +47,20 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			}
 			catch( Exception aExpection )
 			{
-				Logger.BreakDebug( aExpection.ToString() + ":LoopTool Exception" );
+				Logger.BreakError( aExpection.ToString() + ":LoopTool Exception" );
 			}
 			
 			Logger.BreakDebug( "Exception" );
-			//for( int i = 0; i < lLoopList.Count; i++ )
-			if ( lLoopList.Count >= 1 )
+
+			for( int i = 0; i < lLoopList.Count; i++ )
 			{
 				//lRiffChunkListWave.AddCuePoint( ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
 				//lRiffChunkListWave.AddSampleLoop( ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
+				aLoopInformation.Add( lLoopList[i] );
+			}
+
+			if ( lLoopList.Count >= 1 )
+			{
 				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
 				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
 			}
@@ -102,14 +107,14 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			
 			try
 			{
-				using( FileStream u = new FileStream( aFilePathOutput, FileMode.Create, FileAccess.Write ) )
+				using( FileStream u = new FileStream( aFilePathOutput, FileMode.Create, FileAccess.Write, FileShare.Read ) )
 				{
 					u.Write( lMemoryStreamWrite.GetBuffer(), 0, ( int )lMemoryStreamWrite.Length );
 				}
 			}
 			catch( Exception aExpection )
 			{
-				Logger.BreakDebug( "Write Exception" + aExpection );
+				Logger.BreakError( "Write Exception:" + aExpection );
 			}
 		}
 		
