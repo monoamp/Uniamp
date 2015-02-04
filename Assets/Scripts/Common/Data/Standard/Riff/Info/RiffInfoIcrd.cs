@@ -17,10 +17,10 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 			informationList.Add( "Creation Date:" + creationDate );
 		}
-
+		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
 		{
 			aByteArray.WriteString( creationDate );
-		}
+		}*/
 	}
 }

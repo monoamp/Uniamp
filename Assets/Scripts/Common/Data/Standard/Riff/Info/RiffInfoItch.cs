@@ -17,10 +17,10 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 			informationList.Add( "Technician:" + technician );
 		}
-
+		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
 		{
 			aByteArray.WriteString( technician );
-		}
+		}*/
 	}
 }

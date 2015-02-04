@@ -18,10 +18,10 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 			informationList.Add( "Name:" + name );
 		}
-
+		/*
 		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
 		{
 			aByteArray.WriteString( name );
-		}
+		}*/
 	}
 }

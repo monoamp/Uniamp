@@ -163,7 +163,7 @@ namespace Unity.View
 								{
 									if( data.progressList[i] > 0.0f )
 									{
-									GUILayout.HorizontalScrollbar( 0.0f, ( float )data.progressList[i], 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
+										GUILayout.HorizontalScrollbar( 0.0f, ( float )data.progressList[i], 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
 									}
 									else
 									{

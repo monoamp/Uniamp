@@ -123,29 +123,23 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 		{
 			Logger.BreakDebug( "AddCuePoint" );
 
-			RiffWaveCue_ cue_Chunk = ( RiffWaveCue_ )lRiffWaveRiff.GetChunk( RiffWaveCue_.ID );
+			RiffWaveCue_ lRiffWaveCue_ = ( RiffWaveCue_ )lRiffWaveRiff.GetChunk( RiffWaveCue_.ID );
 
-			if( cue_Chunk == null )
+			if( lRiffWaveCue_ == null )
 			{
 				List<CuePoint> lCuePointList = new List<CuePoint>();
-				
 				lCuePointList.Add( new CuePoint( 1, ( UInt32 )aStart, "data", 0, 0, ( UInt32 )aStart ) );
 				lCuePointList.Add( new CuePoint( 2, ( UInt32 )aEnd, "data", 0, 0, ( UInt32 )aEnd ) );
-				
-				RiffWaveCue_ lCue_Body = new RiffWaveCue_( lCuePointList );
-
-				lRiffWaveRiff.AddChunk( lCue_Body );
-				cue_Chunk = lCue_Body;
+				lRiffWaveCue_ = new RiffWaveCue_( lCuePointList );
+				lRiffWaveRiff.AddChunk( lRiffWaveCue_ );
 			}
 			else
 			{
-				List<CuePoint> lCuePointList = cue_Chunk.cuePoints;
-				
-				lCuePointList.Add( new CuePoint( cue_Chunk.points + 1, ( UInt32 )aStart, "data", 0, 0, ( UInt32 )aStart ) );
-				lCuePointList.Add( new CuePoint( cue_Chunk.points + 2, ( UInt32 )aEnd, "data", 0, 0, ( UInt32 )aEnd ) );
-
-				RiffWaveCue_ lCue_Body = new RiffWaveCue_( lCuePointList );
-				lRiffWaveRiff.OverrideChunk( lCue_Body );
+				List<CuePoint> lCuePointList = lRiffWaveCue_.cuePoints;
+				lCuePointList.Add( new CuePoint( lRiffWaveCue_.points + 1, ( UInt32 )aStart, "data", 0, 0, ( UInt32 )aStart ) );
+				lCuePointList.Add( new CuePoint( lRiffWaveCue_.points + 2, ( UInt32 )aEnd, "data", 0, 0, ( UInt32 )aEnd ) );
+				lRiffWaveCue_ = new RiffWaveCue_( lCuePointList );
+				lRiffWaveRiff.OverrideChunk( lRiffWaveCue_ );
 			}
 		}
 
@@ -153,25 +147,20 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 		{
 			Logger.BreakDebug( "AddSampleLoop" );
 
-			RiffWaveSmpl smplChunk = ( RiffWaveSmpl )lRiffWaveRiff.GetChunk( RiffWaveSmpl.ID );
+			RiffWaveSmpl lRiffWaveSmpl = ( RiffWaveSmpl )lRiffWaveRiff.GetChunk( RiffWaveSmpl.ID );
 
-			if( smplChunk == null )
+			if( lRiffWaveSmpl == null )
 			{
 				List<SampleLoop> lSampleLoopList = new List<SampleLoop>();
-				
 				lSampleLoopList.Add( new SampleLoop( 0, 0, ( UInt32 )aStart, ( UInt32 )aEnd, 0, 0 ) );
-				
-				RiffWaveSmpl lChunkSmpl = new RiffWaveSmpl( 0, 0, 0, 60, 0, 0, 0, 1, 0, lSampleLoopList );
-				lRiffWaveRiff.AddChunk( lChunkSmpl );
-				smplChunk = lChunkSmpl;
+				lRiffWaveSmpl = new RiffWaveSmpl( 0, 0, 0, 60, 0, 0, 0, 1, 0, lSampleLoopList );
+				lRiffWaveRiff.AddChunk( lRiffWaveSmpl );
 			}
 			else
 			{
-				List<SampleLoop> lSmplLoopList = smplChunk.sampleLoopList;
-				
+				List<SampleLoop> lSmplLoopList = lRiffWaveSmpl.sampleLoopList;
 				lSmplLoopList.Add( new SampleLoop( 0, 0, ( UInt32 )aStart, ( UInt32 )aEnd, 0, 0 ) );
-				
-				lRiffWaveRiff.OverrideChunk( new RiffWaveSmpl( smplChunk, lSmplLoopList ) );
+				lRiffWaveRiff.OverrideChunk( new RiffWaveSmpl( lRiffWaveSmpl, lSmplLoopList ) );
 			}
 		}
 		
