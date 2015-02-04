@@ -9,22 +9,22 @@ using System.IO;
 
 namespace Unity.View
 {
-	public class ComponentSettings : IView
+	public class ComponentSettingsLoop : IView
 	{
 		public delegate void CloseWindow( int aConfig );
 		private CloseWindow closeWindow;
-		
+        
 		private string description;
         private string[] captions;
         private int grid;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentSettings( CloseWindow aCloseWindow, Dictionary<string, string> aLanguage )
+		public ComponentSettingsLoop( CloseWindow aCloseWindow, Dictionary<string, string> aLanguage )
 		{
 			closeWindow = aCloseWindow;
-			
-			description = aLanguage["LOOP"];
+            
+			description = aLanguage["CUT"];
 			captions = new string[2] { aLanguage["ON"], aLanguage["OFF"] };
             grid = 0;
 		}

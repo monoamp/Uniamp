@@ -7,7 +7,7 @@ using Monoamp.Common.Struct;
 
 namespace Monoamp.Common.Data.Application.Waveform
 {
-	public class FormatWaweform
+	public struct FormatWaweform
 	{
 		public readonly int channels;
 		public readonly int samples;

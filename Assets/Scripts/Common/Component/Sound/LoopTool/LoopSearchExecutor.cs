@@ -13,7 +13,7 @@ using Monoamp.Common.Utility;
 
 using Monoamp.Boundary;
 
-namespace Curan.Common.ApplicationComponent.Sound.LoopTool
+namespace Monoamp.Common.Component.Sound.LoopTool
 {
 	public static class LoopSearchExecutor
 	{
@@ -21,7 +21,7 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 
 		static LoopSearchExecutor()
 		{
-			IsCutLast = false;
+			IsCutLast = true;
 		}
 
 		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, int aIndex )
@@ -78,9 +78,11 @@ namespace Curan.Common.ApplicationComponent.Sound.LoopTool
 
 			if( IsCutLast == true )
 			{
-				lDataArrayWrite = new Byte[( ( int )lLoopList[0].end.sample + 1 ) * 4];
+				int lLength = ( int )( lLoopList[0].end.sample + 1 ) * waveform.format.channels * ( waveform.format.sampleBits / 8 );
 
-				for( int i = 0; i < ( lLoopList[0].end.sample + 1 ) * 4; i++ )
+				lDataArrayWrite = new Byte[lLength];
+
+				for( int i = 0; i < lLength; i++ )
 				{
 					lDataArrayWrite[i] = lDataArrayRead[i];
 				}

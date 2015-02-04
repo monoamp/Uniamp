@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Monoamp.Common.Struct;
 
-namespace Curan.Common.ApplicationComponent.Sound.LoopTool
+namespace Monoamp.Common.Component.Sound.LoopTool
 {
 	public class LoopSet
 	{

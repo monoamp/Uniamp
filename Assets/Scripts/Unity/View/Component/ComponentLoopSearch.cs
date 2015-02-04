@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-using Curan.Common.ApplicationComponent.Sound.LoopTool;
+using Monoamp.Common.Component.Sound.LoopTool;
 
 namespace Unity.View
 {
@@ -108,6 +108,16 @@ namespace Unity.View
 			}
 			
 			isOnSearch = false;
+		}
+
+		public bool GetIsCutLast()
+		{
+			return LoopSearchExecutor.IsCutLast;
+		}
+		
+		public void SetIsCutLast( bool aIsCutLast )
+		{
+			LoopSearchExecutor.IsCutLast = aIsCutLast;
 		}
 	}
 }
