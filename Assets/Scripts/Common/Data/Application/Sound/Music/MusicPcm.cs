@@ -41,7 +41,7 @@ namespace Monoamp.Common.Data.Application.Music
 		{
 			if( aIndexX < GetCountLoopX() && aIndexY < GetCountLoopY( aIndexX ) )
 			{
-				return loopList[aIndexX][aIndexX];
+				return loopList[aIndexX][aIndexY];
 			}
 			else
 			{

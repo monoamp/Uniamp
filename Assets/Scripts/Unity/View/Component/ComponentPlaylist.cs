@@ -244,33 +244,44 @@ namespace Unity.View
 
 			for( int i = 0; i < pathArray.Length; i++ )
 			{
-				string lPath = pathArray[i];
-				data.filePathList.Add( lPath );
-				Logger.BreakDebug( "Input:" + lPath );
+				string lFilePath = pathArray[i];
+				data.filePathList.Add( lFilePath );
+				Logger.BreakDebug( "Input:" + lFilePath );
 				
-				if( musicDictionary.ContainsKey( lPath ) == false )
+				if( musicDictionary.ContainsKey( lFilePath ) == false )
 				{
 					IMusic lMusic = null;
 
 					try
 					{
-						lMusic = LoaderCollection.LoadMusic( lPath );
+						lMusic = LoaderCollection.LoadMusic( lFilePath );
 					}
 					catch( Exception aExpection )
 					{
-						Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lPath );
+						Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
 					}
 
 					if( lMusic != null )
 					{
-						Logger.BreakDebug( "Add:" + lPath );
-						musicDictionary.Add( lPath, lMusic );
+						Logger.BreakDebug( "Add:" + lFilePath );
+						musicDictionary.Add( lFilePath, lMusic );
 						List<LoopInformation> lLoopPointList = new List<LoopInformation>();
-						lLoopPointList.Add( lMusic.GetLoop( 0, 0 ) );
 
-						if( data.loopPointListDictionary.ContainsKey( lPath ) == false )
+						for( int j = 0; j < lMusic.GetCountLoopX(); j++ )
 						{
-							data.loopPointListDictionary.Add( lPath, lLoopPointList );
+							for( int k = 0; k < lMusic.GetCountLoopY( j ); k++ )
+							{
+								lLoopPointList.Add( lMusic.GetLoop( j, k ) );
+							}
+						}
+
+						if( data.loopPointListDictionary.ContainsKey( lFilePath ) == false )
+						{
+							data.loopPointListDictionary.Add( lFilePath, lLoopPointList );
+						}
+						else
+						{
+							data.loopPointListDictionary[lFilePath] = lLoopPointList;
 						}
 					}
 				}
