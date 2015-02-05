@@ -97,8 +97,6 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			//float widthVerticalbar = GuiStyleSet.StyleScrollbar.verticalbar.fixedWidth;
-
 			if( Event.current.type != EventType.Repaint )
 			{
 				UpdateFileList();
@@ -113,7 +111,7 @@ namespace Unity.View
 						bool lIsSelectedAllBefore = isSelectedAll;
 						isSelectedAll = GUILayout.Toggle( isSelectedAll, new GUIContent( "", "StyleTable.ToggleCheckHeader" ), GuiStyleSet.StyleTable.toggleCheckHeader );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.MinWidth( 300.0f ) );
+						GUILayout.Label( new GUIContent( "Name", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.MinWidth( 160.0f ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
 						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
 						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
@@ -139,6 +137,8 @@ namespace Unity.View
 					scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
 					{
 						GUIStyle[] lViewRow = { GuiStyleSet.StyleTable.viewRowA, GuiStyleSet.StyleTable.viewRowB };
+						
+						int lCount = 0;
 
 						for( int i = 0; i < filePathList.Count; i++ )
 						{
@@ -146,21 +146,23 @@ namespace Unity.View
 							
 							if( data.musicDictionary.ContainsKey( lFilePath ) == true )
 							{
-								GUILayout.BeginHorizontal( lViewRow[i % 2] );
+								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
+									lCount++;
+
 									data.isSelectedDictionary[lFilePath] = GUILayout.Toggle( data.isSelectedDictionary[lFilePath], new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
 									{
-										if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
+										if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 160.0f ) ) == false )
 										{
 											playMusic( lFilePath );
 										}
 									}
 									else
 									{
-										if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
+										if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 160.0f ) ) == true )
 										{
 											playMusic( lFilePath );
 										}
