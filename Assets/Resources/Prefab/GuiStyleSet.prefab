@@ -4087,9 +4087,9 @@ MonoBehaviour:
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 24
-    m_FixedHeight: 25
+    m_FixedHeight: 36
     m_StretchWidth: 1
-    m_StretchHeight: 0
+    m_StretchHeight: 1
   partitionVertical:
     m_Name: 
     m_Normal:
