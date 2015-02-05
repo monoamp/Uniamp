@@ -20,15 +20,17 @@ namespace Unity.View
 		private Thread thread;
 		private bool isOnSearch;
 
-		DataLoopPlaylist dataLoopPlaylist;
-		DataLoopInputlist dataLoopInputlist;
+		private DataLoopPlaylist dataLoopPlaylist;
+		private DataLoopInputlist dataLoopInputlist;
+		private List<string> filePathInputList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentLoopSearch( DataLoopPlaylist aDataLoopPlaylist, DataLoopInputlist aDataLoopDetector )
+		public ComponentLoopSearch( DataLoopPlaylist aDataLoopPlaylist, DataLoopInputlist aDataLoopDetector, List<string> aFilePathInputList )
 		{
 			dataLoopPlaylist = aDataLoopPlaylist;
 			dataLoopInputlist = aDataLoopDetector;
+			filePathInputList = aFilePathInputList;
 
 			isOnSearch = false;
 		}
@@ -107,26 +109,28 @@ namespace Unity.View
 		
 		private void Execute()
 		{
-			for( int i = 0; i < dataLoopInputlist.filePathList.Count; i++ )
+			for( int i = 0; i < filePathInputList.Count; i++ )
 			{
-				if( dataLoopInputlist.isSelectedList[i] == true )
+				string lFilePathInput = filePathInputList[i];
+
+				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
 				{
-					string lFilePath = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] );
-					Debug.Log( "Search:" + dataLoopInputlist.filePathList[i] );
+					string lFilePathOutput = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
+					Debug.Log( "Search:" + lFilePathInput );
 
 					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
-					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], lFilePath, dataLoopInputlist.progressList, lLoopInformationList, i );
+					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
 
-					if( dataLoopPlaylist.loopPointListDictionary.ContainsKey( lFilePath ) == false )
+					if( dataLoopPlaylist.loopPointListDictionary.ContainsKey( lFilePathOutput ) == false )
 					{
-						dataLoopPlaylist.loopPointListDictionary.Add( lFilePath, lLoopInformationList );
+						dataLoopPlaylist.loopPointListDictionary.Add( lFilePathOutput, lLoopInformationList );
 					}
 					else
 					{
-						dataLoopPlaylist.loopPointListDictionary[lFilePath] = lLoopInformationList;
+						dataLoopPlaylist.loopPointListDictionary[lFilePathOutput] = lLoopInformationList;
 					}
 					
-					dataLoopInputlist.isSelectedList[i] = false;
+					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
 				}
 			}
 			

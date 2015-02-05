@@ -24,7 +24,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			IsCutLast = false;
 		}
 
-		public static void Execute( string aFilePathInput, string aFilePathOutput, List<double> aProgressList, List<LoopInformation> aLoopInformation, int aIndex )
+		public static void Execute( string aFilePathInput, string aFilePathOutput, Dictionary<string, double> aProgressList, List<LoopInformation> aLoopInformation )
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
 
@@ -43,7 +43,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 			try
 			{
-				lLoopList = LoopSearchTool.Execute( lSampleArray, aProgressList, aIndex );
+				lLoopList = LoopSearchTool.Execute( lSampleArray, aProgressList, aFilePathInput );
 			}
 			catch( Exception aExpection )
 			{
