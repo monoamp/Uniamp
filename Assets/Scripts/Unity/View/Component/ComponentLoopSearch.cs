@@ -17,22 +17,28 @@ namespace Unity.View
 {
 	public class ComponentLoopSearch : IView
 	{
-		private Thread thread;
+		private Thread threadSearch;
+		private Thread threadSave;
+
 		private bool isOnSearch;
+		private bool isOnSave;
 
 		private ComponentPlaylist componentPlaylist;
 		private DataLoopInputlist dataLoopInputlist;
 		private List<string> filePathInputList;
+		private List<string> filePathOutputList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, DataLoopInputlist aDataLoopInputlist, List<string> aFilePathInputList )
+		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, DataLoopInputlist aDataLoopInputlist, List<string> aFilePathInputList, List<string> aFilePathOutputList )
 		{
 			componentPlaylist = aComponentPlaylist;
 			dataLoopInputlist = aDataLoopInputlist;
 			filePathInputList = aFilePathInputList;
-
+			filePathOutputList = aFilePathOutputList;
+			
 			isOnSearch = false;
+			isOnSave = false;
 		}
 
 		public void Awake()
@@ -63,10 +69,16 @@ namespace Unity.View
 		public void OnApplicationQuit()
 		{
 			isOnSearch = false;
+			isOnSave = false;
 
-			if( thread != null )
+			if( threadSearch != null )
 			{
-				thread.Abort();
+				threadSearch.Abort();
+			}
+			
+			if( threadSave != null )
+			{
+				threadSave.Abort();
 			}
 		}
 
@@ -81,15 +93,15 @@ namespace Unity.View
 					if( GUILayout.Toggle( false, new GUIContent ( "Start Search", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == true )
 					{
 						isOnSearch = true;
-						thread = new Thread( Execute );
+						threadSearch = new Thread( Execute );
 
 						try
 						{
-							thread.Start();
+							threadSearch.Start();
 						}
 						catch( Exception aExpection )
 						{
-							Logger.BreakError( aExpection.ToString() + ":LoopTool Exception" );
+							Logger.BreakError( "Search Exception:" + aExpection.ToString() );
 						}
 					}
 				}
@@ -98,15 +110,28 @@ namespace Unity.View
 					if( GUILayout.Toggle( true, new GUIContent ( "Stop Search", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == false )
 					{
 						isOnSearch = false;
-						thread.Abort();
+						threadSearch.Abort();
 					}
 				}
 
 				GUILayout.FlexibleSpace();
 				
-				if( GUILayout.Button( new GUIContent ( "Save Modified Loop", "StyleLoopTool.ButtonSave" ), GuiStyleSet.StyleLoopTool.buttonSave ) == true )
+				if( isOnSave == false )
 				{
-					SaveModifiedLoop();
+					if( GUILayout.Button( new GUIContent ( "Save Modified Loop", "StyleLoopTool.ButtonSave" ), GuiStyleSet.StyleLoopTool.buttonSave ) == true )
+					{
+						isOnSave = true;
+						threadSave = new Thread( SaveModifiedLoop );
+						
+						try
+						{
+							threadSave.Start();
+						}
+						catch( Exception aExpection )
+						{
+							Logger.BreakError( "Save Exception:" + aExpection.ToString() );
+						}
+					}
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -121,10 +146,9 @@ namespace Unity.View
 				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
 				{
 					string lFilePathOutput = componentPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
-					Debug.Log( "Search:" + lFilePathInput );
+					Logger.BreakDebug( "Search:" + lFilePathInput );
 
-					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
-					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
+					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary );
 
 					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
 				}
@@ -135,26 +159,24 @@ namespace Unity.View
 		
 		private void SaveModifiedLoop()
 		{
-			/*
-			dataLoopPlaylist.getPlayingMusic();
-			for( int i = 0; i < filePathInputList.Count; i++ )
+			for( int i = 0; i < filePathOutputList.Count; i++ )
 			{
-				string lFilePathInput = filePathInputList[i];
+				string lFilePathOutput = filePathOutputList[i];
 				
-				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
+				if( componentPlaylist.data.isSelectedDictionary.ContainsKey( lFilePathOutput ) == true && componentPlaylist.data.isSelectedDictionary[lFilePathOutput] == true )
 				{
-					string lFilePathOutput = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
-					Debug.Log( "Search:" + lFilePathInput );
+					Logger.BreakDebug( "Save:" + lFilePathOutput );
 					
-					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
-					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
+					LoopInformation lLoopInformation = componentPlaylist.data.musicDictionary[lFilePathOutput].Loop;
 					
-					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
+					Logger.BreakDebug( "Loop:" + lLoopInformation.start.sample + ", " + lLoopInformation.end.sample + ", " + lLoopInformation.length.sample );
+					LoopSearchExecutor.SaveModifiedLoop( lFilePathOutput, lLoopInformation );
+					
+					componentPlaylist.data.isSelectedDictionary[lFilePathOutput] = false;
 				}
 			}
 			
-			isOnSearch = false;
-	*/
+			isOnSave = false;
 		}
 
 		public bool GetIsCutLast()

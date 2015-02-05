@@ -108,7 +108,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 		{
 			if( name != null )
 			{
-				using ( FileStream u = new FileStream( name, FileMode.Open, FileAccess.Read ) )
+				using ( FileStream u = new FileStream( name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
 				{
 					ByteArray lByteArray = ConstructByteArray( u );
 					

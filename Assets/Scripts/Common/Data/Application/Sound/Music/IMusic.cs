@@ -9,6 +9,7 @@ namespace Monoamp.Common.Data.Application.Music
 	{
 		string Name{ get; }
 		SoundTime Length{ get; }
+		LoopInformation Loop{ get; set; }
 
 		int GetCountLoopX();
 		int GetCountLoopY( int aIndexX );

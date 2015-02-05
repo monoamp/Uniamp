@@ -192,11 +192,11 @@ namespace Unity.View
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 									GUILayout.TextField( data.musicDictionary[lFilePath].Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].start.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( data.musicDictionary[lFilePath].Loop.start.String, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].end.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( data.musicDictionary[lFilePath].Loop.end.String, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].length.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( data.musicDictionary[lFilePath].Loop.length.String, GuiStyleSet.StyleTable.textRow );
 								}
 								GUILayout.EndHorizontal();
 							}
@@ -288,31 +288,31 @@ namespace Unity.View
 						{
 							Logger.BreakDebug( "Add:" + lFilePath );
 							data.musicDictionary.Add( lFilePath, lMusic );
-						}
-					}
 
-					if( data.musicDictionary.ContainsKey( lFilePath ) == true )
-					{
-						List<LoopInformation> lLoopPointList = new List<LoopInformation>();
+							List<LoopInformation> lLoopPointList = new List<LoopInformation>();
 
-						for( int j = 0; j < data.musicDictionary[lFilePath].GetCountLoopX(); j++ )
-						{
-							for( int k = 0; k < data.musicDictionary[lFilePath].GetCountLoopY( j ); k++ )
+							for( int j = 0; j < data.musicDictionary[lFilePath].GetCountLoopX(); j++ )
 							{
-								lLoopPointList.Add( data.musicDictionary[lFilePath].GetLoop( j, k ) );
+								for( int k = 0; k < data.musicDictionary[lFilePath].GetCountLoopY( j ); k++ )
+								{
+									lLoopPointList.Add( data.musicDictionary[lFilePath].GetLoop( j, k ) );
+								}
 							}
-						}
 
-						if( data.loopPointListDictionary.ContainsKey( lFilePath ) == false )
-						{
-							data.loopPointListDictionary.Add( lFilePath, lLoopPointList );
+							if( data.loopPointListDictionary.ContainsKey( lFilePath ) == false )
+							{
+								data.loopPointListDictionary.Add( lFilePath, lLoopPointList );
+							}
+							else
+							{
+								data.loopPointListDictionary[lFilePath] = lLoopPointList;
+							}
+							
+							if( data.isSelectedDictionary.ContainsKey( lFilePath ) == false )
+							{
+								data.isSelectedDictionary.Add( lFilePath, false );
 						}
-						else
-						{
-							data.loopPointListDictionary[lFilePath] = lLoopPointList;
 						}
-
-						data.isSelectedDictionary.Add( lFilePath, false );
 					}
 				}
 			}

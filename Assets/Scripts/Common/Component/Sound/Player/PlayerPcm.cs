@@ -47,7 +47,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		public PlayerPcm( MusicPcm aMusic )
 		{
 			music = aMusic;
-			synthesizer = new SynthesizerPcm( music.Waveform, music.GetLoop( 0, 0 ) );
+			synthesizer = new SynthesizerPcm( music.Waveform, music.Loop );
             bufferArray = new float[2];
 
 			delegateUpdate = UpdatePlay;
@@ -212,6 +212,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		public void SetLoop( LoopInformation aLoopInformation )
 		{
 			Loop = aLoopInformation;
+			music.Loop = Loop;
 		}
 	}
 }

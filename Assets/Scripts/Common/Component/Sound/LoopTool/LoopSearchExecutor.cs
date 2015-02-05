@@ -21,10 +21,10 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 		static LoopSearchExecutor()
 		{
-			IsCutLast = false;
+			IsCutLast = true;
 		}
 
-		public static void Execute( string aFilePathInput, string aFilePathOutput, Dictionary<string, double> aProgressList, List<LoopInformation> aLoopInformation )
+		public static void Execute( string aFilePathInput, string aFilePathOutput, Dictionary<string, double> aProgressList )
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
 
@@ -56,15 +56,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			{
 				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
 				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
-				aLoopInformation.Add( lLoopList[i] );
 			}
-
-			/*
-			if ( lLoopList.Count >= 1 )
-			{
-				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
-				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
-			}*/
 
 			Byte[] lDataArrayRead = null;
 			RiffWaveData dataChunk = ( RiffWaveData )lRiffWaveRiff.GetChunk( RiffWaveData.ID );
@@ -80,22 +72,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 				lDataArrayRead = l.ReadBytes( dataChunk.Size );
 			}
 
-			Byte[] lDataArrayWrite = lDataArrayRead;
-
-			if( IsCutLast == true )
-			{
-				int lLength = ( int )( lLoopList[0].end.sample + 1 ) * waveform.format.channels * ( waveform.format.sampleBits / 8 );
-				Logger.BreakError( "End:" + lLoopList[0].end.sample );
-
-				lDataArrayWrite = new Byte[lLength];
-
-				for( int i = 0; i < lLength; i++ )
-				{
-					lDataArrayWrite[i] = lDataArrayRead[i];
-				}
-			}
-
-			SetDataArray( lRiffWaveRiff, lDataArrayWrite );
+			SetDataArray( lRiffWaveRiff, lDataArrayRead );
 			
 			Logger.BreakDebug( "lMemoryStreamWrite" );
 
@@ -120,52 +97,18 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			}
 		}
 		
-		public static void SaveModifiedLoop( string aFilePathOutput, Dictionary<string, double> aProgressList, List<LoopInformation> aLoopInformation )
+		public static void SaveModifiedLoop( string aFilePathOutput, LoopInformation aLoopInformation )
 		{
-			/*
-			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
+			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathOutput );
 			
 			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff );
-			
-			SByte[] lSampleArray = new SByte[waveform.format.samples];
-			
-			for( int i = 0; i < waveform.format.samples; i++ )
-			{
-				lSampleArray[i] = ( SByte )( waveform.data.GetSampleData( 0, i ) >> 8 );
-			}
-			
-			List<LoopInformation> lLoopList = null;
-			
-			Logger.BreakDebug( "Exception" );
-			
-			try
-			{
-				lLoopList = LoopSearchTool.Execute( lSampleArray, aProgressList, aFilePathInput );
-			}
-			catch( Exception aExpection )
-			{
-				Logger.BreakError( aExpection.ToString() + ":LoopTool Exception" );
-			}
-			
-			Logger.BreakDebug( "Exception" );
-			
-			for( int i = 0; i < lLoopList.Count; i++ )
-			{
-				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
-				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
-				aLoopInformation.Add( lLoopList[i] );
-			}
-			
-			/*
-			if ( lLoopList.Count >= 1 )
-			{
-				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
-				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
-			}
+
+			OverrideCuePoint( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );
+			OverrideSampleLoop( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );
 			
 			Byte[] lDataArrayRead = null;
 			RiffWaveData dataChunk = ( RiffWaveData )lRiffWaveRiff.GetChunk( RiffWaveData.ID );
-			
+
 			using ( FileStream u = new FileStream( lRiffWaveRiff.name, FileMode.Open, FileAccess.Read ) )
 			{
 				ByteArray l = new ByteArrayLittle( u );
@@ -176,13 +119,13 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 				
 				lDataArrayRead = l.ReadBytes( dataChunk.Size );
 			}
-			
+
 			Byte[] lDataArrayWrite = lDataArrayRead;
-			
+
 			if( IsCutLast == true )
 			{
-				int lLength = ( int )( lLoopList[0].end.sample + 1 ) * waveform.format.channels * ( waveform.format.sampleBits / 8 );
-				Logger.BreakError( "End:" + lLoopList[0].end.sample );
+				int lLength = ( int )( aLoopInformation.end.sample + 1 ) * waveform.format.channels * ( waveform.format.sampleBits / 8 );
+				Logger.BreakDebug( "End:" + aLoopInformation.end.sample );
 				
 				lDataArrayWrite = new Byte[lLength];
 				
@@ -193,9 +136,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			}
 			
 			SetDataArray( lRiffWaveRiff, lDataArrayWrite );
-			
-			Logger.BreakDebug( "lMemoryStreamWrite" );
-			
+
 			MemoryStream lMemoryStreamWrite = new MemoryStream( ( int )lRiffWaveRiff.Size + 8 );
 			ByteArrayLittle lByteArray = new ByteArrayLittle( lMemoryStreamWrite );
 			
@@ -214,7 +155,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			catch( Exception aExpection )
 			{
 				Logger.BreakError( "Write Exception:" + aExpection );
-			}*/
+			}
 		}
 
 		public static void AddCuePoint( RiffWaveRiff lRiffWaveRiff, int aStart, int aEnd )
@@ -262,6 +203,51 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			}
 		}
 		
+		public static void OverrideCuePoint( RiffWaveRiff lRiffWaveRiff, int aStart, int aEnd )
+		{
+			Logger.BreakDebug( "OverrideCuePoint" );
+			
+			RiffWaveCue_ lRiffWaveCue_ = ( RiffWaveCue_ )lRiffWaveRiff.GetChunk( RiffWaveCue_.ID );
+			
+			if( lRiffWaveCue_ == null )
+			{
+				List<CuePoint> lCuePointList = new List<CuePoint>();
+				lCuePointList.Add( new CuePoint( 1, ( UInt32 )aStart, "data", 0, 0, ( UInt32 )aStart ) );
+				lCuePointList.Add( new CuePoint( 2, ( UInt32 )aEnd, "data", 0, 0, ( UInt32 )aEnd ) );
+				lRiffWaveCue_ = new RiffWaveCue_( lCuePointList );
+				lRiffWaveRiff.AddChunk( lRiffWaveCue_ );
+			}
+			else
+			{
+				List<CuePoint> lCuePointList = new List<CuePoint>();
+				lCuePointList.Add( new CuePoint( 0, ( UInt32 )aStart, "data", 0, 0, ( UInt32 )aStart ) );
+				lCuePointList.Add( new CuePoint( 1, ( UInt32 )aEnd, "data", 0, 0, ( UInt32 )aEnd ) );
+				lRiffWaveCue_ = new RiffWaveCue_( lCuePointList );
+				lRiffWaveRiff.OverrideChunk( lRiffWaveCue_ );
+			}
+		}
+		
+		public static void OverrideSampleLoop( RiffWaveRiff lRiffWaveRiff, int aStart, int aEnd )
+		{
+			Logger.BreakDebug( "OverrideSampleLoop" );
+			
+			RiffWaveSmpl lRiffWaveSmpl = ( RiffWaveSmpl )lRiffWaveRiff.GetChunk( RiffWaveSmpl.ID );
+			
+			if( lRiffWaveSmpl == null )
+			{
+				List<SampleLoop> lSampleLoopList = new List<SampleLoop>();
+				lSampleLoopList.Add( new SampleLoop( 0, 0, ( UInt32 )aStart, ( UInt32 )aEnd, 0, 0 ) );
+				lRiffWaveSmpl = new RiffWaveSmpl( 0, 0, 0, 60, 0, 0, 0, 1, 0, lSampleLoopList );
+				lRiffWaveRiff.AddChunk( lRiffWaveSmpl );
+			}
+			else
+			{
+				List<SampleLoop> lSmplLoopList = new List<SampleLoop>();
+				lSmplLoopList.Add( new SampleLoop( 0, 0, ( UInt32 )aStart, ( UInt32 )aEnd, 0, 0 ) );
+				lRiffWaveRiff.OverrideChunk( new RiffWaveSmpl( lRiffWaveSmpl, lSmplLoopList ) );
+			}
+		}
+
 		public static void SetDataArray( RiffWaveRiff lRiffWaveRiff, Byte[] aSampleData )
 		{
 			Logger.BreakDebug( "SetDataArray" );

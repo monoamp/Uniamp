@@ -19,6 +19,7 @@ namespace Monoamp.Common.Data.Application.Music
 		public string Name{ get; private set; }
 		public SoundTime Length{ get; private set; }
 		public WaveformPcm Waveform{ get; private set; }
+		public LoopInformation Loop{ get; set; }
 
 		public int GetCountLoopX()
 		{
@@ -100,6 +101,8 @@ namespace Monoamp.Common.Data.Application.Music
 				loopList.Add( new List<LoopInformation>() );
 				loopList[0].Add( new LoopInformation( Length.sampleRate, -1, -1 ) );
 			}
+
+			Loop = GetLoop( 0, 0 );
 		}
 	}
 }
