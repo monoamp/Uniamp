@@ -24,13 +24,13 @@ namespace Unity.View
 		private bool isOnSave;
 
 		private ComponentPlaylist componentPlaylist;
-		private DataLoopInputlist dataLoopInputlist;
+		private Dictionary<string, InputMusicInformation> dataLoopInputlist;
 		private List<string> filePathInputList;
 		private List<string> filePathOutputList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, DataLoopInputlist aDataLoopInputlist, List<string> aFilePathInputList, List<string> aFilePathOutputList )
+		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, Dictionary<string, InputMusicInformation> aDataLoopInputlist, List<string> aFilePathInputList, List<string> aFilePathOutputList )
 		{
 			componentPlaylist = aComponentPlaylist;
 			dataLoopInputlist = aDataLoopInputlist;
@@ -143,14 +143,14 @@ namespace Unity.View
 			{
 				string lFilePathInput = filePathInputList[i];
 
-				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
+				if( dataLoopInputlist.ContainsKey( lFilePathInput ) == true && dataLoopInputlist[lFilePathInput].isSelected == true )
 				{
 					string lFilePathOutput = componentPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
 					Logger.BreakDebug( "Search:" + lFilePathInput );
 
-					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary );
+					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist[lFilePathInput] );
 
-					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
+					dataLoopInputlist[lFilePathInput].isSelected = false;
 				}
 			}
 			
@@ -163,16 +163,16 @@ namespace Unity.View
 			{
 				string lFilePathOutput = filePathOutputList[i];
 				
-				if( componentPlaylist.data.isSelectedDictionary.ContainsKey( lFilePathOutput ) == true && componentPlaylist.data.isSelectedDictionary[lFilePathOutput] == true )
+				if( componentPlaylist.data.ContainsKey( lFilePathOutput ) == true && componentPlaylist.data[lFilePathOutput].isSelected == true )
 				{
 					Logger.BreakDebug( "Save:" + lFilePathOutput );
 					
-					LoopInformation lLoopInformation = componentPlaylist.data.musicDictionary[lFilePathOutput].Loop;
+					LoopInformation lLoopInformation = componentPlaylist.data[lFilePathOutput].music.Loop;
 					
 					Logger.BreakDebug( "Loop:" + lLoopInformation.start.sample + ", " + lLoopInformation.end.sample + ", " + lLoopInformation.length.sample );
 					LoopSearchExecutor.SaveModifiedLoop( lFilePathOutput, lLoopInformation );
 					
-					componentPlaylist.data.isSelectedDictionary[lFilePathOutput] = false;
+					componentPlaylist.data[lFilePathOutput].isSelected = false;
 				}
 			}
 			

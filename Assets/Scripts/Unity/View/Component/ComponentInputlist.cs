@@ -16,26 +16,10 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class DataLoopInputlist
-	{
-		public string[] pathArray;
-		public Dictionary<string, double> progressDictionary;
-		public Dictionary<string, bool> isSelectedDictionary;
-		public Dictionary<string, LoopInformation> loopSetDictionary;
-		public Dictionary<string, IMusic> musicDictionary;
-
-		public DataLoopInputlist()
-		{
-			isSelectedDictionary = new Dictionary<string, bool>();
-			progressDictionary = new Dictionary<string, double>();
-			loopSetDictionary = new Dictionary<string ,LoopInformation>();
-			musicDictionary = new Dictionary<string, IMusic>();
-		}
-	}
-
 	public class ComponentInputlist : IView
     {
-		public DataLoopInputlist data;
+		public Dictionary<string, InputMusicInformation> data;
+		public string[] pathArray;
 		public List<string> filePathList;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
@@ -57,7 +41,7 @@ namespace Unity.View
 			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
 
-			data = new DataLoopInputlist();
+			data = new Dictionary<string, InputMusicInformation>();
 
 			UpdateFileList();
 			
@@ -121,9 +105,9 @@ namespace Unity.View
 						{
 							foreach( string l in filePathList )
 							{
-								if( data.isSelectedDictionary.ContainsKey( l ) == true )
+								if( data.ContainsKey( l ) == true )
 								{
-									data.isSelectedDictionary[l] = isSelectedAll;
+									data[l].isSelected = isSelectedAll;
 								}
 							}
 						}
@@ -144,13 +128,13 @@ namespace Unity.View
 						{
 							string lFilePath = filePathList[i];
 							
-							if( data.musicDictionary.ContainsKey( lFilePath ) == true )
+							if( data.ContainsKey( lFilePath ) == true )
 							{
 								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
 									lCount++;
 
-									data.isSelectedDictionary[lFilePath] = GUILayout.Toggle( data.isSelectedDictionary[lFilePath], new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
+									data[lFilePath].isSelected = GUILayout.Toggle( data[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
@@ -169,14 +153,14 @@ namespace Unity.View
 									}
 									
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( data.musicDictionary[filePathList[i]].Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( data[filePathList[i]].music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
-									if( data.isSelectedDictionary[lFilePath] == true )
+									if( data[lFilePath].isSelected == true )
 									{
-										if( data.progressDictionary[lFilePath] > 0.0f )
+										if( data[lFilePath].progress > 0.0f )
 										{
-											GUILayout.HorizontalScrollbar( 0.0f, ( float )data.progressDictionary[lFilePath], 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
+											GUILayout.HorizontalScrollbar( 0.0f, ( float )data[lFilePath].progress, 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
 										}
 										else
 										{
@@ -196,16 +180,24 @@ namespace Unity.View
 						{
 							GUILayout.BeginVertical( GUILayout.Width( 24.0f ) );
 							{
-								GUILayout.FlexibleSpace( );
+								GUILayout.FlexibleSpace();
 							}
 							GUILayout.EndVertical();
 							
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 							GUILayout.FlexibleSpace();
-							
+
 							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 							
+							GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+							{
+								GUILayout.FlexibleSpace();
+							}
+							GUILayout.EndVertical();
+							
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+
 							GUILayout.BeginVertical( GUILayout.Width( 140.0f ) );
 							{
 								GUILayout.FlexibleSpace();
@@ -225,19 +217,19 @@ namespace Unity.View
 		{
 			string[] lPathArray = PoolFilePath.Get( directoryInfo );
 
-			if( lPathArray != data.pathArray )
+			if( lPathArray != pathArray )
 			{
-				data.pathArray = lPathArray;
+				pathArray = lPathArray;
                 
 				filePathList = new List<string>();
 
-				for( int i = 0; i < data.pathArray.Length; i++ )
+				for( int i = 0; i < pathArray.Length; i++ )
 				{
-					string lFilePath = data.pathArray[i];
+					string lFilePath = pathArray[i];
 					Logger.BreakDebug( "Input:" + lFilePath );
 					filePathList.Add( lFilePath );
 
-					if( data.musicDictionary.ContainsKey( lFilePath ) == false )
+					if( data.ContainsKey( lFilePath ) == false )
 					{
 						IMusic lMusic = null;
 						
@@ -252,16 +244,17 @@ namespace Unity.View
 						
 						if( lMusic != null )
 						{
-							data.musicDictionary.Add( lFilePath, lMusic );
+							data.Add( lFilePath, new InputMusicInformation( false, lMusic, 0.0d ) );
+							data[lFilePath].music = lMusic;
 						}
 					}
-					
-					if( data.musicDictionary.ContainsKey( lFilePath ) == true )
+
+					/*
+					if( data.ContainsKey( lFilePath ) == true )
 					{
-						data.loopSetDictionary.Add( lFilePath, new LoopInformation( 44100, 0, 0 ) );
-						data.isSelectedDictionary.Add( lFilePath, false );
-						data.progressDictionary.Add( lFilePath, 0.0d );
-					}
+						data[lFilePath].isSelected = false;
+						data[lFilePath].progress = 0.0d;
+					}*/
 				}
 			}
 		}
@@ -270,9 +263,9 @@ namespace Unity.View
 		{
 			foreach( string l in filePathList )
 			{
-				if( data.isSelectedDictionary.ContainsKey( l ) == true )
+				if( data.ContainsKey( l ) == true )
 				{
-					data.isSelectedDictionary[l] = false;
+					data[l].isSelected = false;
 				}
 			}
 		}
@@ -287,7 +280,7 @@ namespace Unity.View
 
 				if( lIndex < 0 )
 				{
-					lIndex = data.loopSetDictionary.Count - 1;
+					lIndex = data.Count - 1;
 				}
 
 				playMusic( filePathList[lIndex] );
@@ -302,7 +295,7 @@ namespace Unity.View
 			{
 				lIndex++;
 
-				if( lIndex >= data.loopSetDictionary.Count )
+				if( lIndex >= data.Count )
 				{
 					lIndex = 0;
 				}

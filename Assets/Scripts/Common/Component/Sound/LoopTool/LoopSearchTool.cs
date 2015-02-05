@@ -43,21 +43,21 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			Progress = 0.0d;
 		}
 
-		public static List<LoopInformation> Execute( SByte[] aDataArray, Dictionary<string, double> aProgressList, string aFilePath )
+		public static List<LoopInformation> Execute( SByte[] aDataArray, InputMusicInformation aData, string aFilePath )
 		{
-			List<LoopInformation> lSamePointList = SearchLoopPoints( aDataArray, aProgressList, aFilePath );
+			List<LoopInformation> lSamePointList = SearchLoopPoints( aDataArray, aData, aFilePath );
 
 			return SortLoopCount( lSamePointList );
 		}
 
-		private static List<LoopInformation> SearchLoopPoints( SByte[] aDataArray, Dictionary<string, double> aProgressList, string aFilePath )
+		private static List<LoopInformation> SearchLoopPoints( SByte[] aDataArray, InputMusicInformation aData, string aFilePath )
 		{
 			List<LoopInformation> lLoopPointList = new List<LoopInformation>();
 
 			int lLength = aDataArray.Length - FEADOUT_SAMPLES;
 			int lMinLoopLength = lLength / 4;//SEARCH_WIDTH
 
-			aProgressList[aFilePath] = 0.0d;
+			aData.progress = 0.0d;
 
 			object l = new object();
 
@@ -67,11 +67,11 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 				lock( l )
 				{
-					aProgressList[aFilePath] += 1.0d / LOOP_POINTS;
+					aData.progress += 1.0d / LOOP_POINTS;
 				}
 			}
 
-			aProgressList[aFilePath] = 0.0d;
+			aData.progress = 0.0d;
 
 			for( int i = 0; i < LOOP_POINTS; i++ )
 			{
