@@ -23,6 +23,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		void SetNextLoop();
 		void SetUpLoop();
 		void SetDownLoop();
+		void SetLoop( LoopInformation aLoopInformation );
 		SoundTime GetTPosition();
 		SoundTime GetElapsed();
 		SoundTime GetLength();

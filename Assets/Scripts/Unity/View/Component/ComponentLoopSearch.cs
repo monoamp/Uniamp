@@ -111,11 +111,20 @@ namespace Unity.View
 			{
 				if( dataLoopInputlist.isSelectedList[i] == true )
 				{
+					string lFilePath = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] );
 					Debug.Log( "Search:" + dataLoopInputlist.filePathList[i] );
 
 					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
-					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( dataLoopInputlist.filePathList[i] ), dataLoopInputlist.progressList, lLoopInformationList, i );
-					dataLoopPlaylist.loopPointListList.Add( lLoopInformationList );
+					LoopSearchExecutor.Execute( dataLoopInputlist.filePathList[i], lFilePath, dataLoopInputlist.progressList, lLoopInformationList, i );
+
+					if( dataLoopPlaylist.loopPointListDictionary.ContainsKey( lFilePath ) == false )
+					{
+						dataLoopPlaylist.loopPointListDictionary.Add( lFilePath, lLoopInformationList );
+					}
+					else
+					{
+						dataLoopPlaylist.loopPointListDictionary[lFilePath] = lLoopInformationList;
+					}
 					
 					dataLoopInputlist.isSelectedList[i] = false;
 				}

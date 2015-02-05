@@ -55,7 +55,7 @@ namespace Monoamp.Boundary
 
 		public static void BreakDebug( object message )
 		{
-			//UnityEngine.Debug.Log( "[Debug]:" + message );
+			UnityEngine.Debug.Log( "[Debug]:" + message );
 		}
 	}
 }

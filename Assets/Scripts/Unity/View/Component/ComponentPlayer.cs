@@ -245,5 +245,10 @@ namespace Unity.View
 		{
 			player.IsLoop = aIsLoop;
 		}
+
+		public void SetLoop( LoopInformation aLoopInformation )
+		{
+			player.SetLoop( aLoopInformation );
+		}
 	}
 }

@@ -19,11 +19,10 @@ namespace Unity.View
 	public class DataLoopPlaylist
 	{
 		public DirectoryInfo directoryInfo;
-		public DirectoryInfo directoryInfoRoot;
 
 		public List<string> filePathList;
-		public List<bool> isSelectedList;
-		public List<List<LoopInformation>> loopPointListList;
+		public Dictionary<string, bool> isSelectedList;
+		public Dictionary<string, List<LoopInformation>> loopPointListDictionary;
 		
 		public delegate void PlayMusic( string aName );
 		public delegate string GetPlayingMusic();
@@ -34,7 +33,6 @@ namespace Unity.View
 		public DataLoopPlaylist( DirectoryInfo aDirectoryInfo, PlayMusic aSetPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
 			directoryInfo = aDirectoryInfo;
-			directoryInfoRoot = new DirectoryInfo( Application.streamingAssetsPath );
 
 			playMusic = aSetPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
@@ -53,6 +51,7 @@ namespace Unity.View
 		public ComponentPlaylist( DirectoryInfo aDirectoryInfo, DataLoopPlaylist.PlayMusic aSetFileInfoPlaying, DataLoopPlaylist.GetPlayingMusic aGetFileInfoPlaying )
 		{
 			data = new DataLoopPlaylist( aDirectoryInfo, aSetFileInfoPlaying, aGetFileInfoPlaying );
+			data.loopPointListDictionary = new Dictionary<string, List<LoopInformation>>();
 			musicDictionary = new Dictionary<string, IMusic>();
 
 			UpdateFileList();
@@ -148,33 +147,38 @@ namespace Unity.View
 
 						for( int i = 0; i < data.filePathList.Count; i++ )
 						{
-							GUILayout.BeginHorizontal( lViewRow[i % 2] );
-							{
-								if( data.filePathList[i] == data.getPlayingMusic() )
-								{
-									if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( data.filePathList[i] ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
-									{
-										data.playMusic( data.filePathList[i] );
-									}
-								}
-								else
-								{
-									if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( data.filePathList[i] ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
-									{
-										data.playMusic( data.filePathList[i] );
-									}
-								}
+							string lFilePath = data.filePathList[i];
 
-								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( musicDictionary[data.filePathList[i]].Length.MMSS, GuiStyleSet.StyleTable.textRow );
-								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( data.loopPointListList[i][0].start.String, GuiStyleSet.StyleTable.textRow );
-								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( data.loopPointListList[i][0].end.String, GuiStyleSet.StyleTable.textRow );
-								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-								GUILayout.TextField( data.loopPointListList[i][0].length.String, GuiStyleSet.StyleTable.textRow );
+							if( musicDictionary.ContainsKey( lFilePath ) == true )
+							{
+								GUILayout.BeginHorizontal( lViewRow[i % 2] );
+								{
+									if( lFilePath == data.getPlayingMusic() )
+									{
+										if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
+										{
+											data.playMusic( lFilePath );
+										}
+									}
+									else
+									{
+										if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
+										{
+											data.playMusic( lFilePath );
+										}
+									}
+
+									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+									GUILayout.TextField( musicDictionary[lFilePath].Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].start.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].end.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].length.String, GuiStyleSet.StyleTable.textRow );
+								}
+								GUILayout.EndHorizontal();
 							}
-							GUILayout.EndHorizontal();
 						}
 
 						GUILayout.BeginHorizontal();
@@ -237,11 +241,11 @@ namespace Unity.View
 		private void LoadLoop()
 		{
 			data.filePathList = new List<string>();
-			data.loopPointListList = new List<List<LoopInformation>>();
 
 			for( int i = 0; i < pathArray.Length; i++ )
 			{
 				string lPath = pathArray[i];
+				data.filePathList.Add( lPath );
 				Logger.BreakDebug( "Input:" + lPath );
 				
 				if( musicDictionary.ContainsKey( lPath ) == false )
@@ -259,17 +263,16 @@ namespace Unity.View
 
 					if( lMusic != null )
 					{
+						Logger.BreakDebug( "Add:" + lPath );
 						musicDictionary.Add( lPath, lMusic );
+						List<LoopInformation> lLoopPointList = new List<LoopInformation>();
+						lLoopPointList.Add( lMusic.GetLoop( 0, 0 ) );
+
+						if( data.loopPointListDictionary.ContainsKey( lPath ) == false )
+						{
+							data.loopPointListDictionary.Add( lPath, lLoopPointList );
+						}
 					}
-				}
-
-				if( musicDictionary.ContainsKey( lPath ) == true )
-				{
-					data.filePathList.Add( lPath );
-
-					List<LoopInformation> lLoopPointList = new List<LoopInformation>();
-					lLoopPointList.Add( musicDictionary[lPath].GetLoop( 0, 0 ) );
-					data.loopPointListList.Add( lLoopPointList );
 				}
 			}
 		}

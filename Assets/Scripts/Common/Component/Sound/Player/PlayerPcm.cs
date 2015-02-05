@@ -208,5 +208,10 @@ namespace Monoamp.Common.Component.Sound.Player
 			LoopNumberY %= music.GetCountLoopY( LoopNumberX );
 			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
 		}
+
+		public void SetLoop( LoopInformation aLoopInformation )
+		{
+			Loop = aLoopInformation;
+		}
 	}
 }

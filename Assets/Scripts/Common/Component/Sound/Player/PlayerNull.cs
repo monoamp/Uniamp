@@ -95,5 +95,10 @@ namespace Monoamp.Common.Component.Sound.Player
 		{
 
 		}
+
+		public void SetLoop( LoopInformation aLoopInformation )
+		{
+			
+		}
 	}
 }
