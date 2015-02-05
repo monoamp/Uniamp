@@ -54,16 +54,17 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 			for( int i = 0; i < lLoopList.Count; i++ )
 			{
-				//lRiffChunkListWave.AddCuePoint( ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
-				//lRiffChunkListWave.AddSampleLoop( ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
+				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
+				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[i].start.sample, ( int )lLoopList[i].end.sample );
 				aLoopInformation.Add( lLoopList[i] );
 			}
 
+			/*
 			if ( lLoopList.Count >= 1 )
 			{
 				AddCuePoint( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
 				AddSampleLoop( lRiffWaveRiff, ( int )lLoopList[0].start.sample, ( int )lLoopList[0].end.sample );
-			}
+			}*/
 
 			Byte[] lDataArrayRead = null;
 			RiffWaveData dataChunk = ( RiffWaveData )lRiffWaveRiff.GetChunk( RiffWaveData.ID );

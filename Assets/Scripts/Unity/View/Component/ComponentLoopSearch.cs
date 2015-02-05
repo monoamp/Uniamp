@@ -121,6 +121,7 @@ namespace Unity.View
 					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
 					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
 
+					/*
 					if( dataLoopPlaylist.loopPointListDictionary.ContainsKey( lFilePathOutput ) == false )
 					{
 						dataLoopPlaylist.loopPointListDictionary.Add( lFilePathOutput, lLoopInformationList );
@@ -128,7 +129,7 @@ namespace Unity.View
 					else
 					{
 						dataLoopPlaylist.loopPointListDictionary[lFilePathOutput] = lLoopInformationList;
-					}
+					}*/
 					
 					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
 				}
