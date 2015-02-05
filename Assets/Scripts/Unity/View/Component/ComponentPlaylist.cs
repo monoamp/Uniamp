@@ -18,11 +18,28 @@ namespace Unity.View
 {
 	public class DataLoopPlaylist
 	{
-		public DirectoryInfo directoryInfo;
-
-		public List<string> filePathList;
+		public string[] pathArray;
 		public Dictionary<string, bool> isSelectedList;
 		public Dictionary<string, List<LoopInformation>> loopPointListDictionary;
+		public Dictionary<string, IMusic> musicDictionary;
+
+		public DataLoopPlaylist()
+		{
+			isSelectedList = new Dictionary<string, bool>();
+			loopPointListDictionary = new Dictionary<string, List<LoopInformation>>();
+			musicDictionary = new Dictionary<string, IMusic>();
+		}
+	}
+
+	public class ComponentPlaylist : IView
+	{
+		public List<string> filePathList;
+		public DirectoryInfo directoryInfo;
+
+		public DataLoopPlaylist data;
+		private Vector2 scrollPosition;
+		
+		public Rect Rect{ get; set; }
 		
 		public delegate void PlayMusic( string aName );
 		public delegate string GetPlayingMusic();
@@ -30,29 +47,13 @@ namespace Unity.View
 		public PlayMusic playMusic;
 		public GetPlayingMusic getPlayingMusic;
 
-		public DataLoopPlaylist( DirectoryInfo aDirectoryInfo, PlayMusic aSetPlayMusic, GetPlayingMusic aGetPlayingMusic )
+		public ComponentPlaylist( DirectoryInfo aDirectoryInfo, PlayMusic aPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
 			directoryInfo = aDirectoryInfo;
-
-			playMusic = aSetPlayMusic;
+			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
-		}
-	}
 
-	public class ComponentPlaylist : IView
-	{
-		public DataLoopPlaylist data;
-        private Dictionary<string, IMusic> musicDictionary;
-		private Vector2 scrollPosition;
-		private string[] pathArray;
-		
-		public Rect Rect{ get; set; }
-
-		public ComponentPlaylist( DirectoryInfo aDirectoryInfo, DataLoopPlaylist.PlayMusic aSetFileInfoPlaying, DataLoopPlaylist.GetPlayingMusic aGetFileInfoPlaying )
-		{
-			data = new DataLoopPlaylist( aDirectoryInfo, aSetFileInfoPlaying, aGetFileInfoPlaying );
-			data.loopPointListDictionary = new Dictionary<string, List<LoopInformation>>();
-			musicDictionary = new Dictionary<string, IMusic>();
+			data = new DataLoopPlaylist();
 
 			UpdateFileList();
 
@@ -61,7 +62,7 @@ namespace Unity.View
 
 		public void SetDirectory( DirectoryInfo aDirectoryInfo )
 		{
-			data.directoryInfo = aDirectoryInfo;
+			directoryInfo = aDirectoryInfo;
 		}
 		
 		public void Awake()
@@ -145,31 +146,31 @@ namespace Unity.View
 					{
 						GUIStyle[] lViewRow = { GuiStyleSet.StyleTable.viewRowA, GuiStyleSet.StyleTable.viewRowB };
 
-						for( int i = 0; i < data.filePathList.Count; i++ )
+						for( int i = 0; i < filePathList.Count; i++ )
 						{
-							string lFilePath = data.filePathList[i];
+							string lFilePath = filePathList[i];
 
-							if( musicDictionary.ContainsKey( lFilePath ) == true )
+							if( data.musicDictionary.ContainsKey( lFilePath ) == true )
 							{
 								GUILayout.BeginHorizontal( lViewRow[i % 2] );
 								{
-									if( lFilePath == data.getPlayingMusic() )
+									if( lFilePath == getPlayingMusic() )
 									{
 										if( GUILayout.Toggle( true, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == false )
 										{
-											data.playMusic( lFilePath );
+											playMusic( lFilePath );
 										}
 									}
 									else
 									{
 										if( GUILayout.Toggle( false, new GUIContent( Path.GetFileName( lFilePath ), "StyleTable.ToggleRow" ), GuiStyleSet.StyleTable.toggleRow, GUILayout.MinWidth( 300.0f ) ) == true )
 										{
-											data.playMusic( lFilePath );
+											playMusic( lFilePath );
 										}
 									}
 
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( musicDictionary[lFilePath].Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( data.musicDictionary[lFilePath].Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 									GUILayout.TextField( data.loopPointListDictionary[lFilePath][0].start.String, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
@@ -228,60 +229,55 @@ namespace Unity.View
 
 		private void UpdateFileList()
 		{
-			string[] lPathArray = PoolFilePath.Get( data.directoryInfo );
-
-			if( lPathArray != pathArray )
+			string[] lPathArray = PoolFilePath.Get( directoryInfo );
+			
+			if( lPathArray != data.pathArray )
 			{
-				pathArray = lPathArray;
+				data.pathArray = lPathArray;
 
-				LoadLoop();
-			}
-		}
+				filePathList = new List<string>();
 
-		private void LoadLoop()
-		{
-			data.filePathList = new List<string>();
-
-			for( int i = 0; i < pathArray.Length; i++ )
-			{
-				string lFilePath = pathArray[i];
-				data.filePathList.Add( lFilePath );
-				Logger.BreakDebug( "Input:" + lFilePath );
-				
-				if( musicDictionary.ContainsKey( lFilePath ) == false )
+				for( int i = 0; i < data.pathArray.Length; i++ )
 				{
-					IMusic lMusic = null;
-
-					try
+					string lFilePath = data.pathArray[i];
+					filePathList.Add( lFilePath );
+					Logger.BreakDebug( "Input:" + lFilePath );
+					
+					if( data.musicDictionary.ContainsKey( lFilePath ) == false )
 					{
-						lMusic = LoaderCollection.LoadMusic( lFilePath );
-					}
-					catch( Exception aExpection )
-					{
-						Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
-					}
+						IMusic lMusic = null;
 
-					if( lMusic != null )
-					{
-						Logger.BreakDebug( "Add:" + lFilePath );
-						musicDictionary.Add( lFilePath, lMusic );
-						List<LoopInformation> lLoopPointList = new List<LoopInformation>();
-
-						for( int j = 0; j < lMusic.GetCountLoopX(); j++ )
+						try
 						{
-							for( int k = 0; k < lMusic.GetCountLoopY( j ); k++ )
+							lMusic = LoaderCollection.LoadMusic( lFilePath );
+						}
+						catch( Exception aExpection )
+						{
+							Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
+						}
+
+						if( lMusic != null )
+						{
+							Logger.BreakDebug( "Add:" + lFilePath );
+							data.musicDictionary.Add( lFilePath, lMusic );
+							List<LoopInformation> lLoopPointList = new List<LoopInformation>();
+
+							for( int j = 0; j < lMusic.GetCountLoopX(); j++ )
 							{
-								lLoopPointList.Add( lMusic.GetLoop( j, k ) );
+								for( int k = 0; k < lMusic.GetCountLoopY( j ); k++ )
+								{
+									lLoopPointList.Add( lMusic.GetLoop( j, k ) );
+								}
 							}
-						}
 
-						if( data.loopPointListDictionary.ContainsKey( lFilePath ) == false )
-						{
-							data.loopPointListDictionary.Add( lFilePath, lLoopPointList );
-						}
-						else
-						{
-							data.loopPointListDictionary[lFilePath] = lLoopPointList;
+							if( data.loopPointListDictionary.ContainsKey( lFilePath ) == false )
+							{
+								data.loopPointListDictionary.Add( lFilePath, lLoopPointList );
+							}
+							else
+							{
+								data.loopPointListDictionary[lFilePath] = lLoopPointList;
+							}
 						}
 					}
 				}
@@ -290,7 +286,7 @@ namespace Unity.View
 
 		public void ChangeMusicPrevious()
 		{
-			int lIndex = data.filePathList.IndexOf( data.getPlayingMusic() );
+			int lIndex = filePathList.IndexOf( getPlayingMusic() );
 
 			if( lIndex >= 0 )
 			{
@@ -298,27 +294,27 @@ namespace Unity.View
 
 				if( lIndex < 0 )
 				{
-					lIndex = data.filePathList.Count - 1;
+					lIndex = filePathList.Count - 1;
 				}
 
-				data.playMusic( data.filePathList[lIndex] );
+				playMusic( filePathList[lIndex] );
 			}
 		}
 
 		public void ChangeMusicNext()
 		{
-			int lIndex = data.filePathList.IndexOf( data.getPlayingMusic() );
+			int lIndex = filePathList.IndexOf( getPlayingMusic() );
 
 			if( lIndex >= 0 )
 			{
 				lIndex++;
 
-				if( lIndex >= data.filePathList.Count )
+				if( lIndex >= filePathList.Count )
 				{
 					lIndex = 0;
 				}
 				
-				data.playMusic( data.filePathList[lIndex] );
+				playMusic( filePathList[lIndex] );
 			}
 		}
     }

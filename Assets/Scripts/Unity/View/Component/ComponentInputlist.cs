@@ -18,6 +18,7 @@ namespace Unity.View
 {
 	public class DataLoopInputlist
 	{
+		public string[] pathArray;
 		public Dictionary<string, double> progressDictionary;
 		public Dictionary<string, bool> isSelectedDictionary;
 		public Dictionary<string, LoopInformation> loopSetDictionary;
@@ -38,7 +39,6 @@ namespace Unity.View
 		public List<string> filePathList;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
-		private string[] pathArray;
 		private DirectoryInfo directoryInfo;
 
 		private const string STRING_PROGRESS = "Progress";
@@ -224,15 +224,15 @@ namespace Unity.View
 		{
 			string[] lPathArray = PoolFilePath.Get( directoryInfo );
 
-			if( lPathArray != pathArray )
+			if( lPathArray != data.pathArray )
 			{
-				pathArray = lPathArray;
+				data.pathArray = lPathArray;
                 
 				filePathList = new List<string>();
 
-				for( int i = 0; i < pathArray.Length; i++ )
+				for( int i = 0; i < data.pathArray.Length; i++ )
 				{
-					string lFilePath = pathArray[i];
+					string lFilePath = data.pathArray[i];
 					Logger.BreakDebug( "Input:" + lFilePath );
 					filePathList.Add( lFilePath );
 

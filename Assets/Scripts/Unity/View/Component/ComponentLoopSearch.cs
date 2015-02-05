@@ -20,16 +20,16 @@ namespace Unity.View
 		private Thread thread;
 		private bool isOnSearch;
 
-		private DataLoopPlaylist dataLoopPlaylist;
+		private ComponentPlaylist componentPlaylist;
 		private DataLoopInputlist dataLoopInputlist;
 		private List<string> filePathInputList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentLoopSearch( DataLoopPlaylist aDataLoopPlaylist, DataLoopInputlist aDataLoopDetector, List<string> aFilePathInputList )
+		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, DataLoopInputlist aDataLoopInputlist, List<string> aFilePathInputList )
 		{
-			dataLoopPlaylist = aDataLoopPlaylist;
-			dataLoopInputlist = aDataLoopDetector;
+			componentPlaylist = aComponentPlaylist;
+			dataLoopInputlist = aDataLoopInputlist;
 			filePathInputList = aFilePathInputList;
 
 			isOnSearch = false;
@@ -78,7 +78,7 @@ namespace Unity.View
 
 				if( isOnSearch == false )
 				{
-					if( GUILayout.Toggle( false, new GUIContent ( "Start", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == true )
+					if( GUILayout.Toggle( false, new GUIContent ( "Start Search", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == true )
 					{
 						isOnSearch = true;
 						thread = new Thread( Execute );
@@ -95,7 +95,7 @@ namespace Unity.View
 				}
 				else
 				{
-					if( GUILayout.Toggle( true, new GUIContent ( "Stop", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == false )
+					if( GUILayout.Toggle( true, new GUIContent ( "Stop Search", "StyleLoopTool.ButtonSearch" ), GuiStyleSet.StyleLoopTool.buttonSearch ) == false )
 					{
 						isOnSearch = false;
 						thread.Abort();
@@ -103,8 +103,13 @@ namespace Unity.View
 				}
 
 				GUILayout.FlexibleSpace();
+				
+				if( GUILayout.Button( new GUIContent ( "Save Modified Loop", "StyleLoopTool.ButtonSave" ), GuiStyleSet.StyleLoopTool.buttonSave ) == true )
+				{
+					SaveModifiedLoop();
+				}
 			}
-			GUILayout.EndVertical();
+			GUILayout.EndHorizontal();
 		}
 		
 		private void Execute()
@@ -115,27 +120,41 @@ namespace Unity.View
 
 				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
 				{
-					string lFilePathOutput = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
+					string lFilePathOutput = componentPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
 					Debug.Log( "Search:" + lFilePathInput );
 
 					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
 					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
 
-					/*
-					if( dataLoopPlaylist.loopPointListDictionary.ContainsKey( lFilePathOutput ) == false )
-					{
-						dataLoopPlaylist.loopPointListDictionary.Add( lFilePathOutput, lLoopInformationList );
-					}
-					else
-					{
-						dataLoopPlaylist.loopPointListDictionary[lFilePathOutput] = lLoopInformationList;
-					}*/
+					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
+				}
+			}
+			
+			isOnSearch = false;
+		}
+		
+		private void SaveModifiedLoop()
+		{
+			/*
+			dataLoopPlaylist.getPlayingMusic();
+			for( int i = 0; i < filePathInputList.Count; i++ )
+			{
+				string lFilePathInput = filePathInputList[i];
+				
+				if( dataLoopInputlist.isSelectedDictionary.ContainsKey( lFilePathInput ) == true && dataLoopInputlist.isSelectedDictionary[lFilePathInput] == true )
+				{
+					string lFilePathOutput = dataLoopPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
+					Debug.Log( "Search:" + lFilePathInput );
+					
+					List<LoopInformation> lLoopInformationList = new List<LoopInformation>();
+					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist.progressDictionary, lLoopInformationList );
 					
 					dataLoopInputlist.isSelectedDictionary[lFilePathInput] = false;
 				}
 			}
 			
 			isOnSearch = false;
+	*/
 		}
 
 		public bool GetIsCutLast()
