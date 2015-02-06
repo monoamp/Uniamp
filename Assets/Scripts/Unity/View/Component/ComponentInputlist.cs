@@ -17,7 +17,9 @@ using Monoamp.Boundary;
 namespace Unity.View
 {
 	public class ComponentInputlist : IView
-    {
+	{
+		public Rect Rect{ get; set; }
+
 		public Dictionary<string, InputMusicInformation> data;
 		public string[] pathArray;
 		public List<string> filePathList;
@@ -32,8 +34,6 @@ namespace Unity.View
 		
 		public PlayMusic playMusic;
 		public GetPlayingMusic getPlayingMusic;
-
-		public Rect Rect{ get; set; }
 
 		public ComponentInputlist( DirectoryInfo aDirectoryInfo, PlayMusic aPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
@@ -227,7 +227,6 @@ namespace Unity.View
 				{
 					string lFilePath = pathArray[i];
 					Logger.BreakDebug( "Input:" + lFilePath );
-					filePathList.Add( lFilePath );
 
 					if( data.ContainsKey( lFilePath ) == false )
 					{
@@ -244,6 +243,7 @@ namespace Unity.View
 						
 						if( lMusic != null )
 						{
+							filePathList.Add( lFilePath );
 							data.Add( lFilePath, new InputMusicInformation( false, lMusic, 0.0d ) );
 							data[lFilePath].music = lMusic;
 						}

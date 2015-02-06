@@ -18,6 +18,8 @@ namespace Unity.View
 {
 	public class ComponentPlaylist : IView
 	{
+		public Rect Rect{ get; set; }
+
 		public string[] pathArray;
 		public List<string> filePathList;
 		public DirectoryInfo directoryInfo;
@@ -25,9 +27,7 @@ namespace Unity.View
 		public Dictionary<string, PlayMusicInformation> data;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
-		
-		public Rect Rect{ get; set; }
-		
+
 		public delegate void PlayMusic( string aName );
 		public delegate string GetPlayingMusic();
 		
@@ -255,7 +255,6 @@ namespace Unity.View
 				for( int i = 0; i < pathArray.Length; i++ )
 				{
 					string lFilePath = pathArray[i];
-					filePathList.Add( lFilePath );
 					Logger.BreakDebug( "Input:" + lFilePath );
 					
 					if( data.ContainsKey( lFilePath ) == false )
@@ -273,7 +272,12 @@ namespace Unity.View
 
 						if( lMusic != null )
 						{
-							Logger.BreakDebug( "Add:" + lFilePath );
+							filePathList.Add( lFilePath );
+							
+							if( data.ContainsKey( lFilePath ) == false )
+							{
+								data.Add( lFilePath, new PlayMusicInformation( false, lMusic, lMusic.Loop ) );
+							}
 
 							/*
 							List<LoopInformation> lLoopPointList = new List<LoopInformation>();
@@ -285,11 +289,6 @@ namespace Unity.View
 									lLoopPointList.Add( data.musicDictionary[lFilePath].GetLoop( j, k ) );
 								}
 							}*/
-
-							if( data.ContainsKey( lFilePath ) == false )
-							{
-								data.Add( lFilePath, new PlayMusicInformation( false, lMusic, lMusic.Loop ) );
-							}
 						}
 					}
 				}
