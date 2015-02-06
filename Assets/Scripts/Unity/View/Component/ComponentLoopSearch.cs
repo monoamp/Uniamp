@@ -163,16 +163,16 @@ namespace Unity.View
 			{
 				string lFilePathOutput = filePathOutputList[i];
 				
-				if( componentPlaylist.data.ContainsKey( lFilePathOutput ) == true && componentPlaylist.data[lFilePathOutput].isSelected == true )
+				if( componentPlaylist.musicInformationDictionary.ContainsKey( lFilePathOutput ) == true && componentPlaylist.musicInformationDictionary[lFilePathOutput].isSelected == true )
 				{
 					Logger.BreakDebug( "Save:" + lFilePathOutput );
 					
-					LoopInformation lLoopInformation = componentPlaylist.data[lFilePathOutput].music.Loop;
+					LoopInformation lLoopInformation = componentPlaylist.musicInformationDictionary[lFilePathOutput].music.Loop;
 					
 					Logger.BreakDebug( "Loop:" + lLoopInformation.start.sample + ", " + lLoopInformation.end.sample + ", " + lLoopInformation.length.sample );
 					LoopSearchExecutor.SaveModifiedLoop( lFilePathOutput, lLoopInformation );
 					
-					componentPlaylist.data[lFilePathOutput].isSelected = false;
+					componentPlaylist.musicInformationDictionary[lFilePathOutput].isSelected = false;
 				}
 			}
 			

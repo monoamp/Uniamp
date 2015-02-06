@@ -38,8 +38,6 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			}
 
 			List<LoopInformation> lLoopList = null;
-			
-			Logger.BreakDebug( "Exception" );
 
 			try
 			{
@@ -49,8 +47,6 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			{
 				Logger.BreakError( aExpection.ToString() + ":LoopTool Exception" );
 			}
-			
-			Logger.BreakDebug( "Exception" );
 
 			for( int i = 0; i < lLoopList.Count; i++ )
 			{

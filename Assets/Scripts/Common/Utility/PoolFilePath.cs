@@ -21,14 +21,14 @@ namespace Monoamp.Common.Utility
         {
             lock( objectLock )
             {
-				// If: Exists new file.
+				// If: Need to load new directory.
 				if( pathArrayDictionary.ContainsKey( aDirectoryInfo.FullName ) == false )
                 {
 					pathArrayDictionary.Add( aDirectoryInfo.FullName, Directory.GetFiles( aDirectoryInfo.FullName, "*.*", SearchOption.TopDirectoryOnly ) );
 					dateTimeDictionary.Add( aDirectoryInfo.FullName, Directory.GetLastWriteTime( aDirectoryInfo.FullName ) );
                 }
 				
-				// If: Exists updated file.
+				// If: Updated.
 				if( dateTimeDictionary[aDirectoryInfo.FullName].Ticks != Directory.GetLastWriteTime( aDirectoryInfo.FullName ).Ticks )
                 {
 					pathArrayDictionary[aDirectoryInfo.FullName] = Directory.GetFiles( aDirectoryInfo.FullName, "*.*", SearchOption.TopDirectoryOnly );
@@ -37,6 +37,16 @@ namespace Monoamp.Common.Utility
             }
             
 			return pathArrayDictionary[aDirectoryInfo.FullName];
+		}
+		
+		public static long GetTimeStampTicks( DirectoryInfo aDirectoryInfo )
+		{
+			if( pathArrayDictionary.ContainsKey( aDirectoryInfo.FullName ) == false )
+			{
+				Get( aDirectoryInfo );
+			}
+
+			return dateTimeDictionary[aDirectoryInfo.FullName].Ticks;
 		}
 	}
 }

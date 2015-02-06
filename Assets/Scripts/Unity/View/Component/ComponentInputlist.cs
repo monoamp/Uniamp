@@ -20,15 +20,13 @@ namespace Unity.View
 	{
 		public Rect Rect{ get; set; }
 
-		public Dictionary<string, InputMusicInformation> data;
-		public string[] pathArray;
+		public Dictionary<string, InputMusicInformation> musicInformationDictionary;
+		private long timeStampTicks;
 		public List<string> filePathList;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 		private DirectoryInfo directoryInfo;
 
-		private const string STRING_PROGRESS = "Progress";
-		
 		public delegate void PlayMusic( string aFilePath );
 		public delegate string GetPlayingMusic();
 		
@@ -37,11 +35,12 @@ namespace Unity.View
 
 		public ComponentInputlist( DirectoryInfo aDirectoryInfo, PlayMusic aPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
+			timeStampTicks = 0;
 			directoryInfo = aDirectoryInfo;
 			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
 
-			data = new Dictionary<string, InputMusicInformation>();
+			musicInformationDictionary = new Dictionary<string, InputMusicInformation>();
 
 			UpdateFileList();
 			
@@ -105,9 +104,9 @@ namespace Unity.View
 						{
 							foreach( string l in filePathList )
 							{
-								if( data.ContainsKey( l ) == true )
+								if( musicInformationDictionary.ContainsKey( l ) == true )
 								{
-									data[l].isSelected = isSelectedAll;
+									musicInformationDictionary[l].isSelected = isSelectedAll;
 								}
 							}
 						}
@@ -128,13 +127,13 @@ namespace Unity.View
 						{
 							string lFilePath = filePathList[i];
 							
-							if( data.ContainsKey( lFilePath ) == true )
+							if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
 							{
 								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
 									lCount++;
 
-									data[lFilePath].isSelected = GUILayout.Toggle( data[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
+									musicInformationDictionary[lFilePath].isSelected = GUILayout.Toggle( musicInformationDictionary[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
@@ -153,14 +152,14 @@ namespace Unity.View
 									}
 									
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( data[filePathList[i]].music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( musicInformationDictionary[filePathList[i]].music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
-									if( data[lFilePath].isSelected == true )
+									if( musicInformationDictionary[lFilePath].isSelected == true )
 									{
-										if( data[lFilePath].progress > 0.0f )
+										if( musicInformationDictionary[lFilePath].progress > 0.0f )
 										{
-											GUILayout.HorizontalScrollbar( 0.0f, ( float )data[lFilePath].progress, 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
+											GUILayout.HorizontalScrollbar( 0.0f, ( float )musicInformationDictionary[lFilePath].progress, 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
 										}
 										else
 										{
@@ -215,23 +214,23 @@ namespace Unity.View
 
 		private void UpdateFileList()
 		{
-			string[] lPathArray = PoolFilePath.Get( directoryInfo );
-
-			if( lPathArray != pathArray )
+			if( PoolFilePath.GetTimeStampTicks( directoryInfo ) != timeStampTicks )
 			{
-				pathArray = lPathArray;
-                
+				timeStampTicks = PoolFilePath.GetTimeStampTicks( directoryInfo );
+				string[] lPathArray = PoolFilePath.Get( directoryInfo );
+
 				filePathList = new List<string>();
 
-				for( int i = 0; i < pathArray.Length; i++ )
+				for( int i = 0; i < lPathArray.Length; i++ )
 				{
-					string lFilePath = pathArray[i];
+					string lFilePath = lPathArray[i];
 					Logger.BreakDebug( "Input:" + lFilePath );
+					long timeStampFile = File.GetLastWriteTime( lFilePath ).Ticks;
+					
+					IMusic lMusic = null;
 
-					if( data.ContainsKey( lFilePath ) == false )
+					if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
 					{
-						IMusic lMusic = null;
-						
 						try
 						{
 							lMusic = LoaderCollection.LoadMusic( lFilePath );
@@ -244,15 +243,23 @@ namespace Unity.View
 						if( lMusic != null )
 						{
 							filePathList.Add( lFilePath );
-
-							if( data.ContainsKey( lFilePath ) == false )
-							{
-								data.Add( lFilePath, new InputMusicInformation( false, lMusic, 0.0d ) );
-							}
-							else
-							{
-								data[lFilePath] = new InputMusicInformation( false, lMusic, 0.0d );
-							}
+							musicInformationDictionary.Add( lFilePath, new InputMusicInformation( timeStampFile, false, lMusic, 0.0d ) );
+						}
+					}
+					else if( timeStampFile != musicInformationDictionary[lFilePath].timeStampTicks )
+					{
+						try
+						{
+							lMusic = LoaderCollection.LoadMusic( lFilePath );
+						}
+						catch( Exception aExpection )
+						{
+							Logger.BreakError( "LoopInputlist Exception:" + aExpection.ToString() + ":" + lFilePath );
+						}
+						
+						if( lMusic != null )
+						{
+							musicInformationDictionary[lFilePath] = new InputMusicInformation( timeStampFile, false, lMusic, 0.0d );
 						}
 					}
 				}
@@ -263,9 +270,9 @@ namespace Unity.View
 		{
 			foreach( string l in filePathList )
 			{
-				if( data.ContainsKey( l ) == true )
+				if( musicInformationDictionary.ContainsKey( l ) == true )
 				{
-					data[l].isSelected = false;
+					musicInformationDictionary[l].isSelected = false;
 				}
 			}
 		}
@@ -280,7 +287,7 @@ namespace Unity.View
 
 				if( lIndex < 0 )
 				{
-					lIndex = data.Count - 1;
+					lIndex = musicInformationDictionary.Count - 1;
 				}
 
 				playMusic( filePathList[lIndex] );
@@ -295,7 +302,7 @@ namespace Unity.View
 			{
 				lIndex++;
 
-				if( lIndex >= data.Count )
+				if( lIndex >= musicInformationDictionary.Count )
 				{
 					lIndex = 0;
 				}

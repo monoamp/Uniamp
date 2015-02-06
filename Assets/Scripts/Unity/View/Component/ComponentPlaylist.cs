@@ -20,11 +20,11 @@ namespace Unity.View
 	{
 		public Rect Rect{ get; set; }
 
-		public string[] pathArray;
 		public List<string> filePathList;
 		public DirectoryInfo directoryInfo;
-
-		public Dictionary<string, PlayMusicInformation> data;
+		
+		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
+		public Dictionary<string, bool> filePathListD;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 
@@ -34,23 +34,43 @@ namespace Unity.View
 		public PlayMusic playMusic;
 		public GetPlayingMusic getPlayingMusic;
 
+		private FileSystemWatcher fsw;
+
 		public ComponentPlaylist( DirectoryInfo aDirectoryInfo, PlayMusic aPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
 			directoryInfo = aDirectoryInfo;
 			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
+			
+			musicInformationDictionary = new Dictionary<string, PlayMusicInformation>();
+			filePathListD = new Dictionary<string, bool>();
 
-			data = new Dictionary<string, PlayMusicInformation>();
-
-			UpdateFileList();
+			UpdateFileList( null, null );
 			
 			isSelectedAll = false;
 			scrollPosition = Vector2.zero;
+			
+			Logger.BreakDebug( "ComponentPlaylist:" + aDirectoryInfo.FullName );
+			/*
+			fsw = new FileSystemWatcher( aDirectoryInfo.FullName );
+			fsw.Filter = "*.*";
+			fsw.NotifyFilter = NotifyFilters.LastWrite;
+			fsw.IncludeSubdirectories = false;
+			fsw.Changed += new FileSystemEventHandler( UpdateFileList );
+			fsw.EnableRaisingEvents = true;*/
 		}
 
 		public void SetDirectory( DirectoryInfo aDirectoryInfo )
 		{
 			directoryInfo = aDirectoryInfo;
+			/*
+			fsw.EnableRaisingEvents = false;
+			fsw = new FileSystemWatcher( aDirectoryInfo.FullName );
+			fsw.Filter = "*.*";
+			fsw.NotifyFilter = NotifyFilters.LastWrite;
+			fsw.IncludeSubdirectories = false;
+			fsw.Changed += new FileSystemEventHandler( UpdateFileList );
+			fsw.EnableRaisingEvents = true;*/
 		}
 		
 		public void Awake()
@@ -90,7 +110,7 @@ namespace Unity.View
 
 			if( Event.current.type != EventType.Repaint )
 			{
-				UpdateFileList();
+				UpdateFileList( null, null );
 			}
 
 			GUILayout.BeginVertical();
@@ -114,11 +134,11 @@ namespace Unity.View
 
 							GUILayout.BeginHorizontal();
 							{
-								GUILayout.Label( new GUIContent( "Start", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
+								GUILayout.Label( new GUIContent( "Start", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-								GUILayout.Label( new GUIContent( "End", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
+								GUILayout.Label( new GUIContent( "End", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-								GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
+								GUILayout.Label( new GUIContent( "Length", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( lWidthValue ) );
 							}
 							GUILayout.EndHorizontal();
 						}
@@ -128,9 +148,9 @@ namespace Unity.View
 						{
 							foreach( string l in filePathList )
 							{
-								if( data.ContainsKey( l ) == true )
+								if( musicInformationDictionary.ContainsKey( l ) == true )
 								{
-									data[l].isSelected = isSelectedAll;
+									musicInformationDictionary[l].isSelected = isSelectedAll;
 								}
 							}
 						}
@@ -151,14 +171,14 @@ namespace Unity.View
 						{
 							string lFilePath = filePathList[i];
 
-							if( data.ContainsKey( lFilePath ) == true )
+							if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
 							{
 								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
 									lCount++;
-									IMusic lMusic = data[lFilePath].music;
+									IMusic lMusic = musicInformationDictionary[lFilePath].music;
 
-									data[lFilePath].isSelected = GUILayout.Toggle( data[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
+									musicInformationDictionary[lFilePath].isSelected = GUILayout.Toggle( musicInformationDictionary[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
@@ -242,24 +262,47 @@ namespace Unity.View
 			GUILayout.EndVertical();
 		}
 
-		private void UpdateFileList()
+		private void UpdateFileList( object sender, FileSystemEventArgs e )
 		{
 			string[] lPathArray = PoolFilePath.Get( directoryInfo );
-			
-			if( lPathArray != pathArray )
+
+			filePathList = new List<string>();
+
+			for( int i = 0; i < lPathArray.Length; i++ )
 			{
-				pathArray = lPathArray;
+				string lFilePath = lPathArray[i];
+				//Logger.BreakDebug( "Input:" + lFilePath );
+				long timeStampFile = File.GetLastWriteTime( lFilePath ).Ticks;
+				
+				IMusic lMusic = null;
 
-				filePathList = new List<string>();
-
-				for( int i = 0; i < pathArray.Length; i++ )
+				if( filePathListD.ContainsKey( lFilePath ) == false )
 				{
-					string lFilePath = pathArray[i];
-					Logger.BreakDebug( "Input:" + lFilePath );
-					
-					if( data.ContainsKey( lFilePath ) == false )
+					filePathListD.Add( lFilePath, true );
+
+					try
 					{
-						IMusic lMusic = null;
+						lMusic = LoaderCollection.LoadMusic( lFilePath );
+					}
+					catch( Exception aExpection )
+					{
+						Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
+					}
+
+					if( lMusic != null )
+					{
+						filePathList.Add( lFilePath );
+						musicInformationDictionary.Add( lFilePath, new PlayMusicInformation( timeStampFile, false, lMusic, lMusic.Loop ) );
+					}
+				}
+
+				if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
+				{
+					filePathList.Add( lFilePath );
+
+					if( timeStampFile != musicInformationDictionary[lFilePath].timeStampTicks )
+					{
+						//Logger.BreakError( "UpdateFileList" );
 
 						try
 						{
@@ -269,19 +312,10 @@ namespace Unity.View
 						{
 							Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
 						}
-
+						
 						if( lMusic != null )
 						{
-							filePathList.Add( lFilePath );
-							
-							if( data.ContainsKey( lFilePath ) == false )
-							{
-								data.Add( lFilePath, new PlayMusicInformation( false, lMusic, lMusic.Loop ) );
-							}
-							else
-							{
-								data[lFilePath] = new PlayMusicInformation( false, lMusic, lMusic.Loop );
-							}
+							musicInformationDictionary[lFilePath] = new PlayMusicInformation( timeStampFile, false, lMusic, lMusic.Loop );
 						}
 					}
 				}

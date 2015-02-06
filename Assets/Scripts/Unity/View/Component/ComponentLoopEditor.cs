@@ -122,19 +122,26 @@ namespace Unity.View
 				
 				GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
 				{
-					GUILayout.BeginHorizontal();
+					GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
 					{
-						GUILayout.Label( new GUIContent( "Pattern No.", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 60.0f ) );
+						GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
+						GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
+
+						GUILayout.BeginHorizontal();
+						{
+							GUILayout.Label( new GUIContent( "Group No.", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+							GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader );
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+							GUILayout.Label( new GUIContent( "Count", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 60.0f ) );
+						}
+						GUILayout.EndHorizontal();
 					}
-					GUILayout.EndHorizontal();
+					GUILayout.EndVertical();
 				}
 				GUILayout.EndScrollView();
 
-				scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, false, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
+				scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
 				{
 					for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
 					{
@@ -161,6 +168,28 @@ namespace Unity.View
 						}
 						GUILayout.EndHorizontal();
 					}
+					
+					GUILayout.BeginHorizontal();
+					{
+						GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+						{
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndVertical();
+						
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+						
+						GUILayout.FlexibleSpace();
+						
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+						
+						GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
+						{
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndVertical();
+					}
+					GUILayout.EndHorizontal();
 				}
 				GUILayout.EndScrollView();
 
@@ -172,6 +201,7 @@ namespace Unity.View
 					componentPlayer.SetLoop( loopArrayArray[x][y] );
 					playMusicInformation.loopPoint = loopArrayArray[x][y];
 					playMusicInformation.music.Loop = loopArrayArray[x][y];
+					playMusicInformation.isSelected = true;
 				}
 			}
 		}
