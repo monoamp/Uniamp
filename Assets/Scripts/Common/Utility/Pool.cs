@@ -10,6 +10,7 @@ namespace Monoamp.Common.Utility
 
 		private readonly Constructor constructor;
 		private readonly Dictionary<string, object> dictionary;
+		private readonly Dictionary<string, long> timeStampTicksDictionary;
 
 		private object objectLock;
 
@@ -17,6 +18,7 @@ namespace Monoamp.Common.Utility
 		{
 			constructor = aConstructor;
 			dictionary = new Dictionary<string, object>();
+			timeStampTicksDictionary = new Dictionary<string, long>();
 			
 			objectLock = new object();
 		}
@@ -27,20 +29,15 @@ namespace Monoamp.Common.Utility
 			{
 				if( dictionary.ContainsKey( aPathFile ) == false )
 				{
-					try
-					{
-						using( FileStream u = new FileStream( aPathFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
-						{
-							object l = constructor( u );
-
-							dictionary.Add( aPathFile, l );
-						}
-					}
-					catch( Exception aExpection )
-					{
-						UnityEngine.Debug.LogError( "Exception:" + aExpection );
-						UnityEngine.Debug.LogError( "PathFile:" + aPathFile );
-					}
+					object l = Load( aPathFile );
+					dictionary.Add( aPathFile, l );
+					timeStampTicksDictionary.Add( aPathFile, File.GetLastWriteTime( aPathFile ).Ticks );
+				}
+				else if( File.GetLastWriteTime( aPathFile ).Ticks != timeStampTicksDictionary[aPathFile] )
+				{
+					object l = Load( aPathFile );
+					dictionary[aPathFile] = l;
+					timeStampTicksDictionary[aPathFile] = File.GetLastWriteTime( aPathFile ).Ticks;
 				}
 			}
 
@@ -50,6 +47,23 @@ namespace Monoamp.Common.Utility
 			}
 			else
 			{
+				return null;
+			}
+		}
+		
+		private object Load( string aPathFile )
+		{
+			try
+			{
+				using( FileStream u = new FileStream( aPathFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
+				{
+					return constructor( u );
+				}
+			}
+			catch( Exception aExpection )
+			{
+				UnityEngine.Debug.LogError( "Exception:" + aExpection );
+				UnityEngine.Debug.LogError( "PathFile:" + aPathFile );
 				return null;
 			}
 		}
