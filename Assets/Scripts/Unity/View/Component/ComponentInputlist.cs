@@ -244,17 +244,17 @@ namespace Unity.View
 						if( lMusic != null )
 						{
 							filePathList.Add( lFilePath );
-							data.Add( lFilePath, new InputMusicInformation( false, lMusic, 0.0d ) );
-							data[lFilePath].music = lMusic;
+
+							if( data.ContainsKey( lFilePath ) == false )
+							{
+								data.Add( lFilePath, new InputMusicInformation( false, lMusic, 0.0d ) );
+							}
+							else
+							{
+								data[lFilePath] = new InputMusicInformation( false, lMusic, 0.0d );
+							}
 						}
 					}
-
-					/*
-					if( data.ContainsKey( lFilePath ) == true )
-					{
-						data[lFilePath].isSelected = false;
-						data[lFilePath].progress = 0.0d;
-					}*/
 				}
 			}
 		}

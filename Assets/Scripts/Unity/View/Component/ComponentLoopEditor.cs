@@ -83,54 +83,96 @@ namespace Unity.View
 		{
 			if( playMusicInformation != null )
 			{
+				int lX = x;
+				int lY = y;
+
 				GUILayout.BeginHorizontal();
 				{
-					int lLoopY = 1;
-					lLoopY = loopArrayArray[x].Length;
+					int lLoopCountY = 1;
+					lLoopCountY = loopArrayArray[x].Length;
 					
-					if( lLoopY == 0 )
+					if( lLoopCountY == 0 )
 					{
-						lLoopY = 1;
+						lLoopCountY = 1;
+					}
+
+					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					{
+						lY--;
+					}
+
+					lY = ( int )GUILayout.HorizontalSlider( lY, 0.0f, lLoopCountY - 1 );
+					
+					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					{
+						lY++;
+					}
+
+					if( lY < 0 )
+					{
+						lY = 0;
 					}
 					
-					int yPre = ( y - 1 + lLoopY ) % lLoopY;
-					int yNext = ( y + 1 ) % lLoopY;
-					
-					if( GUILayout.Button( new GUIContent ( ( yPre + 1 ).ToString() + "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					if( lY >= lLoopCountY )
 					{
-						y = yPre;
-						componentPlayer.SetLoop( loopArrayArray[x][y] );
-						playMusicInformation.loopPoint = loopArrayArray[x][y];
-						playMusicInformation.music.Loop = loopArrayArray[x][y];
-					}
-					
-					GUILayout.Label( new GUIContent ( playMusicInformation.music.GetLoop( x, y ).length.sample.ToString(), "StyleGeneral.LabelCenter" ), GuiStyleSet.StyleGeneral.labelCenter );
-					
-					if( GUILayout.Button( new GUIContent ( "->" + ( yNext + 1 ).ToString(), "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
-					{
-						y = yNext;
-						componentPlayer.SetLoop( loopArrayArray[x][y] );
-						playMusicInformation.loopPoint = loopArrayArray[x][y];
-						playMusicInformation.music.Loop = loopArrayArray[x][y];
+						lY = lLoopCountY - 1;
 					}
 				}
 				GUILayout.EndHorizontal();
 				
+				GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
+				{
+					GUILayout.BeginHorizontal();
+					{
+						GUILayout.Label( new GUIContent( "Pattern No.", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Length", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 60.0f ) );
+					}
+					GUILayout.EndHorizontal();
+				}
+				GUILayout.EndScrollView();
+
 				scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, false, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
 				{
 					for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
 					{
-						if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine ) == true )
+						GUILayout.BeginHorizontal();
 						{
-							x = i;
-							y = 0;
-							componentPlayer.SetLoop( loopArrayArray[x][y] );
-							playMusicInformation.loopPoint = loopArrayArray[x][y];
-							playMusicInformation.music.Loop = loopArrayArray[x][y];
+							GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+
+							if( i == x )
+							{
+								GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine );
+							}
+							else
+							{
+								if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine ) == true )
+								{
+									lX = i;
+									lY = 0;
+								}
+							}
+
+							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+							GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 60.0f ) );
 						}
+						GUILayout.EndHorizontal();
 					}
 				}
 				GUILayout.EndScrollView();
+
+				if( x != lX || y != lY )
+				{
+					x = lX;
+					y = lY;
+
+					componentPlayer.SetLoop( loopArrayArray[x][y] );
+					playMusicInformation.loopPoint = loopArrayArray[x][y];
+					playMusicInformation.music.Loop = loopArrayArray[x][y];
+				}
 			}
 		}
 

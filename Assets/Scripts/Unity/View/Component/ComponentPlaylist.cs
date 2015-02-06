@@ -278,17 +278,10 @@ namespace Unity.View
 							{
 								data.Add( lFilePath, new PlayMusicInformation( false, lMusic, lMusic.Loop ) );
 							}
-
-							/*
-							List<LoopInformation> lLoopPointList = new List<LoopInformation>();
-
-							for( int j = 0; j < data.musicDictionary[lFilePath].GetCountLoopX(); j++ )
+							else
 							{
-								for( int k = 0; k < data.musicDictionary[lFilePath].GetCountLoopY( j ); k++ )
-								{
-									lLoopPointList.Add( data.musicDictionary[lFilePath].GetLoop( j, k ) );
-								}
-							}*/
+								data[lFilePath] = new PlayMusicInformation( false, lMusic, lMusic.Loop );
+							}
 						}
 					}
 				}

@@ -8,7 +8,9 @@ namespace Unity.GuiStyle
 		public GUIStyle buttonSave;
 		public GUIStyle backgroundInput;
 		public GUIStyle backgroundOutput;
+		public GUIStyle backgroundEdit;
 		public GUIStyle labelInput;
 		public GUIStyle labelOutput;
+		public GUIStyle labelEdit;
 	}
 }
