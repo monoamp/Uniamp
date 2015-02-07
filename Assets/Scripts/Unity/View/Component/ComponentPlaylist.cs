@@ -20,11 +20,11 @@ namespace Unity.View
 	{
 		public Rect Rect{ get; set; }
 
-		public List<string> filePathList;
 		public DirectoryInfo directoryInfo;
-		
+
+		public List<string> filePathList;
+		public Dictionary<string, long> fileTimeStampTicksDictionary;
 		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
-		public Dictionary<string, bool> filePathListD;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 
@@ -41,9 +41,10 @@ namespace Unity.View
 			directoryInfo = aDirectoryInfo;
 			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
-			
+
+			filePathList = new List<string>();
+			fileTimeStampTicksDictionary = new Dictionary<string, long>();
 			musicInformationDictionary = new Dictionary<string, PlayMusicInformation>();
-			filePathListD = new Dictionary<string, bool>();
 
 			UpdateFileList( null, null );
 			
@@ -63,6 +64,9 @@ namespace Unity.View
 		public void SetDirectory( DirectoryInfo aDirectoryInfo )
 		{
 			directoryInfo = aDirectoryInfo;
+			filePathList = new List<string>();
+			fileTimeStampTicksDictionary = new Dictionary<string, long>();
+
 			/*
 			fsw.EnableRaisingEvents = false;
 			fsw = new FileSystemWatcher( aDirectoryInfo.FullName );
@@ -265,59 +269,48 @@ namespace Unity.View
 		private void UpdateFileList( object sender, FileSystemEventArgs e )
 		{
 			string[] lPathArray = PoolFilePath.Get( directoryInfo );
+			List<string> lFilePathNewList = new List<string>();
 
-			filePathList = new List<string>();
-
+			// Check New File.
 			for( int i = 0; i < lPathArray.Length; i++ )
 			{
 				string lFilePath = lPathArray[i];
-				//Logger.BreakDebug( "Input:" + lFilePath );
-				long timeStampFile = File.GetLastWriteTime( lFilePath ).Ticks;
-				
-				IMusic lMusic = null;
+				long lTimeStampTicks = File.GetLastWriteTime( lFilePath ).Ticks;
 
-				if( filePathListD.ContainsKey( lFilePath ) == false )
+				if( fileTimeStampTicksDictionary.ContainsKey( lFilePath ) == false )
 				{
-					filePathListD.Add( lFilePath, true );
+					fileTimeStampTicksDictionary.Add( lFilePath, lTimeStampTicks );
+					lFilePathNewList.Add( lFilePath );
+				}
+				else if( lTimeStampTicks != fileTimeStampTicksDictionary[lFilePath] )
+				{
+					fileTimeStampTicksDictionary[lFilePath] = lTimeStampTicks;
+					lFilePathNewList.Add( lFilePath );
+				}
+			}
 
-					try
-					{
-						lMusic = LoaderCollection.LoadMusic( lFilePath );
-					}
-					catch( Exception aExpection )
-					{
-						Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
-					}
+			for( int i = 0; i < lFilePathNewList.Count; i++ )
+			{
+				string lFilePath = lFilePathNewList[i];
+				//Logger.BreakDebug( "Input:" + lFilePath );
 
-					if( lMusic != null )
+				try
+				{
+					IMusic lMusic = LoaderCollection.LoadMusic( lFilePath );
+					
+					if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
 					{
 						filePathList.Add( lFilePath );
-						musicInformationDictionary.Add( lFilePath, new PlayMusicInformation( timeStampFile, false, lMusic, lMusic.Loop ) );
+						musicInformationDictionary.Add( lFilePath, new PlayMusicInformation( fileTimeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop ) );
+					}
+					else
+					{
+						musicInformationDictionary[lFilePath] = new PlayMusicInformation( fileTimeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop );
 					}
 				}
-
-				if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
+				catch( Exception aExpection )
 				{
-					filePathList.Add( lFilePath );
-
-					if( timeStampFile != musicInformationDictionary[lFilePath].timeStampTicks )
-					{
-						//Logger.BreakError( "UpdateFileList" );
-
-						try
-						{
-							lMusic = LoaderCollection.LoadMusic( lFilePath );
-						}
-						catch( Exception aExpection )
-						{
-							Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
-						}
-						
-						if( lMusic != null )
-						{
-							musicInformationDictionary[lFilePath] = new PlayMusicInformation( timeStampFile, false, lMusic, lMusic.Loop );
-						}
-					}
+					Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
 				}
 			}
 		}

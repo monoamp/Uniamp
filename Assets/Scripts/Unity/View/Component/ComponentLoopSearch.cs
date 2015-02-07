@@ -23,20 +23,16 @@ namespace Unity.View
 		private bool isOnSearch;
 		private bool isOnSave;
 
+		private ComponentInputlist componentInputlist;
 		private ComponentPlaylist componentPlaylist;
-		private Dictionary<string, InputMusicInformation> dataLoopInputlist;
-		private List<string> filePathInputList;
-		private List<string> filePathOutputList;
 		
 		public Rect Rect{ get; set; }
 
-		public ComponentLoopSearch( ComponentPlaylist aComponentPlaylist, Dictionary<string, InputMusicInformation> aDataLoopInputlist, List<string> aFilePathInputList, List<string> aFilePathOutputList )
+		public ComponentLoopSearch( ComponentInputlist aComponentInputlist, ComponentPlaylist aComponentPlaylist )
 		{
+			componentInputlist = aComponentInputlist;
 			componentPlaylist = aComponentPlaylist;
-			dataLoopInputlist = aDataLoopInputlist;
-			filePathInputList = aFilePathInputList;
-			filePathOutputList = aFilePathOutputList;
-			
+
 			isOnSearch = false;
 			isOnSave = false;
 		}
@@ -139,18 +135,18 @@ namespace Unity.View
 		
 		private void Execute()
 		{
-			for( int i = 0; i < filePathInputList.Count; i++ )
+			for( int i = 0; i < componentInputlist.filePathList.Count; i++ )
 			{
-				string lFilePathInput = filePathInputList[i];
+				string lFilePathInput = componentInputlist.filePathList[i];
 
-				if( dataLoopInputlist.ContainsKey( lFilePathInput ) == true && dataLoopInputlist[lFilePathInput].isSelected == true )
+				if( componentInputlist.musicInformationDictionary.ContainsKey( lFilePathInput ) == true && componentInputlist.musicInformationDictionary[lFilePathInput].isSelected == true )
 				{
 					string lFilePathOutput = componentPlaylist.directoryInfo.FullName + "/" + Path.GetFileName( lFilePathInput );
 					Logger.BreakDebug( "Search:" + lFilePathInput );
 
-					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, dataLoopInputlist[lFilePathInput] );
+					LoopSearchExecutor.Execute( lFilePathInput, lFilePathOutput, componentInputlist.musicInformationDictionary[lFilePathInput] );
 
-					dataLoopInputlist[lFilePathInput].isSelected = false;
+					componentInputlist.musicInformationDictionary[lFilePathInput].isSelected = false;
 				}
 			}
 			
@@ -159,9 +155,9 @@ namespace Unity.View
 		
 		private void SaveModifiedLoop()
 		{
-			for( int i = 0; i < filePathOutputList.Count; i++ )
+			for( int i = 0; i < componentPlaylist.filePathList.Count; i++ )
 			{
-				string lFilePathOutput = filePathOutputList[i];
+				string lFilePathOutput = componentPlaylist.filePathList[i];
 				
 				if( componentPlaylist.musicInformationDictionary.ContainsKey( lFilePathOutput ) == true && componentPlaylist.musicInformationDictionary[lFilePathOutput].isSelected == true )
 				{
