@@ -5,10 +5,13 @@ using Unity.GuiStyle;
 using Unity.Function.Graphic;
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 
 using Monoamp.Common.Component.Sound.Player;
+using Monoamp.Common.Data.Application.Music;
+using Monoamp.Common.Data.Application.Waveform;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
 using Monoamp.Boundary;
@@ -32,25 +35,46 @@ namespace Unity.View
 
 		private int positionInBuffer;
 
-		public ComponentPlayer( string aFilePath, ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
+		private MeshFilter meshFilter;
+		private bool isFinish;
+		Vector3[] vertices;
+
+		public ComponentPlayer( ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext, MeshFilter aMeshFilter, MeshRenderer aMeshRenderer )
 		{
 			mouseButton = false;
+			isFinish = false;
 
-			if( aFilePath == null )
-			{
-				title = "";
-				player = new PlayerNull();
-			}
-			else
-			{
-				title = Path.GetFileNameWithoutExtension( aFilePath );
-				player = LoaderCollection.LoadPlayer( aFilePath );
-			}
+			title = "";
+			player = new PlayerNull();
 
 			changeMusicPrevious = aChangeMusicPrevious;
 			changeMusicNext = aChangeMusicNext;
 
 			positionInBuffer = 0;
+
+			Mesh lMesh = new Mesh();      
+			vertices = new Vector3[1281];
+			int[] lIndices = new int[1281];
+
+			for( int i = 0; i < vertices.Length; i++ )
+			{
+				vertices[i] = new Vector3( i - 640.0f, 360.0f, 0.0f );
+			}
+			
+			for( int i = 0; i < lIndices.Length; i++ )
+			{
+				lIndices[i] = i;
+			}
+
+			meshFilter = aMeshFilter;
+			lMesh.vertices = vertices;
+			lMesh.SetIndices( lIndices, MeshTopology.LineStrip, 0 );
+			lMesh.RecalculateBounds();
+			
+			meshFilter.sharedMesh = lMesh;
+			meshFilter.sharedMesh.name = "Waveform";
+
+			aMeshRenderer.material.color = new Color( 0.4f, 0.4f, 0.9f );
 		}
 		
 		public void SetPlayer( string aFilePath )
@@ -59,20 +83,46 @@ namespace Unity.View
 			bool lIsLoop = player.IsLoop;
 			float lVolume = player.Volume;
 
-			if( aFilePath == null )
-			{
-				title = "";
-				player = new PlayerNull();
-			}
-			else
-			{
-				title = Path.GetFileNameWithoutExtension( aFilePath );
-				player = LoaderCollection.LoadPlayer( aFilePath );
-			}
+			title = Path.GetFileNameWithoutExtension( aFilePath );
+			player = LoaderCollection.LoadPlayer( aFilePath );
 
 			player.IsMute = lIsMute;
 			player.IsLoop = lIsLoop;
 			player.Volume = lVolume;
+		}
+
+		public void UpdateMesh()
+		{
+			vertices = meshFilter.mesh.vertices;
+			BeginAsyncWork( Callback );
+		}
+
+		private void BeginAsyncWork(AsyncCallback callback)
+		{
+			Action async = AsyncWork;
+			async.BeginInvoke(callback, null);
+		}
+
+		private void AsyncWork()
+		{
+			MusicPcm lMusicPcm = ( MusicPcm )player.Music;
+			
+			if( lMusicPcm != null )
+			{
+				WaveformPcm lWaveform = lMusicPcm.Waveform;
+				
+				for( int i = 0; i < 1280; i++ )
+				{
+					int lPosition = ( int )( ( float )i / 1280.0f * lWaveform.format.samples );
+					vertices[i] = new Vector3( i - 640.0f, 359.0f - 100.0f + lWaveform.data.GetSample( 0, lPosition ) * 100.0f, 0.0f );
+					isFinish = true;
+				}
+			}
+		}
+
+		private void Callback(IAsyncResult r)
+		{
+			isFinish = true;
 		}
 
 		public void Awake()
@@ -87,7 +137,11 @@ namespace Unity.View
 		
 		public void Update()
 		{
-			
+			if( isFinish == true )
+			{
+				isFinish = false;
+				meshFilter.mesh.vertices = vertices;
+			}
 		}
 
 		public void OnGUI()

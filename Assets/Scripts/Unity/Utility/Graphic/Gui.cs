@@ -9,15 +9,121 @@ namespace Unity.Function.Graphic
 		private static Material material;
 		public static Camera camera;
 
+		private static Texture2D dotTextureRed;
+		//private static Texture2D dotTextureBlack;
+
         static Gui()
         {
 			material = new Material( Shader.Find( "Unlit/Transparent" ) );
             //material = new Material( Shader.Find( "Diffuse" ) );
             material.hideFlags = HideFlags.HideAndDontSave;
             material.shader.hideFlags = HideFlags.HideAndDontSave;
+			
+			dotTextureRed = CreateDotTexture2d( TextureFormat.ARGB32, Color.red );
+			//dotTextureBlack = CreateDotTexture2d( TextureFormat.ARGB32, Color.black );
         }
+		
+		private static Texture2D CreateDotTexture2d( TextureFormat aTextureFormat, Color aColor )
+		{
+			Texture2D lTexture = new Texture2D( 1, 1, aTextureFormat, false );
+			
+			lTexture.SetPixel( 1, 1, aColor );
+			lTexture.Apply();
+			
+			return lTexture;
+		}
+		
+		public static void DrawLineOrtho( Vector2 aStart, Vector2 aEnd )
+		{
+			material.mainTexture = dotTextureRed;
+			//material.mainTexture = dotTextureBlack;
+			//material.color = Color.blue;
+			material.SetPass( 0 );
+			
+			GL.TexCoord( new Vector3( 0.0f, 0.0f, 0.0f ) );
+			
+			GL.PushMatrix();
+			{
+				GL.LoadOrtho();
 
-		public static void DrawUiTexture( Camera aCamera, Rect aRect, GUIStyle aStyle )
+				GL.Begin( GL.LINES );
+				{
+					Vector3 vector1 = new Vector3( aStart.x, aStart.y, 0.0f );
+					Vector3 vector2 = new Vector3( aEnd.x, aEnd.y, 0.0f );
+					
+					GL.Vertex( vector1 );
+					GL.Vertex( vector2 );
+				}
+				GL.End();
+			}
+			GL.PopMatrix();
+		}
+
+		public static void DrawLine( Vector2 aStart, Vector2 aEnd )
+		{
+			material.mainTexture = dotTextureRed;
+			//material.mainTexture = dotTextureBlack;
+			//material.color = Color.blue;
+			material.SetPass( 0 );
+			
+			GL.TexCoord( new Vector3( 0.0f, 0.0f, 0.0f ) );
+			
+			GL.PushMatrix();
+			GL.MultMatrix( Matrix4x4.TRS( Vector3.zero, Quaternion.identity, Vector3.one ) );
+			{
+				GL.Begin( GL.LINES );
+				{
+					Vector3 vector1 = camera.ScreenToWorldPoint( new Vector3( aStart.x, aStart.y ) );
+					Vector3 vector2 = camera.ScreenToWorldPoint( new Vector3( aEnd.x, aEnd.y ) );
+					
+					GL.Vertex( vector1 );
+					GL.Vertex( vector2 );
+				}
+				GL.End();
+			}
+			GL.PopMatrix();
+		}
+
+		public static void DrawLine( Vector2 aStart, Vector2 aEnd, float aRadius )
+		{
+			material.mainTexture = dotTextureRed;
+			//material.mainTexture = dotTextureBlack;
+			//material.color = Color.blue;
+			material.SetPass( 0 );
+			
+			GL.TexCoord( new Vector3( 0.0f, 0.0f, 0.0f ) );
+			
+			GL.PushMatrix();
+			GL.MultMatrix( Matrix4x4.TRS( Vector3.zero, Quaternion.identity, Vector3.one ) );
+			{
+				GL.Begin( GL.TRIANGLE_STRIP );
+				{
+					Vector3 vector1 = camera.ScreenToWorldPoint( new Vector3( aStart.x - aRadius, aStart.y ) );
+					Vector3 vector2 = camera.ScreenToWorldPoint( new Vector3( aEnd.x - aRadius, aEnd.y ) );
+					Vector3 vector3 = camera.ScreenToWorldPoint( new Vector3( aStart.x + aRadius, aStart.y ) );
+					Vector3 vector4 = camera.ScreenToWorldPoint( new Vector3( aEnd.x + aRadius, aEnd.y ) );
+					
+					Vector3 vector5 = camera.ScreenToWorldPoint( new Vector3( aStart.x, aStart.y - aRadius ) );
+					Vector3 vector6 = camera.ScreenToWorldPoint( new Vector3( aEnd.x, aEnd.y - aRadius ) );
+					Vector3 vector7 = camera.ScreenToWorldPoint( new Vector3( aStart.x, aStart.y + aRadius ) );
+					Vector3 vector8 = camera.ScreenToWorldPoint( new Vector3( aEnd.x, aEnd.y + aRadius ) );
+					
+					GL.Vertex( vector1 );
+					GL.Vertex( vector2 );
+					GL.Vertex( vector3 );
+					GL.Vertex( vector4 );
+					
+					GL.Vertex( vector5 );
+					GL.Vertex( vector6 );
+					GL.Vertex( vector7 );
+					GL.Vertex( vector8 );
+				}
+				GL.End();
+			}
+			GL.PopMatrix();
+		}
+
+		public static void DrawUiTexture( Rect aRect, GUIStyle aStyle )
 		{
 			RectOffset lBorder = aStyle.border;
 			Texture2D lTexture = aStyle.normal.background;
@@ -32,25 +138,25 @@ namespace Unity.Function.Graphic
 			float y2 = Screen.height - aRect.y - aRect.height + lBorder.bottom;
 			float y1 = Screen.height - aRect.y - aRect.height;
 
-			Vector3 vertex11 = aCamera.ScreenToWorldPoint( new Vector3( x1, y1 ) );
-			Vector3 vertex21 = aCamera.ScreenToWorldPoint( new Vector3( x2, y1 ) );
-			Vector3 vertex31 = aCamera.ScreenToWorldPoint( new Vector3( x3, y1 ) );
-			Vector3 vertex41 = aCamera.ScreenToWorldPoint( new Vector3( x4, y1 ) );
+			Vector3 vertex11 = camera.ScreenToWorldPoint( new Vector3( x1, y1 ) );
+			Vector3 vertex21 = camera.ScreenToWorldPoint( new Vector3( x2, y1 ) );
+			Vector3 vertex31 = camera.ScreenToWorldPoint( new Vector3( x3, y1 ) );
+			Vector3 vertex41 = camera.ScreenToWorldPoint( new Vector3( x4, y1 ) );
 
-			Vector3 vertex12 = aCamera.ScreenToWorldPoint( new Vector3( x1, y2 ) );
-			Vector3 vertex22 = aCamera.ScreenToWorldPoint( new Vector3( x2, y2 ) );
-			Vector3 vertex32 = aCamera.ScreenToWorldPoint( new Vector3( x3, y2 ) );
-			Vector3 vertex42 = aCamera.ScreenToWorldPoint( new Vector3( x4, y2 ) );
+			Vector3 vertex12 = camera.ScreenToWorldPoint( new Vector3( x1, y2 ) );
+			Vector3 vertex22 = camera.ScreenToWorldPoint( new Vector3( x2, y2 ) );
+			Vector3 vertex32 = camera.ScreenToWorldPoint( new Vector3( x3, y2 ) );
+			Vector3 vertex42 = camera.ScreenToWorldPoint( new Vector3( x4, y2 ) );
 			
-			Vector3 vertex13 = aCamera.ScreenToWorldPoint( new Vector3( x1, y3 ) );
-			Vector3 vertex23 = aCamera.ScreenToWorldPoint( new Vector3( x2, y3 ) );
-			Vector3 vertex33 = aCamera.ScreenToWorldPoint( new Vector3( x3, y3 ) );
-			Vector3 vertex43 = aCamera.ScreenToWorldPoint( new Vector3( x4, y3 ) );
+			Vector3 vertex13 = camera.ScreenToWorldPoint( new Vector3( x1, y3 ) );
+			Vector3 vertex23 = camera.ScreenToWorldPoint( new Vector3( x2, y3 ) );
+			Vector3 vertex33 = camera.ScreenToWorldPoint( new Vector3( x3, y3 ) );
+			Vector3 vertex43 = camera.ScreenToWorldPoint( new Vector3( x4, y3 ) );
 			
-			Vector3 vertex14 = aCamera.ScreenToWorldPoint( new Vector3( x1, y4 ) );
-			Vector3 vertex24 = aCamera.ScreenToWorldPoint( new Vector3( x2, y4 ) );
-			Vector3 vertex34 = aCamera.ScreenToWorldPoint( new Vector3( x3, y4 ) );
-			Vector3 vertex44 = aCamera.ScreenToWorldPoint( new Vector3( x4, y4 ) );
+			Vector3 vertex14 = camera.ScreenToWorldPoint( new Vector3( x1, y4 ) );
+			Vector3 vertex24 = camera.ScreenToWorldPoint( new Vector3( x2, y4 ) );
+			Vector3 vertex34 = camera.ScreenToWorldPoint( new Vector3( x3, y4 ) );
+			Vector3 vertex44 = camera.ScreenToWorldPoint( new Vector3( x4, y4 ) );
 			
 			float u1 = 0.0f;
 			float u2 = ( float )lBorder.left / ( float )lTexture.width;

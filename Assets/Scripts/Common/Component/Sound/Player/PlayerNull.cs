@@ -10,6 +10,7 @@ namespace Monoamp.Common.Component.Sound.Player
 {
 	public class PlayerNull : IPlayer
     {
+		public IMusic Music{ get{ return null; } }
 		public double PositionRate{ get{ return 0.0d; } set{} }
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }

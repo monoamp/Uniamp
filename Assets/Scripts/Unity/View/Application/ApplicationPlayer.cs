@@ -22,7 +22,7 @@ namespace Unity.View.Player
 
 		public readonly List<DirectoryInfo> directoryInfoRecentList;
 
-		public ApplicationPlayer( DirectoryInfo aDirectoryInfo )
+		public ApplicationPlayer( DirectoryInfo aDirectoryInfo, MeshFilter aMeshFilter, MeshRenderer aMeshRenderer )
 		{
 			directoryInfoRecentList = new List<DirectoryInfo>();
 
@@ -34,7 +34,7 @@ namespace Unity.View.Player
 			}
 
 			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", this );
-			componentPlayer = new ComponentPlayer( null, ChangeMusicPrevious, ChangeMusicNext );
+			componentPlayer = new ComponentPlayer( ChangeMusicPrevious, ChangeMusicNext, aMeshFilter, aMeshRenderer );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
 			componentDirectoryBar = new ComponentDirectoryBar( SetDirectoryInfo, directoryInfoRecentList );
 
@@ -108,9 +108,9 @@ namespace Unity.View.Player
 			componentPlaylist = new ComponentPlaylist( aDirectoryInfo, PlayMusic, GetPlayingMusic );
 		}
 		
-		private void PlayMusic( string aName )
+		private void PlayMusic( string aFilePath )
 		{
-			componentPlayer.SetPlayer( aName );
+			componentPlayer.SetPlayer( aFilePath );
 		}
 		
 		private string GetPlayingMusic()

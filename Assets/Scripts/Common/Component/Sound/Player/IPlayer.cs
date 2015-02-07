@@ -1,9 +1,11 @@
+using Monoamp.Common.Data.Application.Music;
 using Monoamp.Common.Struct;
 
 namespace Monoamp.Common.Component.Sound.Player
 {
 	public interface IPlayer
 	{
+		IMusic Music{ get; }
         double PositionRate{ get; set; }
 		float Volume{ get; set; }
 		bool IsMute{ get; set; }

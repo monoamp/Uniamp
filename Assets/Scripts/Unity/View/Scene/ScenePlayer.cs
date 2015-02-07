@@ -28,7 +28,7 @@ namespace Unity.View.Player
 			AudioSettings.outputSampleRate = 44100;
 			sampleRate = AudioSettings.outputSampleRate;
 
-			applicationPlayer = new ApplicationPlayer( new DirectoryInfo( Application.streamingAssetsPath + "/Sound/Music" ) );
+			applicationPlayer = new ApplicationPlayer( new DirectoryInfo( Application.streamingAssetsPath + "/Sound/Music" ), GetComponent<MeshFilter>(), GetComponent<MeshRenderer>() );
 
 			soundBuffer = new Dictionary<int, float[]>();
 		}
@@ -116,8 +116,6 @@ namespace Unity.View.Player
 				applicationPlayer.OnGUI();
 			}
 			GUILayout.EndArea();
-
-			//GUI.Label( rectWindow, GUI.tooltip, GuiStyleSet.StyleGeneral.tooltip );
 		}
 
 		private void SetGuiStyles()

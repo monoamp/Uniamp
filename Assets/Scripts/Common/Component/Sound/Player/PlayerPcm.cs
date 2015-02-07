@@ -10,6 +10,7 @@ namespace Monoamp.Common.Component.Sound.Player
 {
 	public class PlayerPcm : IPlayer
 	{
+		public IMusic Music{ get{ return music; } }
 		public double PositionRate{ get{ return synthesizer.PositionRate; } set{ synthesizer.PositionRate = value; } }
 		public float Volume{ get; set; }
 		public bool IsMute{ get; set; }
@@ -88,7 +89,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		
 		public string GetFilePath()
 		{
-			return music.Name;
+			return Music.Name;
 		}
 
 		public bool GetFlagPlaying()
@@ -115,7 +116,7 @@ namespace Monoamp.Common.Component.Sound.Player
 
 		public SoundTime GetLength()
 		{
-			return music.Length;
+			return Music.Length;
 		}
 
 		// Return: End position.
@@ -180,39 +181,39 @@ namespace Monoamp.Common.Component.Sound.Player
 		public void SetNextLoop()
 		{
 			LoopNumberX++;
-			LoopNumberX %= music.GetCountLoopX();
+			LoopNumberX %= Music.GetCountLoopX();
 			LoopNumberY = 0;
-			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
+			Loop = Music.GetLoop( LoopNumberX, LoopNumberY );
 		}
 		
 		public void SetPreviousLoop()
 		{
-			LoopNumberX += music.GetCountLoopX();
+			LoopNumberX += Music.GetCountLoopX();
 			LoopNumberX--;
-			LoopNumberX %= music.GetCountLoopX();
+			LoopNumberX %= Music.GetCountLoopX();
 			LoopNumberY = 0;
-			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
+			Loop = Music.GetLoop( LoopNumberX, LoopNumberY );
 		}
 		
 		public void SetUpLoop()
 		{
 			LoopNumberY++;
-			LoopNumberY %= music.GetCountLoopY( LoopNumberX );
-			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
+			LoopNumberY %= Music.GetCountLoopY( LoopNumberX );
+			Loop = Music.GetLoop( LoopNumberX, LoopNumberY );
 		}
 		
 		public void SetDownLoop()
 		{
-			LoopNumberY += music.GetCountLoopY( LoopNumberX );
+			LoopNumberY += Music.GetCountLoopY( LoopNumberX );
 			LoopNumberY--;
-			LoopNumberY %= music.GetCountLoopY( LoopNumberX );
-			Loop = music.GetLoop( LoopNumberX, LoopNumberY );
+			LoopNumberY %= Music.GetCountLoopY( LoopNumberX );
+			Loop = Music.GetLoop( LoopNumberX, LoopNumberY );
 		}
 
 		public void SetLoop( LoopInformation aLoopInformation )
 		{
 			Loop = aLoopInformation;
-			music.Loop = Loop;
+			Music.Loop = Loop;
 		}
 	}
 }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Monoamp.Common.system.io;
 using Monoamp.Common.Struct;
 
+using Monoamp.Boundary;
+
 namespace Monoamp.Common.Data.Application.Waveform
 {
 	public struct FormatWaweform
@@ -43,8 +45,12 @@ namespace Monoamp.Common.Data.Application.Waveform
 
 		private int startPosition;
 
+		private object objectLock;
+
 		protected WaveformData( FormatWaweform aFormat, string aName, int aBasePosition, bool aIsOnMemory )
 		{
+			objectLock = new object();
+
 			format = aFormat;
 			name = aName;
 			basePosition = aBasePosition;
@@ -72,19 +78,27 @@ namespace Monoamp.Common.Data.Application.Waveform
 
 		public float GetSample( int aChannel, int aPositionSample )
 		{
-			if( aPositionSample < startPosition || aPositionSample >= startPosition + bufferLength )
+			lock( objectLock )
 			{
-				startPosition = aPositionSample;
+				if( aPositionSample >= format.samples )
+				{
+					return 0.0f;
+				}
+
+				if( aPositionSample < startPosition || aPositionSample >= startPosition + bufferLength )
+				{
+					startPosition = aPositionSample;
+					
+					ReadSampleArray( startPosition );
+				}
 				
-				ReadSampleArray( startPosition );
+				if( aPositionSample - startPosition < 0 && aPositionSample - startPosition >= sampleArray[aChannel].Length )
+				{
+					UnityEngine.Debug.LogError( "Start:" + startPosition + ", Position:" + aPositionSample );
+				}
+				
+				return sampleArray[aChannel % format.channels][aPositionSample - startPosition];
 			}
-			
-			if( aPositionSample - startPosition < 0 && aPositionSample - startPosition >= sampleArray[aChannel].Length )
-			{
-				UnityEngine.Debug.LogError( "Start:" + startPosition + ", Position:" + aPositionSample );
-			}
-			
-			return sampleArray[aChannel % format.channels][aPositionSample - startPosition];
 		}
 		
 		public Int32 GetSampleData( int aChannel, int aPositionSample )
