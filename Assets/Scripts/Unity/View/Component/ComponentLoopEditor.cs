@@ -81,11 +81,11 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
+			int lX = x;
+			int lY = y;
+
 			if( playMusicInformation != null )
 			{
-				int lX = x;
-				int lY = y;
-
 				GUILayout.BeginHorizontal();
 				{
 					int lLoopCountY = 1;
@@ -119,29 +119,32 @@ namespace Unity.View
 					}
 				}
 				GUILayout.EndHorizontal();
+			}
 				
-				GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
+			GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
+			{
+				GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
 				{
-					GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
+					GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
+					GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
+
+					GUILayout.BeginHorizontal();
 					{
-						GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
-						GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
-
-						GUILayout.BeginHorizontal();
-						{
-							GUILayout.Label( new GUIContent( "Group No.", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-							GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader );
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-							GUILayout.Label( new GUIContent( "Count", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 60.0f ) );
-						}
-						GUILayout.EndHorizontal();
+						GUILayout.Label( new GUIContent( "Group No.", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Count", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 60.0f ) );
 					}
-					GUILayout.EndVertical();
+					GUILayout.EndHorizontal();
 				}
-				GUILayout.EndScrollView();
+				GUILayout.EndVertical();
+			}
+			GUILayout.EndScrollView();
 
-				scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
+			scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
+			{
+				if( playMusicInformation != null )
 				{
 					for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
 					{
@@ -168,42 +171,42 @@ namespace Unity.View
 						}
 						GUILayout.EndHorizontal();
 					}
-					
-					GUILayout.BeginHorizontal();
+
+					if( x != lX || y != lY )
 					{
-						GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
-						{
-							GUILayout.FlexibleSpace();
-						}
-						GUILayout.EndVertical();
+						x = lX;
+						y = lY;
 						
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-						
-						GUILayout.FlexibleSpace();
-						
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-						
-						GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
-						{
-							GUILayout.FlexibleSpace();
-						}
-						GUILayout.EndVertical();
+						componentPlayer.SetLoop( loopArrayArray[x][y] );
+						playMusicInformation.loopPoint = loopArrayArray[x][y];
+						playMusicInformation.music.Loop = loopArrayArray[x][y];
+						playMusicInformation.isSelected = true;
 					}
-					GUILayout.EndHorizontal();
 				}
-				GUILayout.EndScrollView();
 
-				if( x != lX || y != lY )
+				GUILayout.BeginHorizontal();
 				{
-					x = lX;
-					y = lY;
-
-					componentPlayer.SetLoop( loopArrayArray[x][y] );
-					playMusicInformation.loopPoint = loopArrayArray[x][y];
-					playMusicInformation.music.Loop = loopArrayArray[x][y];
-					playMusicInformation.isSelected = true;
+					GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+					{
+						GUILayout.FlexibleSpace();
+					}
+					GUILayout.EndVertical();
+					
+					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+					
+					GUILayout.FlexibleSpace();
+					
+					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+					
+					GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
+					{
+						GUILayout.FlexibleSpace();
+					}
+					GUILayout.EndVertical();
 				}
+				GUILayout.EndHorizontal();
 			}
+			GUILayout.EndScrollView();
 		}
 
 		public void OnRenderObject()

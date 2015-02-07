@@ -19,12 +19,12 @@ namespace Unity.View
 	public class ComponentPlaylist : IView
 	{
 		public Rect Rect{ get; set; }
-		
-		public Dictionary<string, long> timeStampTicksDictionary;
-		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
 
 		public DirectoryInfo directoryInfo;
 		public List<string> filePathList;
+		public Dictionary<string, long> timeStampTicksDictionary;
+		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
+
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 
@@ -181,12 +181,13 @@ namespace Unity.View
 
 							if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
 							{
+								PlayMusicInformation lMusicInformation = musicInformationDictionary[lFilePath];
+
 								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
 									lCount++;
-									IMusic lMusic = musicInformationDictionary[lFilePath].music;
 
-									musicInformationDictionary[lFilePath].isSelected = GUILayout.Toggle( musicInformationDictionary[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
+									lMusicInformation.isSelected = GUILayout.Toggle( lMusicInformation.isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
@@ -205,13 +206,13 @@ namespace Unity.View
 									}
 
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( lMusic.Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( lMusicInformation.music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( lMusic.Loop.start.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( lMusicInformation.music.Loop.start.String, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( lMusic.Loop.end.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( lMusicInformation.music.Loop.end.String, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( lMusic.Loop.length.String, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( lMusicInformation.music.Loop.length.String, GuiStyleSet.StyleTable.textRow );
 								}
 								GUILayout.EndHorizontal();
 							}

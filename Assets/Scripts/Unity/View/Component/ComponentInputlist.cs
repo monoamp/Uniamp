@@ -20,9 +20,10 @@ namespace Unity.View
 	{
 		public Rect Rect{ get; set; }
 
-		public Dictionary<string, InputMusicInformation> musicInformationDictionary;
-		private long timeStampTicks;
 		public List<string> filePathList;
+		public Dictionary<string, long> timeStampTicksDictionary;
+		public Dictionary<string, InputMusicInformation> musicInformationDictionary;
+
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 		private DirectoryInfo directoryInfo;
@@ -35,14 +36,15 @@ namespace Unity.View
 
 		public ComponentInputlist( DirectoryInfo aDirectoryInfo, PlayMusic aPlayMusic, GetPlayingMusic aGetPlayingMusic )
 		{
-			timeStampTicks = 0;
 			directoryInfo = aDirectoryInfo;
 			playMusic = aPlayMusic;
 			getPlayingMusic = aGetPlayingMusic;
-
+			
+			filePathList = new List<string>();
+			timeStampTicksDictionary = new Dictionary<string, long>();
 			musicInformationDictionary = new Dictionary<string, InputMusicInformation>();
-
-			UpdateFileList();
+			
+			UpdateFileList( null, null );
 			
 			isSelectedAll = false;
 			scrollPosition = Vector2.zero;
@@ -51,6 +53,12 @@ namespace Unity.View
 		public void SetDirectory( DirectoryInfo aDirectoryInfo )
 		{
 			directoryInfo = aDirectoryInfo;
+			filePathList = new List<string>();
+			timeStampTicksDictionary = new Dictionary<string, long>();
+			musicInformationDictionary = new Dictionary<string, InputMusicInformation>();
+			
+			isSelectedAll = false;
+			scrollPosition = Vector2.zero;
 		}
 		
 		public void Awake()
@@ -82,7 +90,7 @@ namespace Unity.View
 		{
 			if( Event.current.type != EventType.Repaint )
 			{
-				UpdateFileList();
+				UpdateFileList( null, null );
 			}
 			
 			GUILayout.BeginVertical();
@@ -129,11 +137,13 @@ namespace Unity.View
 							
 							if( musicInformationDictionary.ContainsKey( lFilePath ) == true )
 							{
+								InputMusicInformation lMusicInformation = musicInformationDictionary[lFilePath];
+
 								GUILayout.BeginHorizontal( lViewRow[lCount % 2] );
 								{
 									lCount++;
 
-									musicInformationDictionary[lFilePath].isSelected = GUILayout.Toggle( musicInformationDictionary[lFilePath].isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
+									lMusicInformation.isSelected = GUILayout.Toggle( lMusicInformation.isSelected, new GUIContent( "", "StyleGeneral.ToggleCheck" ), GuiStyleSet.StyleGeneral.toggleCheck );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( lFilePath == getPlayingMusic() )
@@ -152,14 +162,14 @@ namespace Unity.View
 									}
 									
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-									GUILayout.TextField( musicInformationDictionary[filePathList[i]].music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
+									GUILayout.TextField( lMusicInformation.music.Length.MMSS, GuiStyleSet.StyleTable.textRow );
 									GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 
 									if( musicInformationDictionary[lFilePath].isSelected == true )
 									{
-										if( musicInformationDictionary[lFilePath].progress > 0.0f )
+										if( lMusicInformation.progress > 0.0f )
 										{
-											GUILayout.HorizontalScrollbar( 0.0f, ( float )musicInformationDictionary[lFilePath].progress, 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
+											GUILayout.HorizontalScrollbar( 0.0f, ( float )lMusicInformation.progress, 0.0f, 1.01f, "progressbar", GUILayout.Width( 132.0f ) );
 										}
 										else
 										{
@@ -211,57 +221,55 @@ namespace Unity.View
 			}
 			GUILayout.EndVertical();
 		}
-
-		private void UpdateFileList()
+		
+		private void UpdateFileList( object sender, FileSystemEventArgs e )
 		{
-			if( PoolFilePath.GetTimeStampTicks( directoryInfo ) != timeStampTicks )
+			string[] lFilePathArray = PoolFilePath.Get( directoryInfo );
+			List<string> lFilePathNewList = new List<string>();
+			
+			// Check New File.
+			for( int i = 0; i < lFilePathArray.Length; i++ )
 			{
-				timeStampTicks = PoolFilePath.GetTimeStampTicks( directoryInfo );
-				string[] lPathArray = PoolFilePath.Get( directoryInfo );
-
-				filePathList = new List<string>();
-
-				for( int i = 0; i < lPathArray.Length; i++ )
+				string lFilePath = lFilePathArray[i];
+				long lTimeStampTicks = File.GetLastWriteTime( lFilePath ).Ticks;
+				
+				if( timeStampTicksDictionary.ContainsKey( lFilePath ) == false )
 				{
-					string lFilePath = lPathArray[i];
-					Logger.BreakDebug( "Input:" + lFilePath );
-					long timeStampFile = File.GetLastWriteTime( lFilePath ).Ticks;
+					timeStampTicksDictionary.Add( lFilePath, lTimeStampTicks );
+					lFilePathNewList.Add( lFilePath );
+				}
+				else if( lTimeStampTicks != timeStampTicksDictionary[lFilePath] )
+				{
+					timeStampTicksDictionary[lFilePath] = lTimeStampTicks;
+					lFilePathNewList.Add( lFilePath );
+				}
+			}
+			
+			for( int i = 0; i < lFilePathNewList.Count; i++ )
+			{
+				string lFilePath = lFilePathNewList[i];
+				//Logger.BreakDebug( "Input:" + lFilePath );
+				
+				try
+				{
+					IMusic lMusic = LoaderCollection.LoadMusic( lFilePath );
 					
-					IMusic lMusic = null;
-
-					if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
+					if( lMusic != null )
 					{
-						try
-						{
-							lMusic = LoaderCollection.LoadMusic( lFilePath );
-						}
-						catch( Exception aExpection )
-						{
-							Logger.BreakError( "LoopInputlist Exception:" + aExpection.ToString() + ":" + lFilePath );
-						}
-						
-						if( lMusic != null )
+						if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
 						{
 							filePathList.Add( lFilePath );
-							musicInformationDictionary.Add( lFilePath, new InputMusicInformation( timeStampFile, false, lMusic, 0.0d ) );
+							musicInformationDictionary.Add( lFilePath, new InputMusicInformation( timeStampTicksDictionary[lFilePath], false, lMusic, 0.0d ) );
+						}
+						else
+						{
+							musicInformationDictionary[lFilePath] = new InputMusicInformation( timeStampTicksDictionary[lFilePath], false, lMusic, 0.0d );
 						}
 					}
-					else if( timeStampFile != musicInformationDictionary[lFilePath].timeStampTicks )
-					{
-						try
-						{
-							lMusic = LoaderCollection.LoadMusic( lFilePath );
-						}
-						catch( Exception aExpection )
-						{
-							Logger.BreakError( "LoopInputlist Exception:" + aExpection.ToString() + ":" + lFilePath );
-						}
-						
-						if( lMusic != null )
-						{
-							musicInformationDictionary[lFilePath] = new InputMusicInformation( timeStampFile, false, lMusic, 0.0d );
-						}
-					}
+				}
+				catch( Exception aExpection )
+				{
+					Logger.BreakError( "LoopPlaylist Exception:" + aExpection.ToString() + ":" + lFilePath );
 				}
 			}
 		}
