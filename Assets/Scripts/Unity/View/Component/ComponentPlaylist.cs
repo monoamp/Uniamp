@@ -19,12 +19,12 @@ namespace Unity.View
 	public class ComponentPlaylist : IView
 	{
 		public Rect Rect{ get; set; }
+		
+		public Dictionary<string, long> timeStampTicksDictionary;
+		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
 
 		public DirectoryInfo directoryInfo;
-
 		public List<string> filePathList;
-		public Dictionary<string, long> fileTimeStampTicksDictionary;
-		public Dictionary<string, PlayMusicInformation> musicInformationDictionary;
 		private Vector2 scrollPosition;
 		private bool isSelectedAll;
 
@@ -43,7 +43,7 @@ namespace Unity.View
 			getPlayingMusic = aGetPlayingMusic;
 
 			filePathList = new List<string>();
-			fileTimeStampTicksDictionary = new Dictionary<string, long>();
+			timeStampTicksDictionary = new Dictionary<string, long>();
 			musicInformationDictionary = new Dictionary<string, PlayMusicInformation>();
 
 			UpdateFileList( null, null );
@@ -65,7 +65,11 @@ namespace Unity.View
 		{
 			directoryInfo = aDirectoryInfo;
 			filePathList = new List<string>();
-			fileTimeStampTicksDictionary = new Dictionary<string, long>();
+			timeStampTicksDictionary = new Dictionary<string, long>();
+			musicInformationDictionary = new Dictionary<string, PlayMusicInformation>();
+			
+			isSelectedAll = false;
+			scrollPosition = Vector2.zero;
 
 			/*
 			fsw.EnableRaisingEvents = false;
@@ -268,23 +272,23 @@ namespace Unity.View
 
 		private void UpdateFileList( object sender, FileSystemEventArgs e )
 		{
-			string[] lPathArray = PoolFilePath.Get( directoryInfo );
+			string[] lFilePathArray = PoolFilePath.Get( directoryInfo );
 			List<string> lFilePathNewList = new List<string>();
 
 			// Check New File.
-			for( int i = 0; i < lPathArray.Length; i++ )
+			for( int i = 0; i < lFilePathArray.Length; i++ )
 			{
-				string lFilePath = lPathArray[i];
+				string lFilePath = lFilePathArray[i];
 				long lTimeStampTicks = File.GetLastWriteTime( lFilePath ).Ticks;
 
-				if( fileTimeStampTicksDictionary.ContainsKey( lFilePath ) == false )
+				if( timeStampTicksDictionary.ContainsKey( lFilePath ) == false )
 				{
-					fileTimeStampTicksDictionary.Add( lFilePath, lTimeStampTicks );
+					timeStampTicksDictionary.Add( lFilePath, lTimeStampTicks );
 					lFilePathNewList.Add( lFilePath );
 				}
-				else if( lTimeStampTicks != fileTimeStampTicksDictionary[lFilePath] )
+				else if( lTimeStampTicks != timeStampTicksDictionary[lFilePath] )
 				{
-					fileTimeStampTicksDictionary[lFilePath] = lTimeStampTicks;
+					timeStampTicksDictionary[lFilePath] = lTimeStampTicks;
 					lFilePathNewList.Add( lFilePath );
 				}
 			}
@@ -297,15 +301,18 @@ namespace Unity.View
 				try
 				{
 					IMusic lMusic = LoaderCollection.LoadMusic( lFilePath );
-					
-					if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
+
+					if( lMusic != null )
 					{
-						filePathList.Add( lFilePath );
-						musicInformationDictionary.Add( lFilePath, new PlayMusicInformation( fileTimeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop ) );
-					}
-					else
-					{
-						musicInformationDictionary[lFilePath] = new PlayMusicInformation( fileTimeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop );
+						if( musicInformationDictionary.ContainsKey( lFilePath ) == false )
+						{
+							filePathList.Add( lFilePath );
+							musicInformationDictionary.Add( lFilePath, new PlayMusicInformation( timeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop ) );
+						}
+						else
+						{
+							musicInformationDictionary[lFilePath] = new PlayMusicInformation( timeStampTicksDictionary[lFilePath], false, lMusic, lMusic.Loop );
+						}
 					}
 				}
 				catch( Exception aExpection )
