@@ -12,6 +12,7 @@ using System.Threading;
 using Monoamp.Common.Component.Sound.Player;
 using Monoamp.Common.Data.Application.Music;
 using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Standard.Riff.Wave;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
 using Monoamp.Boundary;
@@ -38,6 +39,8 @@ namespace Unity.View
 		private MeshFilter meshFilter;
 		private bool isFinish;
 		Vector3[] vertices;
+		float[] waveform;
+		string filePath;
 
 		public ComponentPlayer( ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext, MeshFilter aMeshFilter, MeshRenderer aMeshRenderer )
 		{
@@ -75,6 +78,8 @@ namespace Unity.View
 			meshFilter.sharedMesh.name = "Waveform";
 
 			aMeshRenderer.material.color = new Color( 0.4f, 0.4f, 0.9f );
+
+			filePath = "";
 		}
 		
 		public void SetPlayer( string aFilePath )
@@ -84,7 +89,7 @@ namespace Unity.View
 			float lVolume = player.Volume;
 
 			title = Path.GetFileNameWithoutExtension( aFilePath );
-			player = LoaderCollection.LoadPlayer( aFilePath );
+			player = ConstructorCollection.LoadPlayer( aFilePath );
 
 			player.IsMute = lIsMute;
 			player.IsLoop = lIsLoop;
@@ -109,14 +114,55 @@ namespace Unity.View
 			
 			if( lMusicPcm != null )
 			{
-				WaveformPcm lWaveform = lMusicPcm.Waveform;
-				
-				for( int i = 0; i < 1280; i++ )
+				if( player.GetFilePath() != filePath )
 				{
-					int lPosition = ( int )( ( float )i / 1280.0f * lWaveform.format.samples );
-					vertices[i] = new Vector3( i - 640.0f, 359.0f - 100.0f + lWaveform.data.GetSample( 0, lPosition ) * 100.0f, 0.0f );
-					isFinish = true;
+					filePath = player.GetFilePath();
+					
+					for( int i = 0; i < vertices.Length; i++ )
+					{
+						float lX = -640.0f + i * 1280.0f / Screen.width;
+						float lY = 359.0f - 100.0f * 720.0f / Screen.height;
+						vertices[i] = new Vector3( lX, lY, 0.0f );
+						
+						isFinish = true;
+					}
+
+					RiffWaveRiff lRiffWaveRiff = new RiffWaveRiff( filePath );
+					WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff, true );
+					waveform = new float[lWaveform.format.samples];
+					
+					for( int i = 0; i < lWaveform.format.samples; i++ )
+					{
+						waveform[i] = lWaveform.data.GetSample( 0, i );
+						
+						int lIndex = ( int )( ( float )i / lWaveform.format.samples * Screen.width );
+						
+						float lX = -640.0f + lIndex * 1280.0f / Screen.width;
+						float lY = 359.0f - ( 100.0f + waveform[i] * 100.0f ) * 720.0f / Screen.height;
+						vertices[lIndex] = new Vector3( lX, lY, 0.0f );
+						
+						isFinish = true;
+					}
 				}
+				/*
+				else
+				{
+					for( int i = 0; i < vertices.Length; i++ )
+					{
+						int lPositionSample = ( int )( ( float )i / Screen.width * waveform.Length );
+						
+						if( lPositionSample >= waveform.Length )
+						{
+							lPositionSample = waveform.Length - 1;
+						}
+
+						float lX = -640.0f + i * 1280.0f / Screen.width;
+						float lY = 359.0f - ( 100.0f + waveform[lPositionSample] * 100.0f ) * 720.0f / Screen.height;
+						vertices[i] = new Vector3( lX, lY, 0.0f );
+
+						isFinish = true;
+					}
+				}*/
 			}
 		}
 

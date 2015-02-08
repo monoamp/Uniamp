@@ -28,7 +28,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathOutput );
 			
-			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff );
+			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff, true );
 
 			OverrideCuePoint( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );
 			OverrideSampleLoop( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );

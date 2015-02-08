@@ -10,15 +10,15 @@ using Monoamp.Common.Component.Sound.Player;
 
 namespace Monoamp.Common.Utility
 {
-	public static class LoaderCollection
+	public static class ConstructorCollection
 	{
-		private static readonly Loader loaderMusic;
-		private static readonly Loader loaderWaveform;
-		private static readonly Loader loaderPlayer;
+		private static readonly Constructor loaderMusic;
+		private static readonly Constructor loaderWaveform;
+		private static readonly Constructor loaderPlayer;
 
-		static LoaderCollection()
+		static ConstructorCollection()
 		{
-			Dictionary<string, Loader.Constructor> constructorDictionaryMusic = new Dictionary<string, Loader.Constructor>();
+			Dictionary<string, Constructor.DConstructor> constructorDictionaryMusic = new Dictionary<string, Constructor.DConstructor>();
 			//constructorDictionaryMusic.Add( ".aif", ( string aPathFile ) => { return new MusicAiff( ( FormForm )PoolCollection.poolAif.Get( aPathFile ) ); } );
 			//constructorDictionaryMusic.Add( ".aiff", ( string aPathFile ) => { return new MusicAiff( ( FormForm )PoolCollection.poolAif.Get( aPathFile ) ); } );
 			//constructorDictionaryMusic.Add( ".wav", ( string aPathFile ) => { return new MusicWave( ( RiffRiff )PoolCollection.poolWav.Get( aPathFile ) ); } );
@@ -27,9 +27,9 @@ namespace Monoamp.Common.Utility
 			constructorDictionaryMusic.Add( ".aiff", ( string aPathFile ) => { return new MusicAiff( aPathFile ); } );
 			constructorDictionaryMusic.Add( ".wav", ( string aPathFile ) => { return new MusicWave( aPathFile ); } );
 			constructorDictionaryMusic.Add( ".wave", ( string aPathFile ) => { return new MusicWave( aPathFile ); } );
-			loaderMusic = new Loader( constructorDictionaryMusic );
+			loaderMusic = new Constructor( constructorDictionaryMusic );
 
-			Dictionary<string, Loader.Constructor> constructorDictionaryWaveform = new Dictionary<string, Loader.Constructor>();
+			Dictionary<string, Constructor.DConstructor> constructorDictionaryWaveform = new Dictionary<string, Constructor.DConstructor>();
 			//constructorDictionaryWaveform.Add( ".aif", ( string aPathFile ) => { return new WaveformAiff( PoolCollection.GetAif( aPathFile ) ); } );
 			//constructorDictionaryWaveform.Add( ".aiff", ( string aPathFile ) => { return new WaveformAiff( PoolCollection.GetAif( aPathFile ) ); } );
 			//constructorDictionaryWaveform.Add( ".wav", ( string aPathFile ) => { return new WaveformWave( PoolCollection.GetWav( aPathFile ) ); } );
@@ -38,29 +38,29 @@ namespace Monoamp.Common.Utility
 			constructorDictionaryWaveform.Add( ".aiff", ( string aPathFile ) => { return new WaveformAiff( aPathFile ); } );
 			constructorDictionaryWaveform.Add( ".wav", ( string aPathFile ) => { return new WaveformWave( aPathFile ); } );
 			constructorDictionaryWaveform.Add( ".wave", ( string aPathFile ) => { return new WaveformWave( aPathFile ); } );
-			loaderWaveform = new Loader( constructorDictionaryWaveform );
+			loaderWaveform = new Constructor( constructorDictionaryWaveform );
 			
-			Dictionary<string, Loader.Constructor> constructorDictionaryPlayer = new Dictionary<string, Loader.Constructor>();
+			Dictionary<string, Constructor.DConstructor> constructorDictionaryPlayer = new Dictionary<string, Constructor.DConstructor>();
 			constructorDictionaryPlayer.Add( ".aif", ( string aFilePath ) => { return new PlayerPcm( aFilePath ); } );
 			constructorDictionaryPlayer.Add( ".aiff", ( string aFilePath ) => { return new PlayerPcm( aFilePath ); } );
 			constructorDictionaryPlayer.Add( ".wav", ( string aFilePath ) => { return new PlayerPcm( aFilePath ); } );
 			constructorDictionaryPlayer.Add( ".wave", ( string aFilePath ) => { return new PlayerPcm( aFilePath ); } );
-			loaderPlayer = new Loader( constructorDictionaryPlayer );
+			loaderPlayer = new Constructor( constructorDictionaryPlayer );
 		}
 		
 		public static IMusic LoadMusic( string aPathFile )
 		{
-			return ( IMusic )loaderMusic.Load( aPathFile );
+			return ( IMusic )loaderMusic.Construct( aPathFile );
 		}
 
 		public static WaveformPcm LoadWaveform( string aPathFile )
 		{
-			return ( WaveformPcm )loaderWaveform.Load( aPathFile );
+			return ( WaveformPcm )loaderWaveform.Construct( aPathFile );
 		}
 
 		public static IPlayer LoadPlayer( string aPathFile )
 		{
-			return ( IPlayer )loaderPlayer.Load( aPathFile );
+			return ( IPlayer )loaderPlayer.Construct( aPathFile );
 		}
 	}
 }

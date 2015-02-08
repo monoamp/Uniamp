@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 	public class WaveformWave : WaveformPcm
 	{
 		public WaveformWave( string aPathFile )
-			: base( PoolCollection.GetRiffWave( aPathFile ) )
+			: base( PoolCollection.GetRiffWave( aPathFile ), false )
 		{
 			
 		}

@@ -21,7 +21,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathInput );
 
-			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff );
+			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff, true );
 
 			SByte[] lSampleArray = new SByte[waveform.format.samples];
 

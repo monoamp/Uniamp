@@ -6,18 +6,18 @@ using Monoamp.Boundary;
 
 namespace Monoamp.Common.Utility
 {
-	public struct Loader
+	public struct Constructor
 	{
-		public delegate Object Constructor( string aFilePath );
+		public delegate Object DConstructor( string aFilePath );
 		
-		private readonly Dictionary<string, Constructor> constructorDictionary;
+		private readonly Dictionary<string, DConstructor> constructorDictionary;
 
-		public Loader( Dictionary<string, Constructor> aConstructorDictionary )
+		public Constructor( Dictionary<string, DConstructor> aConstructorDictionary )
 		{
 			constructorDictionary = aConstructorDictionary;
 		}
 
-		public Object Load( string aPathFile )
+		public Object Construct( string aPathFile )
 		{
 			Object lObject = null;
 

@@ -31,8 +31,8 @@ namespace Monoamp.Common.Data.Application.Waveform
 			format = new FormatWaweform( lChannels, lSamples, lSampleRate, lSampleBits );
 			data = new WaveformDataAiff( format, aFormFile.name, lPosition );
 		}
-	
-		public WaveformPcm( RiffWaveRiff aRiffFile )
+
+		public WaveformPcm( RiffWaveRiff aRiffFile, bool aIsOnMemory )
 		{
 			RiffWaveData lRiffWaveData = ( RiffWaveData )aRiffFile.GetChunk( RiffWaveData.ID );
 			int lPosition = ( int )lRiffWaveData.position;
@@ -45,7 +45,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 			int lSamples = lLength / ( lSampleBits / 8 ) / lChannels;
 			
 			format = new FormatWaweform( lChannels, lSamples, lSampleRate, lSampleBits );
-			data = new WaveformDataWave( format, aRiffFile.name, lPosition );
+			data = new WaveformDataWave( format, aRiffFile.name, lPosition, aIsOnMemory );
 		}
 	}
 }

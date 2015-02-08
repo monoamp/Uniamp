@@ -64,7 +64,7 @@ namespace Monoamp.Common.Data.Application.Music
 		public MusicPcm( RiffWaveRiff aRiffFile )
 		{
 			Name = aRiffFile.name;
-			Waveform = new WaveformPcm( aRiffFile );
+			Waveform = new WaveformPcm( aRiffFile, false );
 			
 			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
 

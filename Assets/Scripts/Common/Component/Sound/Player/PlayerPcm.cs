@@ -40,7 +40,7 @@ namespace Monoamp.Common.Component.Sound.Player
 		*/
 
 		public PlayerPcm( string aFilePath )
-			: this( ( MusicPcm )LoaderCollection.LoadMusic( aFilePath ) )
+			: this( ( MusicPcm )ConstructorCollection.LoadMusic( aFilePath ) )
 		{
 
 		}

@@ -192,8 +192,8 @@ namespace Monoamp.Common.Data.Application.Waveform
 	
 	public class WaveformDataWave : WaveformData
 	{
-		public WaveformDataWave( FormatWaweform aFormat, string aName, int aPosition )
-			: base( aFormat, aName, aPosition, false )
+		public WaveformDataWave( FormatWaweform aFormat, string aName, int aPosition, bool aIsOnMemory )
+			: base( aFormat, aName, aPosition, aIsOnMemory )
 		{
 			
 		}
