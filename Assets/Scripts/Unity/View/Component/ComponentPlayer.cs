@@ -39,6 +39,7 @@ namespace Unity.View
 		private MeshFilter meshFilter;
 		private bool isFinish;
 		Vector3[] vertices;
+		Vector3[] vertices2;
 		float[] waveform;
 		string filePath;
 
@@ -56,12 +57,13 @@ namespace Unity.View
 			positionInBuffer = 0;
 
 			Mesh lMesh = new Mesh();      
-			vertices = new Vector3[1281];
-			int[] lIndices = new int[1281];
+			vertices = new Vector3[1281 * 2];
+			int[] lIndices = new int[1281 * 2];
 
-			for( int i = 0; i < vertices.Length; i++ )
+			for( int i = 0; i < vertices.Length / 2; i++ )
 			{
-				vertices[i] = new Vector3( i - 640.0f, 360.0f, 0.0f );
+				vertices[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
 			}
 			
 			for( int i = 0; i < lIndices.Length; i++ )
@@ -118,11 +120,13 @@ namespace Unity.View
 				{
 					filePath = player.GetFilePath();
 					
-					for( int i = 0; i < vertices.Length; i++ )
+					for( int i = 0; i < vertices.Length / 2; i++ )
 					{
-						float lX = -640.0f + i * 1280.0f / Screen.width;
+						float lX = -640.0f + ( float )i / 2.0f * 1280.0f / Screen.width;
 						float lY = 359.0f - 100.0f * 720.0f / Screen.height;
-						vertices[i] = new Vector3( lX, lY, 0.0f );
+
+						vertices[i * 2 + 0] = new Vector3( lX, lY, 0.0f );
+						vertices[i * 2 + 1] = new Vector3( lX, lY, 0.0f );
 						
 						isFinish = true;
 					}
@@ -134,35 +138,63 @@ namespace Unity.View
 					for( int i = 0; i < lWaveform.format.samples; i++ )
 					{
 						waveform[i] = lWaveform.data.GetSample( 0, i );
-						
+
 						int lIndex = ( int )( ( float )i / lWaveform.format.samples * Screen.width );
-						
-						float lX = -640.0f + lIndex * 1280.0f / Screen.width;
-						float lY = 359.0f - ( 100.0f + waveform[i] * 100.0f ) * 720.0f / Screen.height;
-						vertices[lIndex] = new Vector3( lX, lY, 0.0f );
+						float lValue = waveform[i] / ( lWaveform.format.samples / Screen.width );
+						float lY = lValue * 100.0f * 720.0f / Screen.height;
+
+						if( waveform[i] > 0.0f )
+						{
+							vertices[lIndex * 2 + 0].y += lY;
+						}
+						else
+						{
+							vertices[lIndex * 2 + 1].y += lY;
+						}
 						
 						isFinish = true;
 					}
 				}
-				/*
 				else
 				{
+					float lBase = ( float )( player.Loop.start.sample / player.GetLength().sample * 1280.0f );
+
 					for( int i = 0; i < vertices.Length; i++ )
 					{
-						int lPositionSample = ( int )( ( float )i / Screen.width * waveform.Length );
+						vertices[i] = new Vector3( 0.0f, 0.0f, 0.0f );
 						
-						if( lPositionSample >= waveform.Length )
-						{
-							lPositionSample = waveform.Length - 1;
-						}
-
-						float lX = -640.0f + i * 1280.0f / Screen.width;
-						float lY = 359.0f - ( 100.0f + waveform[lPositionSample] * 100.0f ) * 720.0f / Screen.height;
-						vertices[i] = new Vector3( lX, lY, 0.0f );
-
 						isFinish = true;
 					}
-				}*/
+
+					for( int i = 0; i < waveform.Length; i++ )
+					{
+						int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
+						float lValue = waveform[i];// / ( waveform.Length / Screen.width );
+						float lY = lValue * 50.0f * 720.0f / Screen.height;
+						
+						if( lY > vertices[lIndex * 2 + 0].y )
+						{
+							vertices[lIndex * 2 + 0].y = lY;
+						}
+						else if( lY < vertices[lIndex * 2 + 1].y )
+						{
+							vertices[lIndex * 2 + 1].y = lY;
+						}
+						
+						isFinish = true;
+					}
+
+					for( int i = 0; i < vertices.Length / 2; i++ )
+					{
+						float lX = -640.0f + ( float )i / 2.0f * 1280.0f / Screen.width + lBase;
+						float lY = 359.0f - 100.0f * 720.0f / Screen.height;
+						
+						vertices[i * 2 + 0] += new Vector3( lX, lY, 0.0f );
+						vertices[i * 2 + 1] += new Vector3( lX, lY, 0.0f );
+						
+						isFinish = true;
+					}
+				}
 			}
 		}
 
@@ -349,6 +381,9 @@ namespace Unity.View
 		public void SetLoop( LoopInformation aLoopInformation )
 		{
 			player.SetLoop( aLoopInformation );
+			
+			vertices = meshFilter.mesh.vertices;
+			BeginAsyncWork( Callback );
 		}
 	}
 }

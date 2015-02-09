@@ -34,6 +34,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 		}
 		
 		protected const int LENGTH_BUFFER = 1024 * 4;
+		protected const int LENGTH_BUFFER_LONG = 1024 * 64;
 
 		public readonly FormatWaweform format;
 		public readonly string name;
@@ -57,7 +58,7 @@ namespace Monoamp.Common.Data.Application.Waveform
 
 			if( aIsOnMemory == true || LENGTH_BUFFER == 0 )
 			{
-				bufferLength = format.samples;
+				bufferLength = LENGTH_BUFFER_LONG;//format.samples;
 			}
 			else
 			{
