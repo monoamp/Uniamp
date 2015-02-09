@@ -34,7 +34,7 @@ namespace Unity.View.Player
 			}
 
 			menu = new MenuBar( Application.streamingAssetsPath + "/Language/Player/Menu/MenuBar.language", this );
-			componentPlayer = new ComponentPlayer( ChangeMusicPrevious, ChangeMusicNext, aMeshFilter, aMeshRenderer );
+			componentPlayer = new ComponentPlayer( ChangeMusicPrevious, ChangeMusicNext );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentList[0], SetFileInfoPlaying, GetFileInfoPlaying );
 			componentDirectoryBar = new ComponentDirectoryBar( SetDirectoryInfo, directoryInfoRecentList );
 
