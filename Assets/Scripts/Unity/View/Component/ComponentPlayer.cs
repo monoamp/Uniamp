@@ -280,7 +280,7 @@ namespace Unity.View
 					GUILayout.Label( new GUIContent( player.GetTPosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
 					float lPositionFloat = ( float )player.PositionRate;
-					float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
+					float lPositionAfter = GUILayout.HorizontalSlider( lPositionFloat, 0.0f, 1.0f, GuiStyleSet.StylePlayer.seekbar, GuiStyleSet.StylePlayer.seekbarThumb );
 
 					if( lPositionAfter != lPositionFloat )
 					{
@@ -332,7 +332,7 @@ namespace Unity.View
 
 					if( player.IsMute == false )
 					{
-						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.0f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
 						if( player.Volume == 0.0f )
 						{
@@ -341,7 +341,7 @@ namespace Unity.View
 					}
 					else // isMute == true
 					{
-						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.0f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 
 						if( lVolume != 0.0f )
 						{

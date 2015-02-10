@@ -264,6 +264,9 @@ namespace Unity.View
 		public void OnGUI()
 		{
 			mouseButton = Input.GetMouseButton( 0 );
+			
+			GuiStyleSet.StylePlayer.seekbar.fixedWidth = Screen.width;
+			GuiStyleSet.StylePlayer.seekbarImage.fixedWidth = Screen.width;
 
 			GUILayout.BeginVertical( GuiStyleSet.StylePlayer.box );
 			{
@@ -327,7 +330,7 @@ namespace Unity.View
 				GUILayout.EndHorizontal();	
 				
 				float lPositionFloat = ( float )player.PositionRate;
-				float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
+				float lPositionAfter = GUILayout.HorizontalSlider( lPositionFloat, 0.0f, 1.0f, GuiStyleSet.StylePlayer.seekbar, GuiStyleSet.StylePlayer.seekbarThumb );
 				
 				if( lPositionAfter != lPositionFloat )
 				{
@@ -349,13 +352,13 @@ namespace Unity.View
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start / player.GetLength() ), ( float )( player.Loop.end / player.GetLength() ), ( float )player.PositionRate );
+				Gui.DrawSeekBar( new Rect( 0.0f, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start / player.GetLength() ), ( float )( player.Loop.end / player.GetLength() ), ( float )player.PositionRate );
 			}
 			else
 			{
 				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
 				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
-				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
+				Gui.DrawSeekBar( new Rect( 0.0f, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
 			}
 
 			float lWidthVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedWidth;
