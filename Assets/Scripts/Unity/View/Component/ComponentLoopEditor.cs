@@ -2,71 +2,246 @@ using UnityEngine;
 
 using Unity.Data;
 using Unity.GuiStyle;
+using Unity.Function.Graphic;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
+using Monoamp.Common.Component.Sound.Player;
 using Monoamp.Common.Data.Application.Music;
-using Monoamp.Common.Component.Sound;
+using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Standard.Riff.Wave;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
-
 using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class ComponentLoopEditor : IView
+	public class ComponentLoopEditor : ComponentPlayer
 	{
+        private IPlayer player;
+
+		private string title;
+		private bool mouseButton;
+
+		public ChangeMusicPrevious changeMusicPrevious;
+		public ChangeMusicNext changeMusicNext;
+
 		public Rect Rect{ get; set; }
 
-		private ComponentPlayer componentPlayer;
+		private int positionInBuffer;
+		
+		private GameObject gameObjectWaveform1;
+		private GameObject gameObjectWaveform2;
 
-		private Vector2 scrollPosition;
-		private LoopInformation[][] loopArrayArray;
-		private PlayMusicInformation playMusicInformation;
-		private int x;
-		private int y;
+		private Transform transformWaveform1;
+		private Transform transformWaveform2;
 
-		public ComponentLoopEditor( ComponentPlayer aComponentPlayer )
+		private MeshFilter meshFilter1;
+		private MeshFilter meshFilter2;
+		
+		private MeshRenderer meshRenderer1;
+		private MeshRenderer meshRenderer2;
+
+		private bool isFinish;
+		private Vector3[] vertices1;
+		private Vector3[] vertices2;
+		private float[] waveform;
+		private string filePath;
+
+		public ComponentLoopEditor( ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
+			: base( aChangeMusicPrevious, aChangeMusicNext )
 		{
-			componentPlayer = aComponentPlayer;
-			scrollPosition = Vector2.zero;
-			x = 0;
-			y = 0;
+			mouseButton = false;
+			isFinish = false;
+
+			title = "";
+			player = new PlayerNull();
+
+			changeMusicPrevious = aChangeMusicPrevious;
+			changeMusicNext = aChangeMusicNext;
+
+			positionInBuffer = 0;
+			
+			Mesh lMesh1 = new Mesh();
+			Mesh lMesh2 = new Mesh();
+			vertices1 = new Vector3[1281 * 2];
+			vertices2 = new Vector3[1281 * 2];
+			int[] lIndices = new int[1281 * 2];
+
+			for( int i = 0; i < vertices1.Length / 2; i++ )
+			{
+				vertices2[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices2[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+			}
+			
+			for( int i = 0; i < vertices2.Length / 2; i++ )
+			{
+				vertices2[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices2[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+			}
+
+			for( int i = 0; i < lIndices.Length; i++ )
+			{
+				lIndices[i] = i;
+			}
+			
+			lMesh1.vertices = vertices1;
+			lMesh1.SetIndices( lIndices, MeshTopology.Lines, 0 );
+			lMesh1.RecalculateBounds();
+			
+			lMesh2.vertices = vertices2;
+			lMesh2.SetIndices( lIndices, MeshTopology.Lines, 0 );
+			lMesh2.RecalculateBounds();
+
+			gameObjectWaveform1 = GameObject.Find( "Waveform1" );
+			gameObjectWaveform2 = GameObject.Find( "Waveform2" );
+			
+			transformWaveform1 = gameObjectWaveform1.transform;
+			transformWaveform2 = gameObjectWaveform2.transform;
+			
+			meshFilter1 = gameObjectWaveform1.GetComponent<MeshFilter>();
+			meshFilter2 = gameObjectWaveform2.GetComponent<MeshFilter>();
+			
+			meshRenderer1 = gameObjectWaveform1.GetComponent<MeshRenderer>();
+			meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
+			
+			meshFilter1.sharedMesh = lMesh1;
+			meshFilter2.sharedMesh = lMesh2;
+			
+			meshFilter1.sharedMesh.name = "Waveform1";
+			meshFilter2.sharedMesh.name = "Waveform2";
+			
+			meshRenderer1.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.8f );
+			meshRenderer2.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.8f );
+
+			filePath = "";
+		}
+		
+		public void SetPlayer( string aFilePath )
+		{
+			bool lIsMute = player.IsMute;
+			bool lIsLoop = player.IsLoop;
+			float lVolume = player.Volume;
+
+			title = Path.GetFileNameWithoutExtension( aFilePath );
+			player = ConstructorCollection.LoadPlayer( aFilePath );
+
+			player.IsMute = lIsMute;
+			player.IsLoop = lIsLoop;
+			player.Volume = lVolume;
 		}
 
-		public void SetPlayMusicInformation( PlayMusicInformation lPlayMusicInformation )
+		public void UpdateMesh()
 		{
-			scrollPosition = Vector2.zero;
-			x = 0;
-			y = 0;
+			BeginAsyncWork( Callback );
+		}
 
-			playMusicInformation = lPlayMusicInformation;
+		private void BeginAsyncWork(AsyncCallback callback)
+		{
+			Action async = AsyncWork;
+			async.BeginInvoke(callback, null);
+		}
 
-			if( playMusicInformation != null )
+		private void AsyncWork()
+		{
+			MusicPcm lMusicPcm = ( MusicPcm )player.Music;
+			
+			if( lMusicPcm != null )
 			{
-				loopArrayArray = new LoopInformation[playMusicInformation.music.GetCountLoopX()][];
-				
-				for( int i = 0; i < playMusicInformation.music.GetCountLoopX(); i++ )
+				float[] lValueArray = new float[vertices1.Length];
+
+				if( player.GetFilePath() != filePath )
 				{
-					loopArrayArray[i] = new LoopInformation[playMusicInformation.music.GetCountLoopY( i )];
-					
-					for( int j = 0; j < playMusicInformation.music.GetCountLoopY( i ); j++ )
+					filePath = player.GetFilePath();
+
+					RiffWaveRiff lRiffWaveRiff = new RiffWaveRiff( filePath );
+					WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff, true );
+					waveform = new float[lWaveform.format.samples];
+
+					int lIndexPre = 0;
+
+					for( int i = 0; i < lValueArray.Length; i++ )
 					{
-						loopArrayArray[i][j] = playMusicInformation.music.GetLoop( i, j );
+						lValueArray[i] = 0.0f;
+					}
+
+					for( int i = 0; i < lWaveform.format.samples; i++ )
+					{
+						waveform[i] = lWaveform.data.GetSample( 0, i );
+						
+						int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
+						float lValue = waveform[i];
+						
+						if( lValue > lValueArray[lIndex * 2 + 0] )
+						{
+							lValueArray[lIndex * 2 + 0] = lValue;
+						}
+						else if( lValue < lValueArray[lIndex * 2 + 1] )
+						{
+							lValueArray[lIndex * 2 + 1] = lValue;
+						}
+
+						if( lIndex != lIndexPre )
+						{
+							double lX = -640.0d + ( double )lIndexPre * 1280.0d / ( double )Screen.width;
+							double lY = 359.0d - 120.0d * 720.0d / Screen.height;
+							
+							vertices1[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
+							vertices1[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
+							
+							lIndexPre = lIndex;
+
+							isFinish = true;
+						}
 					}
 				}
-			}
-			else
-			{
-				loopArrayArray = null;
+				
+				int lCountStart = ( int )( player.Loop.start.sample / player.GetLength().sample * Screen.width );
+				double lBase = lCountStart * 1280.0d / Screen.width;
+				float lOffset = ( float )( ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * 1280.0d );
+
+				for( int i = 0; i < lValueArray.Length; i++ )
+				{
+					lValueArray[i] = 0.0f;
+				}
+				
+				for( int i = 0; i < waveform.Length; i++ )
+				{
+					int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
+					float lValue = waveform[i];
+					
+					if( lValue > lValueArray[lIndex * 2 + 0] )
+					{
+						lValueArray[lIndex * 2 + 0] = lValue;
+					}
+					else if( lValue < lValueArray[lIndex * 2 + 1] )
+					{
+						lValueArray[lIndex * 2 + 1] = lValue;
+					}
+				}
+				
+				for( int i = 0; i < lValueArray.Length / 2; i++ )
+				{
+					double lX = lOffset - 640.0d + ( double )i * 1280.0d / ( double )Screen.width;
+					double lY = 359.0d - 120.0d * 720.0d / Screen.height;
+
+					vertices2[i * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[i * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
+					vertices2[i * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[i * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
+				}
 			}
 		}
 		
+		private void Callback(IAsyncResult r)
+		{
+			isFinish = true;
+		}
+
 		public void Awake()
 		{
-			
+
 		}
 		
 		public void Start()
@@ -76,153 +251,159 @@ namespace Unity.View
 		
 		public void Update()
 		{
-			
+			if( isFinish == true )
+			{
+				isFinish = false;
+				meshFilter1.mesh.vertices = vertices1;
+				meshFilter2.mesh.vertices = vertices2;
+				meshFilter1.mesh.RecalculateBounds();
+				meshFilter2.mesh.RecalculateBounds();
+			}
 		}
 
 		public void OnGUI()
 		{
-			int lX = x;
-			int lY = y;
+			mouseButton = Input.GetMouseButton( 0 );
 
-			if( playMusicInformation != null )
+			GUILayout.BeginVertical( GuiStyleSet.StylePlayer.box );
 			{
 				GUILayout.BeginHorizontal();
 				{
-					int lLoopCountY = 1;
-					lLoopCountY = loopArrayArray[x].Length;
+					player.IsMute = GUILayout.Toggle( player.IsMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
 					
-					if( lLoopCountY == 0 )
+					if( player.IsMute == false )
 					{
-						lLoopCountY = 1;
-					}
-
-					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
-					{
-						lY--;
-					}
-
-					lY = ( int )GUILayout.HorizontalSlider( lY, 0.0f, lLoopCountY - 1 );
-					
-					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
-					{
-						lY++;
-					}
-
-					if( lY < 0 )
-					{
-						lY = 0;
-					}
-					
-					if( lY >= lLoopCountY )
-					{
-						lY = lLoopCountY - 1;
-					}
-				}
-				GUILayout.EndHorizontal();
-			}
-				
-			GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
-			{
-				GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
-				{
-					GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
-					GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
-
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.Label( new GUIContent( "Group No.", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Count", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 60.0f ) );
-					}
-					GUILayout.EndHorizontal();
-				}
-				GUILayout.EndVertical();
-			}
-			GUILayout.EndScrollView();
-
-			scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
-			{
-				if( playMusicInformation != null )
-				{
-					for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
-					{
-						GUILayout.BeginHorizontal();
-						{
-							GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-
-							if( i == x )
-							{
-								GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine );
-							}
-							else
-							{
-								if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine ) == true )
-								{
-									lX = i;
-									lY = 0;
-								}
-							}
-
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-							GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 60.0f ) );
-						}
-						GUILayout.EndHorizontal();
-					}
-
-					if( x != lX || y != lY )
-					{
-						x = lX;
-						y = lY;
+						player.Volume = GUILayout.HorizontalSlider( player.Volume, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
 						
-						componentPlayer.SetLoop( loopArrayArray[x][y] );
-						playMusicInformation.loopPoint = loopArrayArray[x][y];
-						playMusicInformation.music.Loop = loopArrayArray[x][y];
-						playMusicInformation.isSelected = true;
+						if( player.Volume == 0.0f )
+						{
+							player.IsMute = true;
+						}
 					}
-				}
-
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+					else // isMute == true
 					{
-						GUILayout.FlexibleSpace();
+						float lVolume = GUILayout.HorizontalSlider( 0.0f, 0.0f, 1.00f, GuiStyleSet.StylePlayer.volumebar, GuiStyleSet.StyleSlider.horizontalbarThumb );
+						
+						if( lVolume != 0.0f )
+						{
+							player.IsMute = false;
+							player.Volume = lVolume;
+						}
 					}
-					GUILayout.EndVertical();
+
+					if( GUILayout.Button( new GUIContent( "", "StylePlayer.ButtonPrevious" ), GuiStyleSet.StylePlayer.buttonPrevious ) == true )
+					{
+						changeMusicPrevious();
+					}
 					
-					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+					bool lIsPlaying = GUILayout.Toggle( player.GetFlagPlaying(), new GUIContent( "", "StylePlayer.ToggleStartPause" ), GuiStyleSet.StylePlayer.toggleStartPause );
 					
+					if( lIsPlaying != player.GetFlagPlaying() )
+					{
+						if( lIsPlaying == true )
+						{
+							player.Play();
+						}
+						else
+						{
+							player.Pause();
+						}
+					}
+					
+					if( GUILayout.Button( new GUIContent( "", "StylePlayer.ButtonNext" ), GuiStyleSet.StylePlayer.buttonNext ) == true )
+					{
+						changeMusicNext();
+					}
+
+					player.IsLoop = GUILayout.Toggle( player.IsLoop, new GUIContent( "", "StylePlayer.ToggleLoop" ), GuiStyleSet.StylePlayer.toggleLoop );
+					GUILayout.Label( new GUIContent( player.GetTPosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+
+					GUILayout.Label( new GUIContent( player.GetLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
+
 					GUILayout.FlexibleSpace();
 					
-					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-					
-					GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
-					{
-						GUILayout.FlexibleSpace();
-					}
-					GUILayout.EndVertical();
+					GUILayout.TextArea( title, GuiStyleSet.StyleGeneral.label );
 				}
-				GUILayout.EndHorizontal();
+				GUILayout.EndHorizontal();	
+				
+				float lPositionFloat = ( float )player.PositionRate;
+				float lPositionAfter = GUILayout.HorizontalScrollbar( lPositionFloat, 0.01f, 0.0f, 1.01f, "seekbar" );
+				
+				if( lPositionAfter != lPositionFloat )
+				{
+					player.PositionRate = lPositionAfter;
+				}
 			}
-			GUILayout.EndScrollView();
+			GUILayout.EndVertical();
+			
+			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
+			float lY = Rect.y + lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + GuiStyleSet.StylePlayer.seekbar.fixedHeight;
 		}
-
+		
 		public void OnRenderObject()
 		{
-			
+			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y + GuiStyleSet.StylePlayer.labelTitle.margin.top + GuiStyleSet.StylePlayer.labelTitle.margin.bottom;
+			float lY = Rect.y + lHeightTitle;
+
+			if( player != null && player.GetLength().Second != 0.0d )
+			{
+				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
+				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, ( float )( player.Loop.start / player.GetLength() ), ( float )( player.Loop.end / player.GetLength() ), ( float )player.PositionRate );
+			}
+			else
+			{
+				float lWidth = GuiStyleSet.StylePlayer.seekbar.fixedWidth;
+				float lHeight = GuiStyleSet.StylePlayer.seekbar.fixedHeight;
+				Gui.DrawSeekBar( new Rect( Screen.width / 2 - lWidth / 2, lY, lWidth, lHeight ), GuiStyleSet.StylePlayer.seekbarImage, 0.0f, 0.0f, 0.0f );
+			}
+
+			float lWidthVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedWidth;
+			float lHeightVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedHeight;
+			Gui.DrawVolumeBar( new Rect( GuiStyleSet.StylePlayer.toggleMute.fixedWidth, lHeightTitle, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
 		{
-			
+			positionInBuffer = player.Update( aSoundBuffer, aChannels, aSampleRate, positionInBuffer );
+
+			int lLength = aSoundBuffer.Length / aChannels;
+
+			if( positionInBuffer != lLength && mouseButton == false )
+			{
+				changeMusicNext();
+
+				positionInBuffer = player.Update( aSoundBuffer, aChannels, aSampleRate, positionInBuffer );
+			}
+
+			positionInBuffer %= lLength;
 		}
 		
 		public void OnApplicationQuit()
 		{
 			
 		}
-    }
-}
 
+		public string GetFilePath()
+		{
+			return player.GetFilePath();
+		}
+		
+		public bool GetIsLoop()
+		{
+			return player.IsLoop;
+		}
+
+		public void SetIsLoop( bool aIsLoop )
+		{
+			player.IsLoop = aIsLoop;
+		}
+
+		public void SetLoop( LoopInformation aLoopInformation )
+		{
+			player.SetLoop( aLoopInformation );
+
+			BeginAsyncWork( Callback );
+		}
+	}
+}

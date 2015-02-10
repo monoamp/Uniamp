@@ -7,6 +7,14 @@ Assets/Scripts/Unity/View/Menu/LoopTool/*
 Assets/Scripts/Unity/View/Menu/LoopTool.meta
 Assets/Scripts/Unity/View/Scene/SceneLoopTool.cs
 Assets/Scripts/Unity/View/Scene/SceneLoopTool.cs.meta
+Assets/Scenes/LoopEditor.unity
+Assets/Scenes/LoopEditor.unity.meta
+Assets/Scripts/Unity/View/Application/ApplicationLoopEditor.cs
+Assets/Scripts/Unity/View/Application/ApplicationLoopEditor.cs.meta
+Assets/Scripts/Unity/View/Menu/LoopEditor/*
+Assets/Scripts/Unity/View/Menu/LoopEditor.meta
+Assets/Scripts/Unity/View/Scene/SceneLoopEditor.cs
+Assets/Scripts/Unity/View/Scene/SceneLoopEditor.cs.meta
 Assets/StreamingAssets/Config/*
 Assets/StreamingAssets/Sound/Music/*
 Assets/UnityTestTools/*

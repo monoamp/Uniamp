@@ -39,6 +39,9 @@ namespace Unity.View
 		private GameObject gameObjectWaveform1;
 		private GameObject gameObjectWaveform2;
 
+		private Transform transformWaveform1;
+		private Transform transformWaveform2;
+
 		private MeshFilter meshFilter1;
 		private MeshFilter meshFilter2;
 		
@@ -46,7 +49,8 @@ namespace Unity.View
 		private MeshRenderer meshRenderer2;
 
 		private bool isFinish;
-		private Vector3[] vertices;
+		private Vector3[] vertices1;
+		private Vector3[] vertices2;
 		private float[] waveform;
 		private string filePath;
 
@@ -65,34 +69,40 @@ namespace Unity.View
 			
 			Mesh lMesh1 = new Mesh();
 			Mesh lMesh2 = new Mesh();
-			vertices = new Vector3[1281 * 2];
-			//vertices2 = new Vector3[1281 * 2];
+			vertices1 = new Vector3[1281 * 2];
+			vertices2 = new Vector3[1281 * 2];
 			int[] lIndices = new int[1281 * 2];
 
-			for( int i = 0; i < vertices.Length / 2; i++ )
+			for( int i = 0; i < vertices1.Length / 2; i++ )
 			{
-				vertices[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
-				vertices[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
-				
-				//vertices2[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
-				//vertices2[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices2[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices2[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
 			}
 			
+			for( int i = 0; i < vertices2.Length / 2; i++ )
+			{
+				vertices2[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+				vertices2[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
+			}
+
 			for( int i = 0; i < lIndices.Length; i++ )
 			{
 				lIndices[i] = i;
 			}
 			
-			lMesh1.vertices = vertices;
+			lMesh1.vertices = vertices1;
 			lMesh1.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			lMesh1.RecalculateBounds();
 			
-			lMesh2.vertices = vertices;
+			lMesh2.vertices = vertices2;
 			lMesh2.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			lMesh2.RecalculateBounds();
 
 			gameObjectWaveform1 = GameObject.Find( "Waveform1" );
 			gameObjectWaveform2 = GameObject.Find( "Waveform2" );
+			
+			transformWaveform1 = gameObjectWaveform1.transform;
+			transformWaveform2 = gameObjectWaveform2.transform;
 			
 			meshFilter1 = gameObjectWaveform1.GetComponent<MeshFilter>();
 			meshFilter2 = gameObjectWaveform2.GetComponent<MeshFilter>();
@@ -106,8 +116,8 @@ namespace Unity.View
 			meshFilter1.sharedMesh.name = "Waveform1";
 			meshFilter2.sharedMesh.name = "Waveform2";
 			
-			meshRenderer1.material.color = new Color( 0.4f, 0.4f, 0.9f );
-			meshRenderer2.material.color = new Color( 0.4f, 0.4f, 0.9f );
+			meshRenderer1.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.8f );
+			meshRenderer2.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.8f );
 
 			filePath = "";
 		}
@@ -128,8 +138,9 @@ namespace Unity.View
 
 		public void UpdateMesh()
 		{
-			double lBase = ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * 1280.0d;
-			gameObjectWaveform2.transform.position = new Vector3( ( float )lBase, -100.0f, 0.0f );
+			//int count = ( int )( ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * Screen.width );
+			//double lBase = count * 1280.0d / Screen.width;
+			//transformWaveform2.position = new Vector3( ( float )lBase, -100.0f, 0.0f );
 			BeginAsyncWork( Callback );
 		}
 
@@ -145,6 +156,8 @@ namespace Unity.View
 			
 			if( lMusicPcm != null )
 			{
+				float[] lValueArray = new float[vertices1.Length];
+
 				if( player.GetFilePath() != filePath )
 				{
 					filePath = player.GetFilePath();
@@ -154,9 +167,7 @@ namespace Unity.View
 					waveform = new float[lWaveform.format.samples];
 
 					int lIndexPre = 0;
-					
-					float[] lValueArray = new float[vertices.Length];
-					
+
 					for( int i = 0; i < lValueArray.Length; i++ )
 					{
 						lValueArray[i] = 0.0f;
@@ -183,8 +194,8 @@ namespace Unity.View
 							double lX = -640.0d + ( double )lIndexPre * 1280.0d / ( double )Screen.width;
 							double lY = 359.0d - 50.0d * 720.0d / Screen.height;
 							
-							vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
-							vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
+							vertices1[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
+							vertices1[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
 							
 							lIndexPre = lIndex;
 
@@ -192,9 +203,42 @@ namespace Unity.View
 						}
 					}
 				}
+				
+				int lCountStart = ( int )( player.Loop.start.sample / player.GetLength().sample * Screen.width );
+				double lBase = lCountStart * 1280.0d / Screen.width;
+				float lOffset = ( float )( ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * 1280.0d );
+
+				for( int i = 0; i < lValueArray.Length; i++ )
+				{
+					lValueArray[i] = 0.0f;
+				}
+				
+				for( int i = 0; i < waveform.Length; i++ )
+				{
+					int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
+					float lValue = waveform[i];
+					
+					if( lValue > lValueArray[lIndex * 2 + 0] )
+					{
+						lValueArray[lIndex * 2 + 0] = lValue;
+					}
+					else if( lValue < lValueArray[lIndex * 2 + 1] )
+					{
+						lValueArray[lIndex * 2 + 1] = lValue;
+					}
+				}
+				
+				for( int i = 0; i < lValueArray.Length / 2; i++ )
+				{
+					double lX = lOffset - 640.0d + ( double )i * 1280.0d / ( double )Screen.width;
+					double lY = 359.0d - 50.0d * 720.0d / Screen.height;
+
+					vertices2[i * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[i * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
+					vertices2[i * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[i * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
+				}
 			}
 		}
-
+		
 		private void Callback(IAsyncResult r)
 		{
 			isFinish = true;
@@ -215,8 +259,8 @@ namespace Unity.View
 			if( isFinish == true )
 			{
 				isFinish = false;
-				meshFilter1.mesh.vertices = vertices;
-				meshFilter2.mesh.vertices = vertices;
+				meshFilter1.mesh.vertices = vertices1;
+				meshFilter2.mesh.vertices = vertices2;
 				meshFilter1.mesh.RecalculateBounds();
 				meshFilter2.mesh.RecalculateBounds();
 			}
@@ -384,8 +428,9 @@ namespace Unity.View
 
 			BeginAsyncWork( Callback );
 			
-			double lBase = ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * 1280.0d;
-			gameObjectWaveform2.transform.position = new Vector3( ( float )lBase, -100.0f, 0.0f );
+			//int count = ( int )( ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample * Screen.width );
+			//double lBase = count * 1280.0d / Screen.width;
+			//transformWaveform2.position = new Vector3( ( float )lBase, -100.0f, 0.0f );
 		}
 	}
 }
