@@ -244,42 +244,51 @@ namespace Unity.View.LoopEditor
 		{
 			menu.OnGUI();
 			componentLoopEditor.OnGUI();
-
-			GUILayout.BeginHorizontal();
+			
+			GUILayout.BeginArea( new Rect( 0.0f, 180.0f, Screen.width, Screen.height - 180.0f ) );
 			{
-				GUILayout.BeginVertical( GUILayout.Width( Screen.width * 3 / 4.0f ) );
+				GUILayout.BeginVertical();
 				{
-					/*
-					GUILayout.Label( new GUIContent ( "Input", "StyleLoopTool.LabelInput" ), GuiStyleSet.StyleLoopTool.labelInput );
-					GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundInput" ), GuiStyleSet.StyleLoopTool.backgroundInput );
-					componentDirectoryBarInput.OnGUI();
-					componentInputlist.OnGUI();
-					*/
+					GUILayout.BeginVertical( GUILayout.Height( 100.0f ) );
+					{
+						componentLoopSelector.OnGUI();
+					}
+					GUILayout.EndVertical();
 
-					GUILayout.Label( new GUIContent ( "Target", "StyleLoopTool.LabelOutput" ), GuiStyleSet.StyleLoopTool.labelOutput );
-					GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundOutput" ), GuiStyleSet.StyleLoopTool.backgroundOutput );
-					componentDirectoryBarOutput.OnGUI();
-					componentPlaylist.OnGUI();
-				}
-				GUILayout.EndVertical();
+					GUILayout.BeginHorizontal();
+					{
+						GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
+						{
+							GUILayout.Label( new GUIContent ( "Input", "StyleLoopTool.LabelInput" ), GuiStyleSet.StyleLoopTool.labelInput );
+							GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundInput" ), GuiStyleSet.StyleLoopTool.backgroundInput );
+							componentDirectoryBarInput.OnGUI();
+							componentInputlist.OnGUI();
+						}
+						GUILayout.EndVertical();
 
-				GUILayout.BeginVertical( GUILayout.Width( Screen.width / 4.0f ) );
-				{
-					GUILayout.Label( new GUIContent ( "Select Loop", "StyleLoopTool.LabelEdit" ), GuiStyleSet.StyleLoopTool.labelEdit );
-					GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundEdit" ), GuiStyleSet.StyleLoopTool.backgroundEdit );
-					componentLoopSelector.OnGUI();
+						GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
+						{
+							GUILayout.Label( new GUIContent ( "Output", "StyleLoopTool.LabelOutput" ), GuiStyleSet.StyleLoopTool.labelOutput );
+							GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundOutput" ), GuiStyleSet.StyleLoopTool.backgroundOutput );
+							componentDirectoryBarOutput.OnGUI();
+							componentPlaylist.OnGUI();
+						}
+						GUILayout.EndVertical();
+					}
+					GUILayout.EndHorizontal();
 				}
 				GUILayout.EndVertical();
 			}
-			GUILayout.EndHorizontal();
+			GUILayout.EndArea();
 			
-			GUILayout.BeginArea( new Rect( Screen.width / 2.0f, 180.0f, Screen.width / 2.0f, 160.0f ) );
+			GUILayout.BeginArea( new Rect( 0.0f, 300.0f, Screen.width, 160.0f ) );
 			{
 				GUILayout.BeginHorizontal();
 				{
-					componentLoopSearch.OnGUI();
-					componentLoopSave.OnGUI();
 					GUILayout.FlexibleSpace();
+					componentLoopSearch.OnGUI();
+					GUILayout.FlexibleSpace();
+					componentLoopSave.OnGUI();
 				}
 				GUILayout.EndHorizontal();
 			}

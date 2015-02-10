@@ -83,130 +83,153 @@ namespace Unity.View
 		{
 			int lX = x;
 			int lY = y;
-
-			if( playMusicInformation != null )
+			
+			GUILayout.BeginVertical();
 			{
-				GUILayout.BeginHorizontal();
+				GUILayout.BeginVertical();
 				{
-					int lLoopCountY = 1;
-					lLoopCountY = loopArrayArray[x].Length;
+					if( playMusicInformation != null )
+					{
+						int lLoopCountY = 1;
+						lLoopCountY = loopArrayArray[x].Length;
+						lY = ( int )GUILayout.HorizontalSlider( lY, 0.0f, lLoopCountY - 1, GUILayout.Width( Screen.width ));
 					
-					if( lLoopCountY == 0 )
-					{
-						lLoopCountY = 1;
-					}
-
-					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
-					{
-						lY--;
-					}
-
-					lY = ( int )GUILayout.HorizontalSlider( lY, 0.0f, lLoopCountY - 1 );
-					
-					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
-					{
-						lY++;
-					}
-
-					if( lY < 0 )
-					{
-						lY = 0;
-					}
-					
-					if( lY >= lLoopCountY )
-					{
-						lY = lLoopCountY - 1;
-					}
-				}
-				GUILayout.EndHorizontal();
-			}
-				
-			GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
-			{
-				GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader );
-				{
-					GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
-					GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
-
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.Label( new GUIContent( "Group No.", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 80.0f ) );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader );
-						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-						GUILayout.Label( new GUIContent( "Count", "StyleTable.TextHeader" ), GuiStyleSet.StyleTable.textHeader, GUILayout.Width( 60.0f ) );
-					}
-					GUILayout.EndHorizontal();
-				}
-				GUILayout.EndVertical();
-			}
-			GUILayout.EndScrollView();
-
-			scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
-			{
-				if( playMusicInformation != null )
-				{
-					for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
-					{
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-
-							if( i == x )
+							if( lLoopCountY == 0 )
 							{
-								GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine );
+								lLoopCountY = 1;
 							}
-							else
+							
+							if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ) ) == true )
 							{
-								if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine ) == true )
+								lY--;
+							}
+
+							GUILayout.BeginVertical();
+							{
+								GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+								GUILayout.Label( new GUIContent( loopArrayArray[x][y].start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+							}
+							GUILayout.EndVertical();
+
+							GUILayout.BeginVertical();
+							{
+								GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+								GUILayout.Label( new GUIContent( loopArrayArray[x][y].end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+							}
+							GUILayout.EndVertical();
+							
+							
+							if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ) ) == true )
+							{
+								lY++;
+							}
+							
+							if( lY < 0 )
+							{
+								lY = 0;
+							}
+							
+							if( lY >= lLoopCountY )
+							{
+								lY = lLoopCountY - 1;
+							}
+
+							GUILayout.BeginVertical();
+							{
+								GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
 								{
-									lX = i;
-									lY = 0;
+									GUILayout.BeginHorizontal();
+									{
+										GUILayout.Label( new GUIContent( "Group No.", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+										GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 120.0f ) );
+										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+										GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 60.0f ) );
+									}
+									GUILayout.EndHorizontal();
 								}
+								GUILayout.EndScrollView();
+								
+								scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
+								{
+									if( playMusicInformation != null )
+									{
+										for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
+										{
+											GUILayout.BeginHorizontal();
+											{
+												GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
+												GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+												
+												if( i == x )
+												{
+													GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine, GUILayout.Width( 120.0f ) );
+												}
+												else
+												{
+													if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine, GUILayout.Width( 120.0f ) ) == true )
+													{
+														lX = i;
+														lY = 0;
+													}
+												}
+												
+												GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+												GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 60.0f ) );
+											}
+											GUILayout.EndHorizontal();
+										}
+									}
+									
+									GUILayout.BeginHorizontal();
+									{
+										GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+										{
+											GUILayout.FlexibleSpace();
+										}
+										GUILayout.EndVertical();
+										
+										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+										
+										GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
+										{
+											GUILayout.FlexibleSpace();
+										}
+										GUILayout.EndVertical();
+										
+										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+										
+										GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
+										{
+											GUILayout.FlexibleSpace();
+										}
+										GUILayout.EndVertical();
+									}
+									GUILayout.EndHorizontal();
+								}
+								GUILayout.EndScrollView();
 							}
-
-							GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-							GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 60.0f ) );
+							GUILayout.EndVertical();
 						}
 						GUILayout.EndHorizontal();
 					}
-
-					if( x != lX || y != lY )
-					{
-						x = lX;
-						y = lY;
-						
-						componentPlayer.SetLoop( loopArrayArray[x][y] );
-						playMusicInformation.loopPoint = loopArrayArray[x][y];
-						playMusicInformation.music.Loop = loopArrayArray[x][y];
-						playMusicInformation.isSelected = true;
-					}
 				}
-
-				GUILayout.BeginHorizontal();
-				{
-					GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
-					{
-						GUILayout.FlexibleSpace();
-					}
-					GUILayout.EndVertical();
-					
-					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-					
-					GUILayout.FlexibleSpace();
-					
-					GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-					
-					GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
-					{
-						GUILayout.FlexibleSpace();
-					}
-					GUILayout.EndVertical();
-				}
-				GUILayout.EndHorizontal();
+				GUILayout.EndVertical();
 			}
-			GUILayout.EndScrollView();
+			GUILayout.EndVertical();
+
+			if( x != lX || y != lY )
+			{
+				x = lX;
+				y = lY;
+				
+				componentPlayer.SetLoop( loopArrayArray[x][y] );
+				playMusicInformation.loopPoint = loopArrayArray[x][y];
+				playMusicInformation.music.Loop = loopArrayArray[x][y];
+				playMusicInformation.isSelected = true;
+			}
 		}
 
 		public void OnRenderObject()

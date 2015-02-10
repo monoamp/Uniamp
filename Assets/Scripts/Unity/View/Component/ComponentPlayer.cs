@@ -417,12 +417,12 @@ namespace Unity.View
 			return player.IsLoop;
 		}
 
-		public void SetIsLoop( bool aIsLoop )
+		public virtual void SetIsLoop( bool aIsLoop )
 		{
 			player.IsLoop = aIsLoop;
 		}
 
-		public void SetLoop( LoopInformation aLoopInformation )
+		public virtual void SetLoop( LoopInformation aLoopInformation )
 		{
 			player.SetLoop( aLoopInformation );
 
