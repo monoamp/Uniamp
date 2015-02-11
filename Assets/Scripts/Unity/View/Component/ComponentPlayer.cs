@@ -416,6 +416,16 @@ namespace Unity.View
 		{
 			return player.IsLoop;
 		}
+		
+		public virtual LoopInformation GetLoop()
+		{
+			return player.Loop;
+		}
+		
+		public virtual int GetLength()
+		{
+			return ( int )player.GetLength().sample;
+		}
 
 		public virtual void SetIsLoop( bool aIsLoop )
 		{

@@ -84,18 +84,34 @@ namespace Unity.View
 			int lX = x;
 			int lY = y;
 			
+			float positionStart = ( float )componentPlayer.GetLoop().start.sample;
+			
+			if( positionStart < 0.0f )
+			{
+				positionStart = 0.0f;
+			}
+
+			float lPositionStartPre = positionStart;
+			float lLoopLength = ( float )componentPlayer.GetLoop().length.sample;
+
 			GUILayout.BeginVertical();
 			{
 				GUILayout.BeginVertical();
 				{
 					if( playMusicInformation != null )
 					{
-						int lLoopCountY = 1;
-						lLoopCountY = loopArrayArray[x].Length;
-						lY = ( int )GUILayout.HorizontalSlider( lY, 0.0f, lLoopCountY - 1, GUILayout.Width( Screen.width ));
-					
+						positionStart = GUILayout.HorizontalSlider( positionStart, 0.0f, componentPlayer.GetLength(), GUILayout.Width( Screen.width ));
+				
+						if( positionStart + lLoopLength > componentPlayer.GetLength() )
+						{
+							positionStart = componentPlayer.GetLength() - lLoopLength;
+						}
+
 						GUILayout.BeginHorizontal();
 						{
+							int lLoopCountY = 1;
+							lLoopCountY = loopArrayArray[x].Length;
+
 							if( lLoopCountY == 0 )
 							{
 								lLoopCountY = 1;
@@ -228,6 +244,15 @@ namespace Unity.View
 				componentPlayer.SetLoop( loopArrayArray[x][y] );
 				playMusicInformation.loopPoint = loopArrayArray[x][y];
 				playMusicInformation.music.Loop = loopArrayArray[x][y];
+				playMusicInformation.isSelected = true;
+			}
+
+			if( positionStart != lPositionStartPre )
+			{
+				double lSampleRate = componentPlayer.GetLoop().length.sampleRate;
+				componentPlayer.SetLoop( new LoopInformation( lSampleRate, ( int )positionStart, ( int )positionStart + ( int )lLoopLength - 1 ) );
+				playMusicInformation.loopPoint = componentPlayer.GetLoop();
+				playMusicInformation.music.Loop = componentPlayer.GetLoop();
 				playMusicInformation.isSelected = true;
 			}
 		}
