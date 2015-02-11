@@ -19,6 +19,7 @@ namespace Unity.View
 	public class ComponentLoopSelector : IView
 	{
 		public Rect Rect{ get; set; }
+		public Rect rect;
 
 		private ComponentPlayer componentPlayer;
 
@@ -27,6 +28,8 @@ namespace Unity.View
 		private PlayMusicInformation playMusicInformation;
 		private int x;
 		private int y;
+		
+		private bool isShow;
 
 		public ComponentLoopSelector( ComponentPlayer aComponentPlayer )
 		{
@@ -34,6 +37,8 @@ namespace Unity.View
 			scrollPosition = Vector2.zero;
 			x = 0;
 			y = 0;
+			isShow = false;
+			rect = new Rect( Screen.width - 340.0f, 210.0f, 320.0f, Screen.height - 230.0f );
 		}
 
 		public void SetPlayMusicInformation( PlayMusicInformation lPlayMusicInformation )
@@ -64,6 +69,100 @@ namespace Unity.View
 			}
 		}
 		
+		private void SelectItemWindow( int windowID )
+		{
+			int lX = x;
+			int lY = y;
+
+			GUILayout.BeginVertical();
+			{
+				GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
+				{
+					GUILayout.BeginHorizontal();
+					{
+						GUILayout.Label( new GUIContent( "Group No.", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.MinWidth( 120.0f ) );
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
+						GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
+					}
+					GUILayout.EndHorizontal();
+				}
+				GUILayout.EndScrollView();
+				
+				scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
+				{
+					if( playMusicInformation != null )
+					{
+						for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
+						{
+							GUILayout.BeginHorizontal();
+							{
+								GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
+								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+								
+								if( i == x )
+								{
+									GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine, GUILayout.MinWidth( 120.0f ) );
+								}
+								else
+								{
+									if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine, GUILayout.MinWidth( 120.0f ) ) == true )
+									{
+										lX = i;
+										lY = 0;
+									}
+								}
+								
+								GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+								GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
+							}
+							GUILayout.EndHorizontal();
+						}
+					}
+					
+					GUILayout.BeginHorizontal();
+					{
+						GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+						{
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndVertical();
+						
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+						
+						GUILayout.BeginVertical( GUILayout.MinWidth( 120.0f ) );
+						{
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndVertical();
+						
+						GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
+						
+						GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
+						{
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndVertical();
+					}
+					GUILayout.EndHorizontal();
+				}
+				GUILayout.EndScrollView();
+			}
+			GUILayout.EndVertical();
+			
+			if( x != lX || y != lY )
+			{
+				x = lX;
+				y = lY;
+				
+				componentPlayer.SetLoop( loopArrayArray[x][y] );
+				playMusicInformation.loopPoint = loopArrayArray[x][y];
+				playMusicInformation.music.Loop = loopArrayArray[x][y];
+				playMusicInformation.isSelected = true;
+			}
+		}
+
 		public void Awake()
 		{
 			
@@ -83,145 +182,90 @@ namespace Unity.View
 		{
 			int lX = x;
 			int lY = y;
-
-			GUILayout.BeginVertical();
+			
+			if( isShow == true )
 			{
-				GUILayout.BeginVertical();
+				GUI.Window( 10, rect, SelectItemWindow, "", GuiStyleSet.StyleMenu.window );
+			}
+			
+			if( Input.GetMouseButtonDown( 0 ) == true )
+			{
+				float lYY = Screen.height - 1 - Input.mousePosition.y;
+				
+				if( Input.mousePosition.x < rect.x || Input.mousePosition.x >= rect.x + rect.width ||
+				   lYY < rect.y || lYY >= rect.y + rect.height )
 				{
-					if( playMusicInformation != null )
+					isShow = false;
+				}
+			}
+			
+			GUILayout.FlexibleSpace();
+
+			if( playMusicInformation != null )
+			{
+				GUILayout.BeginHorizontal();
+				{
+					int lLoopCountY = 1;
+					lLoopCountY = loopArrayArray[x].Length;
+
+					if( lLoopCountY == 0 )
 					{
+						lLoopCountY = 1;
+					}
+					
+					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ) ) == true )
+					{
+						lY--;
+					}
+
+					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
+					{
+						GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						GUILayout.Label( new GUIContent( componentPlayer.GetLoop().start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+					}
+					GUILayout.EndVertical();
+
+					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
+					{
+						GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						GUILayout.Label( new GUIContent( componentPlayer.GetLoop().end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+					}
+					GUILayout.EndVertical();
+
+					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
+					{
+						GUILayout.Label( new GUIContent( "Length", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						
 						GUILayout.BeginHorizontal();
 						{
-							int lLoopCountY = 1;
-							lLoopCountY = loopArrayArray[x].Length;
+							GUILayout.Label( new GUIContent( componentPlayer.GetLoop().length.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
 
-							if( lLoopCountY == 0 )
+							if( GUILayout.Button( new GUIContent( "", "StyleGeneral.ButtonPullDown" ), GuiStyleSet.StyleGeneral.buttonPullDown ) == true )
 							{
-								lLoopCountY = 1;
+								isShow = true;
 							}
-							
-							if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ) ) == true )
-							{
-								lY--;
-							}
-
-							GUILayout.BeginVertical();
-							{
-								GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-								GUILayout.Label( new GUIContent( componentPlayer.GetLoop().start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-							}
-							GUILayout.EndVertical();
-							
-							GUILayout.FlexibleSpace();
-
-							GUILayout.BeginVertical();
-							{
-								GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-								GUILayout.Label( new GUIContent( componentPlayer.GetLoop().end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-							}
-							GUILayout.EndVertical();
-							
-							
-							if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ) ) == true )
-							{
-								lY++;
-							}
-							
-							if( lY < 0 )
-							{
-								lY = 0;
-							}
-							
-							if( lY >= lLoopCountY )
-							{
-								lY = lLoopCountY - 1;
-							}
-							
-							GUILayout.FlexibleSpace();
-
-							GUILayout.BeginVertical();
-							{
-								GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
-								{
-									GUILayout.BeginHorizontal();
-									{
-										GUILayout.Label( new GUIContent( "Group No.", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
-										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-										GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 120.0f ) );
-										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-										GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
-									}
-									GUILayout.EndHorizontal();
-								}
-								GUILayout.EndScrollView();
-								
-								scrollPosition = GUILayout.BeginScrollView( scrollPosition, false, true, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleScrollbar.view );
-								{
-									if( playMusicInformation != null )
-									{
-										for( int i = 0; i < loopArrayArray.Length && i < 128; i++ )
-										{
-											GUILayout.BeginHorizontal();
-											{
-												GUILayout.Label( new GUIContent( ( i + 1 ).ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
-												GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-												
-												if( i == x )
-												{
-													GUILayout.Toggle( true, new GUIContent( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine " ), GuiStyleSet.StyleList.toggleLine, GUILayout.Width( 120.0f ) );
-												}
-												else
-												{
-													if( GUILayout.Button( new GUIContent ( loopArrayArray[i][0].length.sample.ToString(), "StyleList.ToggleLine" ), GuiStyleSet.StyleList.toggleLine, GUILayout.Width( 120.0f ) ) == true )
-													{
-														lX = i;
-														lY = 0;
-													}
-												}
-												
-												GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-												GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
-											}
-											GUILayout.EndHorizontal();
-										}
-									}
-									
-									GUILayout.BeginHorizontal();
-									{
-										GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
-										{
-											GUILayout.FlexibleSpace();
-										}
-										GUILayout.EndVertical();
-										
-										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-										
-										GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
-										{
-											GUILayout.FlexibleSpace();
-										}
-										GUILayout.EndVertical();
-										
-										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-										
-										GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
-										{
-											GUILayout.FlexibleSpace();
-										}
-										GUILayout.EndVertical();
-									}
-									GUILayout.EndHorizontal();
-								}
-								GUILayout.EndScrollView();
-							}
-							GUILayout.EndVertical();
 						}
 						GUILayout.EndHorizontal();
 					}
+					GUILayout.EndVertical();
+					
+					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ) ) == true )
+					{
+						lY++;
+					}
+					
+					if( lY < 0 )
+					{
+						lY = 0;
+					}
+					
+					if( lY >= lLoopCountY )
+					{
+						lY = lLoopCountY - 1;
+					}
 				}
-				GUILayout.EndVertical();
+				GUILayout.EndHorizontal();
 			}
-			GUILayout.EndVertical();
 
 			if( x != lX || y != lY )
 			{

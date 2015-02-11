@@ -25,6 +25,8 @@ namespace Unity.View
 
 		private string title;
 		private bool mouseButtonPrevious;
+		
+		private readonly ComponentLoopSelector componentLoopSelector;
 
 		public ChangeMusicPrevious changeMusicPrevious;
 		public ChangeMusicNext changeMusicNext;
@@ -117,9 +119,11 @@ namespace Unity.View
 			
 			objectWaveformLeft = new ObjectWaveform( gameObjectWaveform3.transform, meshFilter3 );
 			objectWaveformRight = new ObjectWaveform( gameObjectWaveform2.transform, meshFilter2 );
+
+			componentLoopSelector = new ComponentLoopSelector( this );
 		}
 		
-		public void SetPlayer( string aFilePath )
+		public void SetPlayer( string aFilePath, Dictionary<string, PlayMusicInformation> aMusicInformationDictionary )
 		{
 			bool lIsMute = player.IsMute;
 			bool lIsLoop = player.IsLoop;
@@ -131,6 +135,15 @@ namespace Unity.View
 			player.IsMute = lIsMute;
 			player.IsLoop = lIsLoop;
 			player.Volume = lVolume;
+			
+			if( aMusicInformationDictionary.ContainsKey( aFilePath ) == true )
+			{
+				componentLoopSelector.SetPlayMusicInformation( aMusicInformationDictionary[aFilePath] );
+			}
+			else
+			{
+				componentLoopSelector.SetPlayMusicInformation( null );
+			}
 		}
 
 		public void UpdateMesh()
@@ -172,7 +185,7 @@ namespace Unity.View
 					if( lIndex != lIndexPre )
 					{
 						double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
-						double lY = Screen.height / 2.0d - 1.0d - 120.0d;
+						double lY = Screen.height / 2.0d - 1.0d - 90.0d;
 						
 						vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
 						vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
@@ -213,7 +226,7 @@ namespace Unity.View
 			{
 				if( Input.GetMouseButton( 0 ) == true )
 				{
-					Rect lFrame = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 120.0f - 30.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
+					Rect lFrame = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 90.0f - 30.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
 
 					if( lFrame.Contains( Event.current.mousePosition ) == true )
 					{
@@ -258,9 +271,20 @@ namespace Unity.View
 			
 			GuiStyleSet.StylePlayer.seekbar.fixedWidth = Screen.width;
 			GuiStyleSet.StylePlayer.seekbarImage.fixedWidth = Screen.width;
-
+			
 			GUILayout.BeginVertical( GuiStyleSet.StylePlayer.box );
 			{
+				GUILayout.TextArea( title, GuiStyleSet.StylePlayer.labelTitle );
+				GUILayout.Label( new GUIContent( "", "StyleGeneral.None" ), GuiStyleSet.StyleGeneral.none, GUILayout.Height( 60.0f ) );
+				
+				float lPositionFloat = ( float )player.PositionRate;
+				float lPositionAfter = GUILayout.HorizontalSlider( lPositionFloat, 0.0f, 1.0f, GuiStyleSet.StylePlayer.seekbar, GuiStyleSet.StylePlayer.seekbarThumb );
+				
+				if( lPositionAfter != lPositionFloat )
+				{
+					player.PositionRate = lPositionAfter;
+				}
+
 				GUILayout.BeginHorizontal();
 				{
 					player.IsMute = GUILayout.Toggle( player.IsMute, new GUIContent( "", "StylePlayer.ToggleMute" ), GuiStyleSet.StylePlayer.toggleMute );
@@ -284,6 +308,11 @@ namespace Unity.View
 							player.Volume = lVolume;
 						}
 					}
+					
+					GUILayout.FlexibleSpace();
+
+					player.IsLoop = GUILayout.Toggle( player.IsLoop, new GUIContent( "", "StylePlayer.ToggleLoop" ), GuiStyleSet.StylePlayer.toggleLoop );
+					GUILayout.Label( new GUIContent( player.GetTPosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
 					if( GUILayout.Button( new GUIContent( "", "StylePlayer.ButtonPrevious" ), GuiStyleSet.StylePlayer.buttonPrevious ) == true )
 					{
@@ -309,35 +338,19 @@ namespace Unity.View
 						changeMusicNext();
 					}
 
-					player.IsLoop = GUILayout.Toggle( player.IsLoop, new GUIContent( "", "StylePlayer.ToggleLoop" ), GuiStyleSet.StylePlayer.toggleLoop );
-					GUILayout.Label( new GUIContent( player.GetTPosition().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
-
 					GUILayout.Label( new GUIContent( player.GetLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
-					GUILayout.FlexibleSpace();
-					
-					GUILayout.TextArea( title, GuiStyleSet.StyleGeneral.label );
+					componentLoopSelector.OnGUI();
 				}
-				GUILayout.EndHorizontal();	
-				
-				float lPositionFloat = ( float )player.PositionRate;
-				float lPositionAfter = GUILayout.HorizontalSlider( lPositionFloat, 0.0f, 1.0f, GuiStyleSet.StylePlayer.seekbar, GuiStyleSet.StylePlayer.seekbarThumb );
-				
-				if( lPositionAfter != lPositionFloat )
-				{
-					player.PositionRate = lPositionAfter;
-				}
+				GUILayout.EndHorizontal();
 			}
 			GUILayout.EndVertical();
-			
-			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y;
-			float lY = Rect.y + lHeightTitle + GuiStyleSet.StyleGeneral.box.margin.top + GuiStyleSet.StyleGeneral.box.padding.top + GuiStyleSet.StylePlayer.seekbar.fixedHeight;
 		}
 		
 		public void OnRenderObject()
 		{
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y + GuiStyleSet.StylePlayer.labelTitle.margin.top + GuiStyleSet.StylePlayer.labelTitle.margin.bottom;
-			float lY = Rect.y + lHeightTitle;
+			float lY = Rect.y + lHeightTitle + 60.0f;
 
 			if( player != null && player.GetLength().Second != 0.0d )
 			{
@@ -354,7 +367,7 @@ namespace Unity.View
 
 			float lWidthVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedWidth;
 			float lHeightVolume = GuiStyleSet.StylePlayer.volumebarImage.fixedHeight;
-			Gui.DrawVolumeBar( new Rect( GuiStyleSet.StylePlayer.toggleMute.fixedWidth, lHeightTitle, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
+			Gui.DrawVolumeBar( new Rect( GuiStyleSet.StylePlayer.toggleMute.fixedWidth, lY + GuiStyleSet.StylePlayer.seekbar.fixedHeight + 20.0f, lWidthVolume, lHeightVolume ), GuiStyleSet.StylePlayer.volumebarImage, player.Volume );
 		}
 
 		public void OnAudioFilterRead( float[] aSoundBuffer, int aChannels, int aSampleRate )
@@ -452,7 +465,7 @@ namespace Unity.View
 				if( lIndex != lIndexPre )
 				{
 					double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
-					double lY = Screen.height / 2.0d - 1.0d - 120.0d;
+					double lY = Screen.height / 2.0d - 1.0d - 90.0d;
 					
 					vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
 					vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );

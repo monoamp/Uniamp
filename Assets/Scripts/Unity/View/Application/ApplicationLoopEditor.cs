@@ -30,7 +30,6 @@ namespace Unity.View.LoopEditor
 		private readonly ComponentLoopSave componentLoopSave;
 		private readonly ComponentDirectoryBar componentDirectoryBarInput;
 		private readonly ComponentDirectoryBar componentDirectoryBarOutput;
-		private readonly ComponentLoopSelector componentLoopSelector;
 
 		private string tooltipPrevious;
 
@@ -109,7 +108,6 @@ namespace Unity.View.LoopEditor
 			componentLoopEditor = new ComponentLoopEditor( ChangeMusicPrevious, ChangeMusicNext );
 			componentDirectoryBarInput = new ComponentDirectoryBar( SetInput, directoryInfoRecentInputList );
 			componentDirectoryBarOutput = new ComponentDirectoryBar( SetOutput, directoryInfoRecentOutputList );
-			componentLoopSelector = new ComponentLoopSelector( componentLoopEditor );
 
 			componentInputlist = new ComponentInputlist( directoryInfoRecentInputList[0], PlayMusic, GetPlayingMusic );
 			componentPlaylist = new ComponentPlaylist( directoryInfoRecentOutputList[0], PlayMusic, GetPlayingMusic );
@@ -123,17 +121,8 @@ namespace Unity.View.LoopEditor
 		
 		private void PlayMusic( string aFilePath )
 		{
-			componentLoopEditor.SetPlayer( aFilePath );
+			componentLoopEditor.SetPlayer( aFilePath, componentPlaylist.musicInformationDictionary );
 			componentLoopEditor.UpdateMesh();
-
-			if( componentPlaylist.musicInformationDictionary.ContainsKey( aFilePath ) == true )
-			{
-				componentLoopSelector.SetPlayMusicInformation( componentPlaylist.musicInformationDictionary[aFilePath] );
-			}
-			else
-			{
-				componentLoopSelector.SetPlayMusicInformation( null );
-			}
 		}
 		
 		private string GetPlayingMusic()
@@ -243,18 +232,13 @@ namespace Unity.View.LoopEditor
 		public void OnGUI()
 		{
 			menu.OnGUI();
+
 			componentLoopEditor.OnGUI();
 			
-			GUILayout.BeginArea( new Rect( 0.0f, 180.0f, Screen.width, Screen.height - 180.0f ) );
+			GUILayout.BeginArea( new Rect( 0.0f, 210.0f, Screen.width, Screen.height - 180.0f ) );
 			{
 				GUILayout.BeginVertical();
 				{
-					GUILayout.BeginVertical( GUILayout.Height( 100.0f ) );
-					{
-						componentLoopSelector.OnGUI();
-					}
-					GUILayout.EndVertical();
-
 					GUILayout.BeginHorizontal();
 					{
 						GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
@@ -281,7 +265,7 @@ namespace Unity.View.LoopEditor
 			}
 			GUILayout.EndArea();
 			
-			GUILayout.BeginArea( new Rect( 0.0f, 280.0f, Screen.width, 160.0f ) );
+			GUILayout.BeginArea( new Rect( 0.0f, 210.0f, Screen.width, 160.0f ) );
 			{
 				GUILayout.BeginHorizontal();
 				{
