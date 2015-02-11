@@ -24,7 +24,7 @@ namespace Unity.View
         private IPlayer player;
 
 		private string title;
-		private bool mouseButton;
+		private bool mouseButtonPrevious;
 
 		public ChangeMusicPrevious changeMusicPrevious;
 		public ChangeMusicNext changeMusicNext;
@@ -36,6 +36,10 @@ namespace Unity.View
 		private MeshFilter meshFilter;
 		private MeshFilter meshFilter2;
 		private MeshFilter meshFilter3;
+		
+		private MeshRenderer meshRenderer;
+		private MeshRenderer meshRenderer2;
+		private MeshRenderer meshRenderer3;
 
 		private float[] waveform;
 		
@@ -43,12 +47,17 @@ namespace Unity.View
 		private ObjectWaveform objectWaveformRight;
 		private ObjectWaveform objectWaveformLeft;
 
+		private bool isOnFrameLoop;
+		private Vector2 positionMousePrevious;
+
 		public ComponentLoopEditor( ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
 			: base( aChangeMusicPrevious, aChangeMusicNext )
 		{
 			objectLock = new object();
 
-			mouseButton = false;
+			mouseButtonPrevious = false;
+			isOnFrameLoop = false;
+			positionMousePrevious = Vector2.zero;
 
 			title = "";
 			player = new PlayerNull();
@@ -98,13 +107,13 @@ namespace Unity.View
 			meshFilter2.sharedMesh.name = "Waveform2";
 			meshFilter3.sharedMesh.name = "Waveform3";
 			
-			MeshRenderer meshRenderer = gameObjectWaveform1.GetComponent<MeshRenderer>();
-			MeshRenderer meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
-			MeshRenderer meshRenderer3 = gameObjectWaveform3.GetComponent<MeshRenderer>();
+			meshRenderer = gameObjectWaveform1.GetComponent<MeshRenderer>();
+			meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
+			meshRenderer3 = gameObjectWaveform3.GetComponent<MeshRenderer>();
 
 			meshRenderer.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.5f );
 			meshRenderer2.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.5f );
-			meshRenderer3.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
+			meshRenderer3.material.color = new Color( 0.0f, 0.1f, 0.0f, 0.5f );
 			
 			objectWaveformLeft = new ObjectWaveform( gameObjectWaveform3.transform, meshFilter3 );
 			objectWaveformRight = new ObjectWaveform( gameObjectWaveform2.transform, meshFilter2 );
@@ -173,10 +182,8 @@ namespace Unity.View
 				}
 				
 				meshFilter.mesh.vertices = vertices;
-				//meshFilter2.mesh.vertices = vertices;
 				meshFilter3.mesh.vertices = vertices;
 				meshFilter.mesh.RecalculateBounds();
-				//meshFilter2.mesh.RecalculateBounds();
 				meshFilter3.mesh.RecalculateBounds();
 				
 				ChangeLoop( player.Loop );
@@ -202,7 +209,52 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			mouseButton = Input.GetMouseButton( 0 );
+			if( Input.GetMouseButton( 0 ) != mouseButtonPrevious )
+			{
+				if( Input.GetMouseButton( 0 ) == true )
+				{
+					Rect lFrame = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 120.0f - 30.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
+
+					if( lFrame.Contains( Event.current.mousePosition ) == true )
+					{
+						isOnFrameLoop = true;
+						meshRenderer3.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
+					}
+				}
+				else
+				{
+					isOnFrameLoop = false;
+					meshRenderer3.material.color = new Color( 0.0f, 1.0f, 0.0f, 0.5f );
+				}
+			}
+
+			if( Input.GetMouseButton( 0 ) == true && isOnFrameLoop == true )
+			{
+				double lPositionStart = player.Loop.start.sample;
+
+				lPositionStart += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width;
+				
+				if( lPositionStart < 0.0f )
+				{
+					lPositionStart = 0.0f;
+				}
+
+				if( lPositionStart + player.Loop.length.sample > player.GetLength().sample + 2 )
+				{
+					lPositionStart = player.GetLength().sample - player.Loop.length.sample + 2;
+				}
+
+				if( lPositionStart != player.Loop.start.sample )
+				{
+					SetLoop( new LoopInformation( player.Loop.length.sampleRate, ( int )lPositionStart, ( int )lPositionStart + ( int )player.Loop.length.sample - 1 ) );
+					//playMusicInformation.loopPoint = componentPlayer.GetLoop();
+					//playMusicInformation.music.Loop = componentPlayer.GetLoop();
+					//playMusicInformation.isSelected = true;
+				}
+			}
+
+			mouseButtonPrevious = Input.GetMouseButton( 0 );
+			positionMousePrevious = Event.current.mousePosition;
 			
 			GuiStyleSet.StylePlayer.seekbar.fixedWidth = Screen.width;
 			GuiStyleSet.StylePlayer.seekbarImage.fixedWidth = Screen.width;
@@ -311,7 +363,7 @@ namespace Unity.View
 
 			int lLength = aSoundBuffer.Length / aChannels;
 
-			if( positionInBuffer != lLength && mouseButton == false )
+			if( positionInBuffer != lLength && mouseButtonPrevious == false )
 			{
 				changeMusicNext();
 

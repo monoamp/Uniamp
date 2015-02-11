@@ -83,16 +83,6 @@ namespace Unity.View
 		{
 			int lX = x;
 			int lY = y;
-			
-			float positionStart = ( float )componentPlayer.GetLoop().start.sample;
-			
-			if( positionStart < 0.0f )
-			{
-				positionStart = 0.0f;
-			}
-
-			float lPositionStartPre = positionStart;
-			float lLoopLength = ( float )componentPlayer.GetLoop().length.sample;
 
 			GUILayout.BeginVertical();
 			{
@@ -100,13 +90,6 @@ namespace Unity.View
 				{
 					if( playMusicInformation != null )
 					{
-						positionStart = GUILayout.HorizontalSlider( positionStart, 0.0f, componentPlayer.GetLength(), GUILayout.Width( Screen.width ));
-				
-						if( positionStart + lLoopLength > componentPlayer.GetLength() + 2 )
-						{
-							positionStart = componentPlayer.GetLength() - lLoopLength + 2;
-						}
-
 						GUILayout.BeginHorizontal();
 						{
 							int lLoopCountY = 1;
@@ -125,14 +108,16 @@ namespace Unity.View
 							GUILayout.BeginVertical();
 							{
 								GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-								GUILayout.Label( new GUIContent( loopArrayArray[x][y].start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+								GUILayout.Label( new GUIContent( componentPlayer.GetLoop().start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
 							}
 							GUILayout.EndVertical();
+							
+							GUILayout.FlexibleSpace();
 
 							GUILayout.BeginVertical();
 							{
 								GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-								GUILayout.Label( new GUIContent( loopArrayArray[x][y].end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+								GUILayout.Label( new GUIContent( componentPlayer.GetLoop().end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
 							}
 							GUILayout.EndVertical();
 							
@@ -151,6 +136,8 @@ namespace Unity.View
 							{
 								lY = lLoopCountY - 1;
 							}
+							
+							GUILayout.FlexibleSpace();
 
 							GUILayout.BeginVertical();
 							{
@@ -162,7 +149,7 @@ namespace Unity.View
 										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
 										GUILayout.Label( new GUIContent( "Length (Sample)", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 120.0f ) );
 										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVerticalHeader );
-										GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 60.0f ) );
+										GUILayout.Label( new GUIContent( "Count", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( 80.0f ) );
 									}
 									GUILayout.EndHorizontal();
 								}
@@ -193,7 +180,7 @@ namespace Unity.View
 												}
 												
 												GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
-												GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 60.0f ) );
+												GUILayout.Label( new GUIContent( loopArrayArray[i].Length.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label, GUILayout.Width( 80.0f ) );
 											}
 											GUILayout.EndHorizontal();
 										}
@@ -217,7 +204,7 @@ namespace Unity.View
 										
 										GUILayout.Label( new GUIContent( "", "StyleTable.PartitionVertical" ), GuiStyleSet.StyleTable.partitionVertical );
 										
-										GUILayout.BeginVertical( GUILayout.Width( 60.0f ) );
+										GUILayout.BeginVertical( GUILayout.Width( 80.0f ) );
 										{
 											GUILayout.FlexibleSpace();
 										}
@@ -244,15 +231,6 @@ namespace Unity.View
 				componentPlayer.SetLoop( loopArrayArray[x][y] );
 				playMusicInformation.loopPoint = loopArrayArray[x][y];
 				playMusicInformation.music.Loop = loopArrayArray[x][y];
-				playMusicInformation.isSelected = true;
-			}
-
-			if( positionStart != lPositionStartPre )
-			{
-				double lSampleRate = componentPlayer.GetLoop().length.sampleRate;
-				componentPlayer.SetLoop( new LoopInformation( lSampleRate, ( int )positionStart, ( int )positionStart + ( int )lLoopLength - 1 ) );
-				playMusicInformation.loopPoint = componentPlayer.GetLoop();
-				playMusicInformation.music.Loop = componentPlayer.GetLoop();
 				playMusicInformation.isSelected = true;
 			}
 		}
