@@ -32,26 +32,11 @@ namespace Unity.View
 		public Rect Rect{ get; set; }
 
 		private int positionInBuffer;
-		
-		private GameObject gameObjectWaveform1;
-		private GameObject gameObjectWaveform2;
-		private GameObject gameObjectWaveform3;
 
-		private Transform transformWaveform1;
-		private Transform transformWaveform2;
-		private Transform transformWaveform3;
-
-		private MeshFilter meshFilter1;
+		private MeshFilter meshFilter;
 		private MeshFilter meshFilter2;
 		private MeshFilter meshFilter3;
-		
-		private MeshRenderer meshRenderer1;
-		private MeshRenderer meshRenderer2;
-		private MeshRenderer meshRenderer3;
 
-		private Vector3[] vertices1;
-		private Vector3[] vertices2;
-		private Vector3[] vertices3;
 		private float[] waveform;
 		
 		private object objectLock;
@@ -73,67 +58,56 @@ namespace Unity.View
 
 			positionInBuffer = 0;
 			
-			Mesh lMesh1 = new Mesh();
+			Mesh lMesh = new Mesh();
 			Mesh lMesh2 = new Mesh();
 			Mesh lMesh3 = new Mesh();
 
-			vertices1 = new Vector3[1281 * 2];
+			Vector3[] vertices = new Vector3[1281 * 2];
 			int[] lIndices = new int[1281 * 2];
-
-			for( int i = 0; i < vertices1.Length / 2; i++ )
-			{
-				vertices1[i * 2 + 0] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
-				vertices1[i * 2 + 1] = new Vector3( ( float )i / 2.0f - 640.0f, 360.0f, 0.0f );
-			}
-
 
 			for( int i = 0; i < lIndices.Length; i++ )
 			{
 				lIndices[i] = i;
 			}
 			
-			lMesh1.vertices = vertices1;
-			lMesh1.SetIndices( lIndices, MeshTopology.Lines, 0 );
-			lMesh1.RecalculateBounds();
+			lMesh.vertices = vertices;
+			lMesh.SetIndices( lIndices, MeshTopology.Lines, 0 );
+			lMesh.RecalculateBounds();
 			
-			lMesh2.vertices = vertices1;
+			lMesh2.vertices = vertices;
 			lMesh2.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			lMesh2.RecalculateBounds();
 			
-			lMesh3.vertices = vertices1;
+			lMesh3.vertices = vertices;
 			lMesh3.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			lMesh3.RecalculateBounds();
 
-			gameObjectWaveform1 = GameObject.Find( "Waveform1" );
-			gameObjectWaveform2 = GameObject.Find( "Waveform2" );
-			gameObjectWaveform3 = GameObject.Find( "Waveform3" );
-			
-			transformWaveform1 = gameObjectWaveform1.transform;
-			transformWaveform2 = gameObjectWaveform2.transform;
-			transformWaveform3 = gameObjectWaveform3.transform;
-			
-			meshFilter1 = gameObjectWaveform1.GetComponent<MeshFilter>();
+			GameObject gameObjectWaveform1 = GameObject.Find( "Waveform1" );
+			GameObject gameObjectWaveform2 = GameObject.Find( "Waveform2" );
+			GameObject gameObjectWaveform3 = GameObject.Find( "Waveform3" );
+
+			meshFilter = gameObjectWaveform1.GetComponent<MeshFilter>();
 			meshFilter2 = gameObjectWaveform2.GetComponent<MeshFilter>();
 			meshFilter3 = gameObjectWaveform3.GetComponent<MeshFilter>();
-			
-			meshRenderer1 = gameObjectWaveform1.GetComponent<MeshRenderer>();
-			meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
-			meshRenderer3 = gameObjectWaveform3.GetComponent<MeshRenderer>();
-			
-			meshFilter1.sharedMesh = lMesh1;
+
+			meshFilter.sharedMesh = lMesh;
 			meshFilter2.sharedMesh = lMesh2;
 			meshFilter3.sharedMesh = lMesh3;
 			
-			meshFilter1.sharedMesh.name = "Waveform1";
+			meshFilter.sharedMesh.name = "Waveform1";
 			meshFilter2.sharedMesh.name = "Waveform2";
 			meshFilter3.sharedMesh.name = "Waveform3";
 			
-			meshRenderer1.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.5f );
+			MeshRenderer meshRenderer = gameObjectWaveform1.GetComponent<MeshRenderer>();
+			MeshRenderer meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
+			MeshRenderer meshRenderer3 = gameObjectWaveform3.GetComponent<MeshRenderer>();
+
+			meshRenderer.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.5f );
 			meshRenderer2.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.5f );
-			meshRenderer3.material.color = new Color( 0.0f, 1.0f, 0.0f, 0.5f );
+			meshRenderer3.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
 			
-			objectWaveformLeft = new ObjectWaveform( transformWaveform3, meshFilter3 );
-			objectWaveformRight = new ObjectWaveform( transformWaveform2, meshFilter2 );
+			objectWaveformLeft = new ObjectWaveform( gameObjectWaveform3.transform, meshFilter3 );
+			objectWaveformRight = new ObjectWaveform( gameObjectWaveform2.transform, meshFilter2 );
 		}
 		
 		public void SetPlayer( string aFilePath )
@@ -156,7 +130,8 @@ namespace Unity.View
 		
 			if( lMusicPcm != null )
 			{
-				float[] lValueArray = new float[vertices1.Length];
+				Vector3[] vertices = meshFilter.mesh.vertices;
+				float[] lValueArray = new float[vertices.Length];
 
 				RiffWaveRiff lRiffWaveRiff = new RiffWaveRiff( player.GetFilePath() );
 				WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff, true );
@@ -190,19 +165,21 @@ namespace Unity.View
 						double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
 						double lY = Screen.height / 2.0d - 1.0d - 120.0d;
 						
-						vertices1[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
-						vertices1[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
+						vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
+						vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
 						
 						lIndexPre = lIndex;
 					}
 				}
 				
-				meshFilter1.mesh.vertices = vertices1;
-				meshFilter2.mesh.vertices = vertices1;
-				meshFilter3.mesh.vertices = vertices1;
-				meshFilter1.mesh.RecalculateBounds();
-				meshFilter2.mesh.RecalculateBounds();
+				meshFilter.mesh.vertices = vertices;
+				//meshFilter2.mesh.vertices = vertices;
+				meshFilter3.mesh.vertices = vertices;
+				meshFilter.mesh.RecalculateBounds();
+				//meshFilter2.mesh.RecalculateBounds();
 				meshFilter3.mesh.RecalculateBounds();
+				
+				ChangeLoop( player.Loop );
 			}
 
 			UpdateVertex();
@@ -376,8 +353,12 @@ namespace Unity.View
 
 		public override void SetLoop( LoopInformation aLoopInformation )
 		{
-			player.SetLoop( aLoopInformation );
+			if( aLoopInformation.length.sample != player.Loop.length.sample )
+			{
+				ChangeLoop( aLoopInformation );
+			}
 
+			player.SetLoop( aLoopInformation );
 			UpdateVertex();
 		}
 
@@ -385,7 +366,53 @@ namespace Unity.View
 		{
 			objectWaveformLeft.SetLoop( player.Loop, ( int )player.GetLength().sample );
 			objectWaveformRight.SetLoop( player.Loop, ( int )player.GetLength().sample );
-			objectWaveformRight.SetPosition( ( player.Loop.end.sample - player.Loop.start.sample + 1 ) / player.GetLength().sample );
+		}
+
+		private void ChangeLoop( LoopInformation aLoopInformation )
+		{
+			Vector3[] vertices = meshFilter2.mesh.vertices;
+			float[] lValueArray = new float[vertices.Length];
+			
+			int lIndexPre = 0;
+			
+			for( int i = 0; i < lValueArray.Length; i++ )
+			{
+				lValueArray[i] = 0.0f;
+			}
+
+			int len = waveform.Length / Screen.width;
+			int diff = ( int )aLoopInformation.length.sample % len;
+
+			for( int i = diff; i < waveform.Length; i++ )
+			{
+				int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
+				float lValue = waveform[i - diff];
+				
+				if( lValue > lValueArray[lIndex * 2 + 0] )
+				{
+					lValueArray[lIndex * 2 + 0] = lValue;
+				}
+				else if( lValue < lValueArray[lIndex * 2 + 1] )
+				{
+					lValueArray[lIndex * 2 + 1] = lValue;
+				}
+				
+				if( lIndex != lIndexPre )
+				{
+					double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
+					double lY = Screen.height / 2.0d - 1.0d - 120.0d;
+					
+					vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
+					vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
+					
+					lIndexPre = lIndex;
+				}
+			}
+			
+			meshFilter2.mesh.vertices = vertices;
+			meshFilter2.mesh.RecalculateBounds();
+			
+			objectWaveformRight.SetPosition( ( aLoopInformation.length.sample ) / player.GetLength().sample );
 		}
 	}
 }
