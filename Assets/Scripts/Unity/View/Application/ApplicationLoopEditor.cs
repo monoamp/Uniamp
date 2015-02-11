@@ -234,36 +234,28 @@ namespace Unity.View.LoopEditor
 			menu.OnGUI();
 
 			componentLoopEditor.OnGUI();
-			
-			GUILayout.BeginArea( new Rect( 0.0f, 210.0f, Screen.width, Screen.height - 180.0f ) );
-			{
-				GUILayout.BeginVertical();
-				{
-					GUILayout.BeginHorizontal();
-					{
-						GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
-						{
-							GUILayout.Label( new GUIContent ( "Input", "StyleLoopTool.LabelInput" ), GuiStyleSet.StyleLoopTool.labelInput );
-							GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundInput" ), GuiStyleSet.StyleLoopTool.backgroundInput );
-							componentDirectoryBarInput.OnGUI();
-							componentInputlist.OnGUI();
-						}
-						GUILayout.EndVertical();
 
-						GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
-						{
-							GUILayout.Label( new GUIContent ( "Output", "StyleLoopTool.LabelOutput" ), GuiStyleSet.StyleLoopTool.labelOutput );
-							GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundOutput" ), GuiStyleSet.StyleLoopTool.backgroundOutput );
-							componentDirectoryBarOutput.OnGUI();
-							componentPlaylist.OnGUI();
-						}
-						GUILayout.EndVertical();
-					}
-					GUILayout.EndHorizontal();
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
+				{
+					GUILayout.Label( new GUIContent ( "Input", "StyleLoopTool.LabelInput" ), GuiStyleSet.StyleLoopTool.labelInput );
+					GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundInput" ), GuiStyleSet.StyleLoopTool.backgroundInput );
+					componentDirectoryBarInput.OnGUI();
+					componentInputlist.OnGUI();
+				}
+				GUILayout.EndVertical();
+
+				GUILayout.BeginVertical( GUILayout.Width( Screen.width / 2.0f ) );
+				{
+					GUILayout.Label( new GUIContent ( "Output", "StyleLoopTool.LabelOutput" ), GuiStyleSet.StyleLoopTool.labelOutput );
+					GUILayout.Label( new GUIContent ( "", "StyleLoopTool.BackgroundOutput" ), GuiStyleSet.StyleLoopTool.backgroundOutput );
+					componentDirectoryBarOutput.OnGUI();
+					componentPlaylist.OnGUI();
 				}
 				GUILayout.EndVertical();
 			}
-			GUILayout.EndArea();
+			GUILayout.EndHorizontal();
 			
 			GUILayout.BeginArea( new Rect( 0.0f, 210.0f, Screen.width, 160.0f ) );
 			{

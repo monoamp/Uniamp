@@ -93,7 +93,7 @@ namespace Unity.View
 				UpdateFileList( null, null );
 			}
 			
-			GUILayout.BeginVertical();
+			GUILayout.BeginVertical( GuiStyleSet.StyleTable.box );
 			{
 				GUILayout.BeginScrollView( new Vector2( scrollPosition.x, 0.0f ), false, true, GuiStyleSet.StyleTable.horizontalbarHeader, GuiStyleSet.StyleTable.verticalbarHeader, GuiStyleSet.StyleGeneral.none );
 				{

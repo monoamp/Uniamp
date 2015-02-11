@@ -67,7 +67,7 @@ namespace Unity.View
 				dialogDirectorySelector.OnGUI();
 			}
 			
-			float lWidth = GuiStyleSet.StyleFolder.buttonFolder.CalcSize( new GUIContent( "" ) ).x;
+			float lWidth = GuiStyleSet.StyleFolder.buttonFolder.CalcSize( new GUIContent( "" ) ).x + GuiStyleSet.StyleFolder.background.margin.left + GuiStyleSet.StyleFolder.background.margin.right;
 
 			GUILayout.BeginHorizontal( GuiStyleSet.StyleFolder.background );
 			{
