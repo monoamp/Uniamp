@@ -281,7 +281,7 @@ namespace Unity.View.LoopEditor
 			}
 			GUILayout.EndArea();
 			
-			GUILayout.BeginArea( new Rect( 0.0f, 300.0f, Screen.width, 160.0f ) );
+			GUILayout.BeginArea( new Rect( 0.0f, 280.0f, Screen.width, 160.0f ) );
 			{
 				GUILayout.BeginHorizontal();
 				{

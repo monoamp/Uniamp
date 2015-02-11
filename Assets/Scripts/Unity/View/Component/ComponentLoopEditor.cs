@@ -187,11 +187,11 @@ namespace Unity.View
 
 					if( lIndex != lIndexPre )
 					{
-						double lX = -640.0d + ( double )lIndexPre * 1280.0d / ( double )Screen.width;
-						double lY = 359.0d - 120.0d * 720.0d / Screen.height;
+						double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
+						double lY = Screen.height / 2.0d - 1.0d - 120.0d;
 						
-						vertices1[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f * 720.0f / Screen.height ), 0.0f );
-						vertices1[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f * 720.0f / Screen.height ), 0.0f );
+						vertices1[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
+						vertices1[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
 						
 						lIndexPre = lIndex;
 					}
@@ -385,7 +385,7 @@ namespace Unity.View
 		{
 			objectWaveformLeft.SetLoop( player.Loop, ( int )player.GetLength().sample );
 			objectWaveformRight.SetLoop( player.Loop, ( int )player.GetLength().sample );
-			objectWaveformRight.SetPosition( ( player.Loop.end.sample - player.Loop.start.sample ) / player.GetLength().sample );
+			objectWaveformRight.SetPosition( ( player.Loop.end.sample - player.Loop.start.sample + 1 ) / player.GetLength().sample );
 		}
 	}
 }

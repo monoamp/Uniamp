@@ -102,9 +102,9 @@ namespace Unity.View
 					{
 						positionStart = GUILayout.HorizontalSlider( positionStart, 0.0f, componentPlayer.GetLength(), GUILayout.Width( Screen.width ));
 				
-						if( positionStart + lLoopLength > componentPlayer.GetLength() )
+						if( positionStart + lLoopLength > componentPlayer.GetLength() + 2 )
 						{
-							positionStart = componentPlayer.GetLength() - lLoopLength;
+							positionStart = componentPlayer.GetLength() - lLoopLength + 2;
 						}
 
 						GUILayout.BeginHorizontal();

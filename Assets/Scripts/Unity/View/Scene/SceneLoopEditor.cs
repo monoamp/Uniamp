@@ -20,6 +20,7 @@ namespace Unity.View.LoopEditor
 		void Awake()
 		{
 			isSetGuiStyle = false;
+			camera.orthographicSize = Screen.height / 2.0f;
 
 			Unity.Function.Graphic.Gui.camera = camera;
 			GameObject obj = GameObject.Find( "GuiStyleSet" );

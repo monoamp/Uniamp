@@ -29,7 +29,7 @@ namespace Unity.View
 
 			for( int i = 0; i < lIndices.Length / 2; i++ )
 			{
-				if( i >= lStart && i <= lEnd )
+				if( i > lStart && i <= lEnd )
 				{
 					lIndices[i * 2 + 0] = i * 2 + 0;
 					lIndices[i * 2 + 1] = i * 2 + 1;
@@ -48,9 +48,8 @@ namespace Unity.View
 		public void SetPosition( double aPosition )
 		{
 			int count = ( int )( aPosition * Screen.width );
-			double lBase = count * 1280.0d / Screen.width;
-			transform.position = new Vector3( ( float )lBase, transform.position.y, transform.position.z );
-			//transform.position.x = ( float )lBase;
+			float lBase = ( float )count * ( float )Screen.width / ( ( float )Screen.width + 1.0f );
+			transform.position = new Vector3( lBase, transform.position.y, transform.position.z );
 		}
 	}
 }
