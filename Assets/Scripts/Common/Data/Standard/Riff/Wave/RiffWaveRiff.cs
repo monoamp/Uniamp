@@ -53,25 +53,25 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 
 		}
 
-		public RiffWaveRiff( ByteArray aByteArray )
+		public RiffWaveRiff( AByteArray aByteArray )
 			: base( aByteArray.ReadString( 4 ), aByteArray.ReadUInt32(), aByteArray, null )
 		{
 			name = aByteArray.GetName();
 		}
 		
-		public RiffWaveRiff( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveRiff( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			
 		}
 
-		public void WriteByteArray( ByteArray aByteArray )
+		public void WriteByteArray( AByteArray aByteArray )
 		{
 			if( name != null && name != "" )
 			{
 				using ( FileStream u = new FileStream( name, FileMode.Open, FileAccess.Read ) )
 				{
-					ByteArray lByteArray = new ByteArrayLittle( u );
+					AByteArray lByteArray = new ByteArrayLittle( u );
 
 					WriteByteArray( lByteArray, aByteArray );
 				}

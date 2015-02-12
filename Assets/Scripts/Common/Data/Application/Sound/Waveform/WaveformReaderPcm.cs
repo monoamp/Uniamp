@@ -11,12 +11,12 @@ using Monoamp.Common.Struct;
 
 namespace Monoamp.Common.Data.Application.Sound
 {
-	public class WaveformPcm
+	public class WaveformReaderPcm
 	{
 		public readonly WaweformFormat format;
-		public readonly WaveformData data;
+		public readonly AWaveformReader reader;
 	
-		public WaveformPcm( FormAiffForm aFormFile )
+		public WaveformReaderPcm( FormAiffForm aFormFile, bool aIsOnMemory )
 		{
 			FormAiffSsnd lSsndChunk = ( FormAiffSsnd )aFormFile.GetChunk( FormAiffSsnd.ID );
 			int lPosition = ( int )( lSsndChunk.position + lSsndChunk.offset + 8 );
@@ -29,15 +29,10 @@ namespace Monoamp.Common.Data.Application.Sound
 			int lSamples = lLength / ( lSampleBits / 8 ) / lChannels;
 			
 			format = new WaweformFormat( lChannels, lSamples, lSampleRate, lSampleBits );
-
-			using ( FileStream u = new FileStream( aFormFile.name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
-			{
-				AByteArray lByteArray = new ByteArrayLittle( u );
-				data = new WaveformData( format, lByteArray, lPosition );
-			}
+			reader = new WaveformReaderAiff( format, aFormFile.name, lPosition, aIsOnMemory );
 		}
 
-		public WaveformPcm( RiffWaveRiff aRiffFile )
+		public WaveformReaderPcm( RiffWaveRiff aRiffFile, bool aIsOnMemory )
 		{
 			RiffWaveData lRiffWaveData = ( RiffWaveData )aRiffFile.GetChunk( RiffWaveData.ID );
 			int lPosition = ( int )lRiffWaveData.position;
@@ -50,12 +45,7 @@ namespace Monoamp.Common.Data.Application.Sound
 			int lSamples = lLength / ( lSampleBits / 8 ) / lChannels;
 			
 			format = new WaweformFormat( lChannels, lSamples, lSampleRate, lSampleBits );
-
-			using ( FileStream u = new FileStream( aRiffFile.name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
-			{
-				AByteArray lByteArray = new ByteArrayLittle( u );
-				data = new WaveformData( format, lByteArray, lPosition );
-			}
+			reader = new WaveformReaderWave( format, aRiffFile.name, lPosition, aIsOnMemory );
 		}
 	}
 }

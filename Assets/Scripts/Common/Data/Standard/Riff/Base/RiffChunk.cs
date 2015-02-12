@@ -14,7 +14,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 		
 		public virtual UInt32 Size{ get; protected set; }
 
-		protected RiffChunk( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		protected RiffChunk( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 		{
 			id = aId;
 			Size = aSize;
@@ -28,10 +28,9 @@ namespace Monoamp.Common.Data.Standard.Riff
 			informationList = new List<string>();
 			
 			Monoamp.Boundary.Logger.Debug( "Position:" + position.ToString() );
-
 		}
 
-		public virtual void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public virtual void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{

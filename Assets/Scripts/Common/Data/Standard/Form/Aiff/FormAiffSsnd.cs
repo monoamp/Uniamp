@@ -14,7 +14,7 @@ namespace Monoamp.Common.Data.Standard.Form.Aiff
 
 		public readonly int dataSize;
 
-		public FormAiffSsnd( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		public FormAiffSsnd( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			offset = aByteArray.ReadUInt32();

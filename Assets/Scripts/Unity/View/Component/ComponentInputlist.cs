@@ -252,7 +252,7 @@ namespace Unity.View
 				
 				try
 				{
-					IMusic lMusic = ConstructorCollection.LoadMusic( lFilePath );
+					IMusic lMusic = ConstructorCollection.ConstructMusic( lFilePath );
 					
 					if( lMusic != null )
 					{

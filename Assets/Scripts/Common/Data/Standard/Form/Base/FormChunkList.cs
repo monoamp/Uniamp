@@ -33,7 +33,7 @@ namespace Monoamp.Common.Data.Standard.Form
 			return _size;
 		}
 
-		protected FormChunkList( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		protected FormChunkList( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			chunkList = new List<FormChunk>();
@@ -56,7 +56,7 @@ namespace Monoamp.Common.Data.Standard.Form
 			aByteArray.SetPosition( ( int )( position + aSize ) );
 		}
 
-		private void ReadChunk( ByteArray aByteArray )
+		private void ReadChunk( AByteArray aByteArray )
 		{
 			string lId = aByteArray.ReadString( 4 );
 
@@ -92,9 +92,9 @@ namespace Monoamp.Common.Data.Standard.Form
 			}
 		}
 
-		public FormChunk Construct( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		public FormChunk Construct( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 		{
-			Type[] lArgumentTypes = { typeof( string ), typeof( UInt32 ), typeof( ByteArray ), typeof( FormChunkList ) };
+			Type[] lArgumentTypes = { typeof( string ), typeof( UInt32 ), typeof( AByteArray ), typeof( FormChunkList ) };
 			object[] lArguments = { aId, aSize, aByteArray, aParent };
 
 			Type lTypeChunk = typeof( FormUnknown );
@@ -119,7 +119,7 @@ namespace Monoamp.Common.Data.Standard.Form
 			return ( FormChunk )lTypeChunk.GetConstructor( lArgumentTypes ).Invoke( lArguments );
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{

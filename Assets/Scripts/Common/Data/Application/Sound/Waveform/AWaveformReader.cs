@@ -7,25 +7,9 @@ using Monoamp.Common.Struct;
 
 using Monoamp.Boundary;
 
-namespace Monoamp.Common.Data.Application.Waveform
+namespace Monoamp.Common.Data.Application.Sound
 {
-	public struct FormatWaweform
-	{
-		public readonly int channels;
-		public readonly int samples;
-		public readonly int sampleRate;
-		public readonly int sampleBits;
-		
-		public FormatWaweform( int aChannels, int aSamples, int aSampleRate, int aSampleBits )
-		{
-			channels = aChannels;
-			samples = aSamples;
-			sampleRate = aSampleRate;
-			sampleBits = aSampleBits;
-		}
-	}
-
-	public abstract class WaveformData
+	public abstract class AWaveformReader
 	{
 		public struct Int24
 		{
@@ -34,31 +18,29 @@ namespace Monoamp.Common.Data.Application.Waveform
 		}
 		
 		protected const int LENGTH_BUFFER = 1024 * 4;
-		protected const int LENGTH_BUFFER_LONG = 1024 * 64;
 
-		public readonly FormatWaweform format;
-		public readonly string name;
+		public readonly WaweformFormat format;
+		public readonly string filePath;
 		public readonly int basePosition;
 		
 		private readonly int bufferLength;
 		private readonly float[][] sampleArray;
-		private readonly Int32[][] sampleDataArray;
 
 		private int startPosition;
 
 		private object objectLock;
 
-		protected WaveformData( FormatWaweform aFormat, string aName, int aBasePosition, bool aIsOnMemory )
+		protected AWaveformReader( WaweformFormat aFormat, string aFilePath, int aBasePosition, bool aIsOnMemory )
 		{
 			objectLock = new object();
 
 			format = aFormat;
-			name = aName;
+			filePath = aFilePath;
 			basePosition = aBasePosition;
 
 			if( aIsOnMemory == true || LENGTH_BUFFER == 0 )
 			{
-				bufferLength = LENGTH_BUFFER_LONG;//format.samples;
+				bufferLength = format.samples;
 			}
 			else
 			{
@@ -66,12 +48,10 @@ namespace Monoamp.Common.Data.Application.Waveform
 			}
 
 			sampleArray = new float[format.channels][];
-			sampleDataArray = new Int32[format.channels][];
 			
 			for( int i = 0; i < format.channels; i++ )
 			{
 				sampleArray[i] = new float[bufferLength];
-				sampleDataArray[i] = new Int32[bufferLength];
 			}
 
 			startPosition = int.MaxValue;
@@ -101,31 +81,14 @@ namespace Monoamp.Common.Data.Application.Waveform
 				return sampleArray[aChannel % format.channels][aPositionSample - startPosition];
 			}
 		}
-		
-		public Int32 GetSampleData( int aChannel, int aPositionSample )
-		{
-			if( aPositionSample < startPosition || aPositionSample >= startPosition + bufferLength )
-			{
-				startPosition = aPositionSample;
-				
-				ReadSampleArray( startPosition );
-			}
-			
-			if( aPositionSample - startPosition < 0 && aPositionSample - startPosition >= sampleArray[aChannel].Length )
-			{
-				UnityEngine.Debug.LogError( "Start:" + startPosition + ", Position:" + aPositionSample );
-			}
-			
-			return sampleDataArray[aChannel % format.channels][aPositionSample - startPosition];
-		}
 
 		private void ReadSampleArray( int aPointSample )
 		{
-			if( name != null )
+			if( filePath != null )
 			{
-				using ( FileStream u = new FileStream( name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
+				using ( FileStream u = new FileStream( filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
 				{
-					ByteArray lByteArray = ConstructByteArray( u );
+					AByteArray lByteArray = ConstructByteArray( u );
 					
 					switch( format.sampleBits )
 					{
@@ -144,9 +107,9 @@ namespace Monoamp.Common.Data.Application.Waveform
 			}
 		}
 		
-		protected abstract ByteArray ConstructByteArray( FileStream aFileStream );
+		protected abstract AByteArray ConstructByteArray( FileStream aFileStream );
 		
-		private void ReadSampleArray16( ByteArray aByteArray, int aPositionSample )
+		private void ReadSampleArray16( AByteArray aByteArray, int aPositionSample )
 		{
 			aByteArray.SetPosition( basePosition + 2 * format.channels * aPositionSample );
 			
@@ -155,13 +118,12 @@ namespace Monoamp.Common.Data.Application.Waveform
 				for( int j = 0; j < format.channels; j++ )
 				{
 					Int32 lSample = aByteArray.ReadInt16();
-					sampleDataArray[j][i] = lSample;
 					sampleArray[j][i] = ( float )lSample / ( float )Int16.MaxValue;
 				}
 			}
 		}
 		
-		private void ReadSampleArray24( ByteArray aByteArray, int aPositionSample )
+		private void ReadSampleArray24( AByteArray aByteArray, int aPositionSample )
 		{
 			aByteArray.SetPosition( basePosition + 3 * format.channels * aPositionSample );
 			
@@ -170,36 +132,35 @@ namespace Monoamp.Common.Data.Application.Waveform
 				for( int j = 0; j < format.channels; j++ )
 				{
 					Int32 lSample = aByteArray.ReadInt24();
-					sampleDataArray[j][i] = lSample;
 					sampleArray[j][i] = ( float )lSample / ( float )Int24.MaxValue;
 				}
 			}
 		}
 	}
 	
-	public class WaveformDataAiff : WaveformData
+	public class WaveformReaderAiff : AWaveformReader
 	{
-		public WaveformDataAiff( FormatWaweform aFormat, string aName, int aPosition )
-			: base( aFormat, aName, aPosition, false )
-		{
-			
-		}
-		
-		protected override ByteArray ConstructByteArray( FileStream aFileStream )
-		{
-			return new ByteArrayBig( aFileStream );
-		}
-	}
-	
-	public class WaveformDataWave : WaveformData
-	{
-		public WaveformDataWave( FormatWaweform aFormat, string aName, int aPosition, bool aIsOnMemory )
+		public WaveformReaderAiff( WaweformFormat aFormat, string aName, int aPosition, bool aIsOnMemory )
 			: base( aFormat, aName, aPosition, aIsOnMemory )
 		{
 			
 		}
 		
-		protected override ByteArray ConstructByteArray( FileStream aFileStream )
+		protected override AByteArray ConstructByteArray( FileStream aFileStream )
+		{
+			return new ByteArrayBig( aFileStream );
+		}
+	}
+	
+	public class WaveformReaderWave : AWaveformReader
+	{
+		public WaveformReaderWave( WaweformFormat aFormat, string aName, int aPosition, bool aIsOnMemory )
+			: base( aFormat, aName, aPosition, aIsOnMemory )
+		{
+			
+		}
+		
+		protected override AByteArray ConstructByteArray( FileStream aFileStream )
 		{
 			return new ByteArrayLittle( aFileStream );
 		}

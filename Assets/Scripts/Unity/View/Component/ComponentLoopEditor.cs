@@ -11,7 +11,7 @@ using System.Threading;
 
 using Monoamp.Common.Component.Sound.Player;
 using Monoamp.Common.Data.Application.Music;
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.Data.Standard.Riff.Wave;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
@@ -19,7 +19,7 @@ using Monoamp.Boundary;
 
 namespace Unity.View
 {
-	public class ComponentLoopEditor : ComponentPlayer
+	public class ComponentLoopEditor
 	{
         private IPlayer player;
 
@@ -27,6 +27,9 @@ namespace Unity.View
 		private bool mouseButtonPrevious;
 		
 		private readonly ComponentLoopSelector componentLoopSelector;
+		
+		public delegate void ChangeMusicPrevious();
+		public delegate void ChangeMusicNext();
 
 		public ChangeMusicPrevious changeMusicPrevious;
 		public ChangeMusicNext changeMusicNext;
@@ -43,22 +46,27 @@ namespace Unity.View
 		private MeshRenderer meshRenderer2;
 		private MeshRenderer meshRenderer3;
 
-		private float[] waveform;
+		private sbyte[] waveform;
 		
 		private object objectLock;
 		private ObjectWaveform objectWaveformRight;
 		private ObjectWaveform objectWaveformLeft;
-
-		private bool isOnFrameLoop;
+		
+		private bool isOnFrameLoopRange;
+		private bool isOnFrameLoopPoint;
 		private Vector2 positionMousePrevious;
+		private Texture2D textureCursorMove;
+		private Texture2D textureCursorHorizontal;
+
+		private PlayMusicInformation playMusicInformation;
 
 		public ComponentLoopEditor( ChangeMusicPrevious aChangeMusicPrevious, ChangeMusicNext aChangeMusicNext )
-			: base( aChangeMusicPrevious, aChangeMusicNext )
 		{
 			objectLock = new object();
 
 			mouseButtonPrevious = false;
-			isOnFrameLoop = false;
+			isOnFrameLoopRange = false;
+			isOnFrameLoopPoint = false;
 			positionMousePrevious = Vector2.zero;
 
 			title = "";
@@ -121,29 +129,30 @@ namespace Unity.View
 			objectWaveformRight = new ObjectWaveform( gameObjectWaveform2.transform, meshFilter2 );
 
 			componentLoopSelector = new ComponentLoopSelector( this );
+			textureCursorMove = ( Texture2D )Resources.Load( "Cursor/Move", typeof( Texture2D ) );
+			textureCursorHorizontal = ( Texture2D )Resources.Load( "Cursor/Horizontal", typeof( Texture2D ) );
 		}
 		
-		public void SetPlayer( string aFilePath, Dictionary<string, PlayMusicInformation> aMusicInformationDictionary )
+		public void SetPlayer( string aFilePath, PlayMusicInformation aMusicInformation )
 		{
 			bool lIsMute = player.IsMute;
 			bool lIsLoop = player.IsLoop;
 			float lVolume = player.Volume;
 
 			title = Path.GetFileNameWithoutExtension( aFilePath );
-			player = ConstructorCollection.LoadPlayer( aFilePath );
+			player = ConstructorCollection.ConstructPlayer( aFilePath );
+
+			if( aMusicInformation.isSelected == true )
+			{
+				SetLoop( aMusicInformation.loopPoint );
+			}
 
 			player.IsMute = lIsMute;
 			player.IsLoop = lIsLoop;
 			player.Volume = lVolume;
-			
-			if( aMusicInformationDictionary.ContainsKey( aFilePath ) == true )
-			{
-				componentLoopSelector.SetPlayMusicInformation( aMusicInformationDictionary[aFilePath] );
-			}
-			else
-			{
-				componentLoopSelector.SetPlayMusicInformation( null );
-			}
+
+			playMusicInformation = aMusicInformation;
+			componentLoopSelector.SetPlayMusicInformation( aMusicInformation );
 		}
 
 		public void UpdateMesh()
@@ -156,8 +165,8 @@ namespace Unity.View
 				float[] lValueArray = new float[vertices.Length];
 
 				RiffWaveRiff lRiffWaveRiff = new RiffWaveRiff( player.GetFilePath() );
-				WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff, true );
-				waveform = new float[lWaveform.format.samples];
+				WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff );
+				waveform = new sbyte[lWaveform.format.samples];
 
 				int lIndexPre = 0;
 
@@ -168,7 +177,7 @@ namespace Unity.View
 
 				for( int i = 0; i < lWaveform.format.samples; i++ )
 				{
-					waveform[i] = lWaveform.data.GetSample( 0, i );
+					waveform[i] = lWaveform.data.GetSampleByte( 0, i );
 					
 					int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
 					float lValue = waveform[i];
@@ -187,8 +196,8 @@ namespace Unity.View
 						double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
 						double lY = Screen.height / 2.0d - 1.0d - 90.0d;
 						
-						vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
-						vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
+						vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 0] / 4.0f ), 0.0f );
+						vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 1] / 4.0f ), 0.0f );
 						
 						lIndexPre = lIndex;
 					}
@@ -222,34 +231,55 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
+			if( GUI.Button( new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f ), new GUIContent( "", "StyleLoopTool.Frame" ), GuiStyleSet.StyleLoopTool.frame ) == true )
+			{
+
+			}
+			
+			if( GUI.Button( new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width ) - 8.0f, 46.0f, 16.0f, 16.0f ), new GUIContent( "", "StyleLoopTool.ButtonPoint" ), GuiStyleSet.StyleLoopTool.buttonPoint ) == true )
+			{
+				
+			}
+
 			if( Input.GetMouseButton( 0 ) != mouseButtonPrevious )
 			{
 				if( Input.GetMouseButton( 0 ) == true )
 				{
-					Rect lFrame = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 90.0f - 30.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
+					Rect lFrameLoopRange = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
 
-					if( lFrame.Contains( Event.current.mousePosition ) == true )
+					if( lFrameLoopRange.Contains( Event.current.mousePosition ) == true )
 					{
-						isOnFrameLoop = true;
+						isOnFrameLoopRange = true;
 						meshRenderer3.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
+						Cursor.SetCursor( textureCursorMove, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
+					}
+					
+					Rect lFrameLoopPoint = new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width ) - 8.0f, 46.0f, 16.0f, 16.0f );
+					
+					if( lFrameLoopPoint.Contains( Event.current.mousePosition ) == true )
+					{
+						isOnFrameLoopPoint = true;
+						Cursor.SetCursor( textureCursorHorizontal, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
 					}
 				}
 				else
 				{
-					isOnFrameLoop = false;
+					isOnFrameLoopRange = false;
+					isOnFrameLoopPoint = false;
 					meshRenderer3.material.color = new Color( 0.0f, 1.0f, 0.0f, 0.5f );
+					Cursor.SetCursor( null, Vector2.zero, CursorMode.Auto );
 				}
 			}
 
-			if( Input.GetMouseButton( 0 ) == true && isOnFrameLoop == true )
+			if( isOnFrameLoopRange == true )
 			{
 				double lPositionStart = player.Loop.start.sample;
 
 				lPositionStart += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width;
 				
-				if( lPositionStart < 0.0f )
+				if( lPositionStart < 0.0d )
 				{
-					lPositionStart = 0.0f;
+					lPositionStart = 0.0d;
 				}
 
 				if( lPositionStart + player.Loop.length.sample > player.GetLength().sample + 2 )
@@ -260,9 +290,34 @@ namespace Unity.View
 				if( lPositionStart != player.Loop.start.sample )
 				{
 					SetLoop( new LoopInformation( player.Loop.length.sampleRate, ( int )lPositionStart, ( int )lPositionStart + ( int )player.Loop.length.sample - 1 ) );
-					//playMusicInformation.loopPoint = componentPlayer.GetLoop();
-					//playMusicInformation.music.Loop = componentPlayer.GetLoop();
-					//playMusicInformation.isSelected = true;
+					playMusicInformation.loopPoint = player.Loop;
+					playMusicInformation.music.Loop = player.Loop;
+					playMusicInformation.isSelected = true;
+				}
+			}
+			
+			if( isOnFrameLoopPoint == true )
+			{
+				double lPositionEnd = player.Loop.end.sample;
+				
+				lPositionEnd += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width;
+				
+				if( lPositionEnd < player.Loop.start.sample )
+				{
+					lPositionEnd = player.Loop.start.sample;
+				}
+				
+				if( lPositionEnd >= player.GetLength().sample )
+				{
+					lPositionEnd = player.GetLength().sample - 1;
+				}
+				
+				if( lPositionEnd != player.Loop.start.sample )
+				{
+					SetLoop( new LoopInformation( ( int )player.Loop.start.sampleRate, ( int )player.Loop.start.sample, ( int )lPositionEnd ) );
+					playMusicInformation.loopPoint = player.Loop;
+					playMusicInformation.music.Loop = player.Loop;
+					playMusicInformation.isSelected = true;
 				}
 			}
 
@@ -395,28 +450,13 @@ namespace Unity.View
 		{
 			return player.GetFilePath();
 		}
-		
-		public bool GetIsLoop()
-		{
-			return player.IsLoop;
-		}
-		
-		public override int GetLength()
-		{
-			return ( int )player.GetLength().sample;
-		}
 
-		public override void SetIsLoop( bool aIsLoop )
-		{
-			player.IsLoop = aIsLoop;
-		}
-		
-		public override LoopInformation GetLoop()
+		public LoopInformation GetLoop()
 		{
 			return player.Loop;
 		}
 
-		public override void SetLoop( LoopInformation aLoopInformation )
+		public void SetLoop( LoopInformation aLoopInformation )
 		{
 			if( aLoopInformation.length.sample != player.Loop.length.sample )
 			{
@@ -467,8 +507,8 @@ namespace Unity.View
 					double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
 					double lY = Screen.height / 2.0d - 1.0d - 90.0d;
 					
-					vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 0] * 30.0f ), 0.0f );
-					vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + lValueArray[lIndexPre * 2 + 1] * 30.0f ), 0.0f );
+					vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 0] / 4.0f ), 0.0f );
+					vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 1] / 4.0f ), 0.0f );
 					
 					lIndexPre = lIndex;
 				}

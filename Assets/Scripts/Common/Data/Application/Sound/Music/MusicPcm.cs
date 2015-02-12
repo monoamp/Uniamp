@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -6,7 +6,7 @@ using Monoamp.Common.Data.Standard.Form;
 using Monoamp.Common.Data.Standard.Form.Aiff;
 using Monoamp.Common.Data.Standard.Riff;
 using Monoamp.Common.Data.Standard.Riff.Wave;
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.system.io;
 using Monoamp.Common.Struct;
 
@@ -18,7 +18,7 @@ namespace Monoamp.Common.Data.Application.Music
 		
 		public string Name{ get; private set; }
 		public SoundTime Length{ get; private set; }
-		public WaveformPcm Waveform{ get; private set; }
+		public WaveformReaderPcm Waveform{ get; private set; }
 		public LoopInformation Loop{ get; set; }
 
 		public int GetCountLoopX()
@@ -53,7 +53,7 @@ namespace Monoamp.Common.Data.Application.Music
 		public MusicPcm( FormAiffForm aFormFile )
 		{
 			Name = aFormFile.name;
-			Waveform = new WaveformPcm( aFormFile );
+			Waveform = new WaveformReaderPcm( aFormFile, false );
 			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
 
 			loopList = new List<List<LoopInformation>>();
@@ -64,7 +64,7 @@ namespace Monoamp.Common.Data.Application.Music
 		public MusicPcm( RiffWaveRiff aRiffFile )
 		{
 			Name = aRiffFile.name;
-			Waveform = new WaveformPcm( aRiffFile, false );
+			Waveform = new WaveformReaderPcm( aRiffFile, false );
 			
 			Length = new SoundTime( Waveform.format.sampleRate, Waveform.format.samples );
 

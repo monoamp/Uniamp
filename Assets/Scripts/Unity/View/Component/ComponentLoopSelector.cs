@@ -21,7 +21,7 @@ namespace Unity.View
 		public Rect Rect{ get; set; }
 		public Rect rect;
 
-		private ComponentPlayer componentPlayer;
+		private ComponentLoopEditor componentLoopEditor;
 
 		private Vector2 scrollPosition;
 		private LoopInformation[][] loopArrayArray;
@@ -31,9 +31,9 @@ namespace Unity.View
 		
 		private bool isShow;
 
-		public ComponentLoopSelector( ComponentPlayer aComponentPlayer )
+		public ComponentLoopSelector( ComponentLoopEditor aComponentPlayer )
 		{
-			componentPlayer = aComponentPlayer;
+			componentLoopEditor = aComponentPlayer;
 			scrollPosition = Vector2.zero;
 			x = 0;
 			y = 0;
@@ -41,13 +41,13 @@ namespace Unity.View
 			rect = new Rect( Screen.width - 340.0f, 210.0f, 320.0f, Screen.height - 230.0f );
 		}
 
-		public void SetPlayMusicInformation( PlayMusicInformation lPlayMusicInformation )
+		public void SetPlayMusicInformation( PlayMusicInformation aPlayMusicInformation )
 		{
 			scrollPosition = Vector2.zero;
 			x = 0;
 			y = 0;
 
-			playMusicInformation = lPlayMusicInformation;
+			playMusicInformation = aPlayMusicInformation;
 
 			if( playMusicInformation != null )
 			{
@@ -156,7 +156,7 @@ namespace Unity.View
 				x = lX;
 				y = lY;
 				
-				componentPlayer.SetLoop( loopArrayArray[x][y] );
+				componentLoopEditor.SetLoop( loopArrayArray[x][y] );
 				playMusicInformation.loopPoint = loopArrayArray[x][y];
 				playMusicInformation.music.Loop = loopArrayArray[x][y];
 				playMusicInformation.isSelected = true;
@@ -217,37 +217,29 @@ namespace Unity.View
 					{
 						lY--;
 					}
-
-					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
+					
+					GUILayout.BeginVertical();
 					{
-						GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-						GUILayout.Label( new GUIContent( componentPlayer.GetLoop().start.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-					}
-					GUILayout.EndVertical();
-
-					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
-					{
-						GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-						GUILayout.Label( new GUIContent( componentPlayer.GetLoop().end.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-					}
-					GUILayout.EndVertical();
-
-					GUILayout.BeginVertical( GUILayout.Width( 120.0f ) );
-					{
-						GUILayout.Label( new GUIContent( "Length", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-						
 						GUILayout.BeginHorizontal();
 						{
-							GUILayout.Label( new GUIContent( componentPlayer.GetLoop().length.sample.ToString(), "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+							GUILayout.Label( new GUIContent( "Loop Point", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+							GUILayout.TextField( componentLoopEditor.GetLoop().end.sample.ToString() );
+						}
+						GUILayout.EndHorizontal();
 
-							if( GUILayout.Button( new GUIContent( "", "StyleGeneral.ButtonPullDown" ), GuiStyleSet.StyleGeneral.buttonPullDown ) == true )
-							{
-								isShow = true;
-							}
+						GUILayout.BeginHorizontal();
+						{
+							GUILayout.Label( new GUIContent( "Length", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+							GUILayout.TextField( componentLoopEditor.GetLoop().length.sample.ToString() );
 						}
 						GUILayout.EndHorizontal();
 					}
 					GUILayout.EndVertical();
+					
+					if( GUILayout.Button( new GUIContent( "", "StyleGeneral.ButtonPullDown" ), GuiStyleSet.StyleGeneral.buttonPullDown ) == true )
+					{
+						isShow = true;
+					}
 					
 					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ) ) == true )
 					{
@@ -272,7 +264,7 @@ namespace Unity.View
 				x = lX;
 				y = lY;
 				
-				componentPlayer.SetLoop( loopArrayArray[x][y] );
+				componentLoopEditor.SetLoop( loopArrayArray[x][y] );
 				playMusicInformation.loopPoint = loopArrayArray[x][y];
 				playMusicInformation.music.Loop = loopArrayArray[x][y];
 				playMusicInformation.isSelected = true;

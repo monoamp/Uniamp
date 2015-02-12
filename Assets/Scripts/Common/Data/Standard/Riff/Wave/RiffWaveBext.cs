@@ -23,7 +23,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly Byte[] reserved;
 		public readonly string codingHistory;
 
-		public RiffWaveBext( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveBext( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			description = aByteArray.ReadString( 256 );

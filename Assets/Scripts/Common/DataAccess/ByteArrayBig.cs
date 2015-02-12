@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace Monoamp.Common.system.io
 {
-	public class ByteArrayBig : ByteArray
+	public class ByteArrayBig : AByteArray
 	{
 		private Byte[] dataArray2;
 		private Byte[] dataArray3;

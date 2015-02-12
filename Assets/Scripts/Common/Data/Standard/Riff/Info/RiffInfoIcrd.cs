@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 		public readonly string creationDate;
 
-		public RiffInfoIcrd( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffInfoIcrd( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			creationDate = aByteArray.ReadString( ( int )Size );

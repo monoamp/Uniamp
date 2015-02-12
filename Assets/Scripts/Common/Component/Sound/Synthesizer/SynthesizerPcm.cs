@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.Component.Sound.Utility;
 using Monoamp.Common.Struct;
 using Monoamp.Boundary;
@@ -10,7 +10,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 {
 	public class SynthesizerPcm
 	{
-		private readonly WaveformPcm waveform;
+		private readonly WaveformReaderPcm waveform;
 		
 		public bool isLoop;
 		public LoopInformation loop;
@@ -26,7 +26,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 			set { PositionPre = Position = new SoundTime( PositionPre.sampleRate, waveform.format.samples * value ); }
 		}
 
-		public SynthesizerPcm( WaveformPcm aWaveform, LoopInformation aLoop )
+		public SynthesizerPcm( WaveformReaderPcm aWaveform, LoopInformation aLoop )
 		{
 			waveform = aWaveform;
 			
@@ -83,7 +83,7 @@ namespace Monoamp.Common.Component.Sound.Synthesizer
 					}
 					else
 					{
-						aSoundBuffer[i] = waveform.data.GetSample( i, ( int )Position.sample );
+						aSoundBuffer[i] = waveform.reader.GetSample( i, ( int )Position.sample );
 					}
 				}
 			}

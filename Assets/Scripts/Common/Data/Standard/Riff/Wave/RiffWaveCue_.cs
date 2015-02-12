@@ -19,7 +19,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			protected set{ base.Size = value; }
 		}
 
-		public RiffWaveCue_( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveCue_( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			points = aByteArray.ReadUInt32();
@@ -43,7 +43,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			cuePoints = aCuePoints;
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{
@@ -70,7 +70,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 blockStart;
 		public readonly UInt32 sampleOffset;
 
-		public CuePoint( ByteArray aByteArray, List<string> aInformationList )
+		public CuePoint( AByteArray aByteArray, List<string> aInformationList )
 		{
 			name = aByteArray.ReadUInt32();
 			position = aByteArray.ReadUInt32();
@@ -97,7 +97,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			sampleOffset = aSampleOffset;
 		}
 
-		public void WriteByteArray( ByteArray aByteArray )
+		public void WriteByteArray( AByteArray aByteArray )
 		{
 			aByteArray.WriteUInt32( name );
 			aByteArray.WriteUInt32( position );

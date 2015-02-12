@@ -11,7 +11,7 @@ using System.Threading;
 
 using Monoamp.Common.Component.Sound.Player;
 using Monoamp.Common.Data.Application.Music;
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.Data.Standard.Riff.Wave;
 using Monoamp.Common.Utility;
 using Monoamp.Common.Struct;
@@ -56,7 +56,7 @@ namespace Unity.View
 			float lVolume = player.Volume;
 
 			title = Path.GetFileNameWithoutExtension( aFilePath );
-			player = ConstructorCollection.LoadPlayer( aFilePath );
+			player = ConstructorCollection.ConstructPlayer( aFilePath );
 
 			player.IsMute = lIsMute;
 			player.IsLoop = lIsLoop;
@@ -229,24 +229,9 @@ namespace Unity.View
 			return player.IsLoop;
 		}
 		
-		public virtual LoopInformation GetLoop()
-		{
-			return player.Loop;
-		}
-		
-		public virtual int GetLength()
-		{
-			return ( int )player.GetLength().sample;
-		}
-
-		public virtual void SetIsLoop( bool aIsLoop )
+		public void SetIsLoop( bool aIsLoop )
 		{
 			player.IsLoop = aIsLoop;
-		}
-
-		public virtual void SetLoop( LoopInformation aLoopInformation )
-		{
-			player.SetLoop( aLoopInformation );
 		}
 	}
 }

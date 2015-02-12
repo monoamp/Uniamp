@@ -13,7 +13,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 type;
 		public readonly UInt32 data;
 
-		public RiffWaveDisp( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveDisp( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			type = aByteArray.ReadUInt32();

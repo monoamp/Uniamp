@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 		public readonly string commisioned;
 
-		public RiffInfoIcms( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffInfoIcms( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			commisioned = aByteArray.ReadString( ( int )Size );

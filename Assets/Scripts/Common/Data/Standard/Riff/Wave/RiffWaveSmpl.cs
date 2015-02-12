@@ -22,7 +22,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 samplerData;
 		public readonly List<SampleLoop> sampleLoopList;
 
-		public RiffWaveSmpl( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveSmpl( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			manufacturer = aByteArray.ReadUInt32();
@@ -105,7 +105,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			informationList.Add( "Sampler Data:" + samplerData );
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{
@@ -140,7 +140,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 fraction;
 		public readonly UInt32 playCount;
 
-		public SampleLoop( ByteArray aByteArray, List<string> aInformationList )
+		public SampleLoop( AByteArray aByteArray, List<string> aInformationList )
 		{
 			cuePointId = aByteArray.ReadUInt32();
 			type = aByteArray.ReadUInt32();
@@ -167,7 +167,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			playCount = aPlayCount;
 		}
 
-		public void WriteByteArray( ByteArray aByteArray )
+		public void WriteByteArray( AByteArray aByteArray )
 		{
 			aByteArray.WriteUInt32( cuePointId );
 			aByteArray.WriteUInt32( type );

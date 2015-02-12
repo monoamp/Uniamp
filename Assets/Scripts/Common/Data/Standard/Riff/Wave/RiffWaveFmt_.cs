@@ -17,7 +17,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt16 blockAlign;
 		public readonly UInt16 bitsPerSample;
 
-		public RiffWaveFmt_( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveFmt_( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			formatTag = ( FormatTag )aByteArray.ReadUInt16();
@@ -48,7 +48,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 			bitsPerSample = aBitsPerSample;
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{

@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 
 		public readonly UInt32 sampleLength;
 
-		public RiffWaveFact( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWaveFact( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			sampleLength = aByteArray.ReadUInt32();

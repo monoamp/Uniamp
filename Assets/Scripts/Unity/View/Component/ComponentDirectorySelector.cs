@@ -84,7 +84,7 @@ namespace Unity.View
 		{
 			DirectoryInfo lDirectoryInfo = uiDirectoryTree.DirectoryInfoSelected;
 
-			positionScrollDirectory = GUILayout.BeginScrollView( positionScrollDirectory, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar );
+			positionScrollDirectory = GUILayout.BeginScrollView( positionScrollDirectory, false, false, GuiStyleSet.StyleScrollbar.horizontalbar, GuiStyleSet.StyleScrollbar.verticalbar, GuiStyleSet.StyleList.box );
 			{
 				uiDirectoryTree.OnGUI();
 			}

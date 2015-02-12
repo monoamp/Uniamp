@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Monoamp.Common.system.io;
@@ -10,7 +10,7 @@ namespace Monoamp.Common.Data.Standard.Form
 	{
 		public readonly Byte[] dataArray;
 
-		public FormUnknown( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		public FormUnknown( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			Logger.Debug( "Unknown ID:" + aId + ", Size:" + aSize );

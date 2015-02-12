@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.Data.Standard.Form;
 using Monoamp.Common.Data.Standard.Form.Aiff;
 using Monoamp.Common.Struct;

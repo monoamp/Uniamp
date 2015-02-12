@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
 using Monoamp.Common.Data.Application;
-using Monoamp.Common.Data.Application.Waveform;
+using Monoamp.Common.Data.Application.Sound;
 using Monoamp.Common.system.io;
 using Monoamp.Common.Data.Standard.Riff;
 using Monoamp.Common.Data.Standard.Riff.Wave;
@@ -28,7 +28,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 		{
 			RiffWaveRiff lRiffWaveRiff = ( RiffWaveRiff )PoolCollection.GetRiffWave( aFilePathOutput );
 			
-			WaveformPcm waveform = new WaveformPcm( lRiffWaveRiff, true );
+			WaveformReaderPcm waveform = new WaveformReaderPcm( lRiffWaveRiff, true );
 
 			OverrideCuePoint( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );
 			OverrideSampleLoop( lRiffWaveRiff, ( int )aLoopInformation.start.sample, ( int )aLoopInformation.end.sample );
@@ -38,7 +38,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 
 			using ( FileStream u = new FileStream( lRiffWaveRiff.name, FileMode.Open, FileAccess.Read ) )
 			{
-				ByteArray l = new ByteArrayLittle( u );
+				AByteArray l = new ByteArrayLittle( u );
 				
 				int bytePosition = ( int )dataChunk.position;
 				
@@ -143,7 +143,7 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			else
 			{
 				MemoryStream lMemoryStream = new MemoryStream( aSampleData );
-				ByteArray lByteArray = new ByteArrayLittle( lMemoryStream );
+				AByteArray lByteArray = new ByteArrayLittle( lMemoryStream );
 				lByteArray.WriteBytes( new byte[dataChunk.position] );
 				lRiffWaveRiff.OverrideChunk( new RiffWaveData( RiffWaveData.ID, ( UInt32 )aSampleData.Length, lByteArray, lRiffWaveRiff ) );
 			}

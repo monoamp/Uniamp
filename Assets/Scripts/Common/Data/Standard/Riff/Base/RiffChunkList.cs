@@ -33,7 +33,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			return _size;
 		}
 
-		protected RiffChunkList( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		protected RiffChunkList( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			chunkList = new List<RiffChunk>();
@@ -56,7 +56,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			aByteArray.SetPosition( ( int )( position + aSize ) );
 		}
 
-		private void ReadChunk( ByteArray aByteArray )
+		private void ReadChunk( AByteArray aByteArray )
 		{
 			string lId = aByteArray.ReadString( 4 );
 
@@ -88,9 +88,9 @@ namespace Monoamp.Common.Data.Standard.Riff
 			}
 		}
 
-		public RiffChunk Construct( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffChunk Construct( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 		{
-			Type[] lArgumentTypes = { typeof( string ), typeof( UInt32 ), typeof( ByteArray ), typeof( RiffChunkList ) };
+			Type[] lArgumentTypes = { typeof( string ), typeof( UInt32 ), typeof( AByteArray ), typeof( RiffChunkList ) };
 			object[] lArguments = { aId, aSize, aByteArray, aParent };
 
 			Type lTypeChunk = typeof( RiffUnknown );
@@ -115,7 +115,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 			return ( RiffChunk )lTypeChunk.GetConstructor( lArgumentTypes ).Invoke( lArguments );
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{

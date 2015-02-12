@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -15,7 +15,7 @@ namespace Monoamp.Common.Data.Standard.Form
 		public readonly List<string> informationList;
 		public virtual UInt32 Size{ get; protected set; }
 
-		protected FormChunk( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		protected FormChunk( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 		{
 			id = aId;
 			Size = aSize;
@@ -29,7 +29,7 @@ namespace Monoamp.Common.Data.Standard.Form
 			informationList = new List<string>();
 		}
 
-		public virtual void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public virtual void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			for( int i = 0; i < id.Length; i++ )
 			{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Monoamp.Common.system.io;
 
@@ -13,7 +13,7 @@ namespace Monoamp.Common.Data.Standard.Form.Aiff
 		public readonly UInt16 bitsPerSamples;
 		public readonly Double sampleRate;
 
-		public FormAiffComm( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		public FormAiffComm( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			numberOfChannels = aByteArray.ReadUInt16();

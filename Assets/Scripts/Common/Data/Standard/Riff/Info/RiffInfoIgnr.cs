@@ -12,7 +12,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 		public readonly string genre;
 
-		public RiffInfoIgnr( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffInfoIgnr( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			genre = aByteArray.ReadString( ( int )Size );

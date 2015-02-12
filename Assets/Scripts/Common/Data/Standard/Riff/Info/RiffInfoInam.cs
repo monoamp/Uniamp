@@ -13,7 +13,7 @@ namespace Monoamp.Common.Data.Standard.Riff
 
 		public readonly string name;
 
-		public RiffInfoInam( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffInfoInam( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			name = aByteArray.ReadString( ( int )Size );

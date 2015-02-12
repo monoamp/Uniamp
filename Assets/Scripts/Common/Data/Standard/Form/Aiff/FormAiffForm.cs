@@ -50,25 +50,25 @@ namespace Monoamp.Common.Data.Standard.Form.Aiff
 
 		}
 
-		public FormAiffForm( ByteArray aByteArray )
+		public FormAiffForm( AByteArray aByteArray )
 			: base( aByteArray.ReadString( 4 ), aByteArray.ReadUInt32(), aByteArray, null )
 		{
 			name = aByteArray.GetName();
 		}
 		
-		public FormAiffForm( string aId, UInt32 aSize, ByteArray aByteArray, FormChunkList aParent )
+		public FormAiffForm( string aId, UInt32 aSize, AByteArray aByteArray, FormChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			
 		}
 
-		public override void WriteByteArray( ByteArray aByteArrayRead, ByteArray aByteArray )
+		public override void WriteByteArray( AByteArray aByteArrayRead, AByteArray aByteArray )
 		{
 			if( name != null && name != "" )
 			{
 				using ( FileStream u = new FileStream( name, FileMode.Open, FileAccess.Read ) )
 				{
-					ByteArray lByteArray = new ByteArrayLittle( u );
+					AByteArray lByteArray = new ByteArrayLittle( u );
 
 					foreach( FormChunk lChunk in chunkList )
 					{

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
 namespace Monoamp.Common.system.io
 {
-	public abstract class ByteArray
+	public abstract class AByteArray
 	{
 		protected Stream stream;
 
@@ -50,7 +50,7 @@ namespace Monoamp.Common.system.io
 			}
 		}
 
-		protected ByteArray( Stream aStream )
+		protected AByteArray( Stream aStream )
 		{
 			stream = aStream;
 
@@ -228,7 +228,7 @@ namespace Monoamp.Common.system.io
 			}
 		}
 
-		public void WriteBytes( ByteArray aByteArray, int aPosition, UInt32 aLength )
+		public void WriteBytes( AByteArray aByteArray, int aPosition, UInt32 aLength )
 		{
 			aByteArray.SetPosition( aPosition );
 			Byte[] lDataArray = aByteArray.ReadBytes( aLength );

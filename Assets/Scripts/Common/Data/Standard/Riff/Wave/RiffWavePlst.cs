@@ -14,7 +14,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 segments;
 		public readonly List<PlaySegment> PlaySegments;
 
-		public RiffWavePlst( string aId, UInt32 aSize, ByteArray aByteArray, RiffChunkList aParent )
+		public RiffWavePlst( string aId, UInt32 aSize, AByteArray aByteArray, RiffChunkList aParent )
 			: base( aId, aSize, aByteArray, aParent )
 		{
 			segments = aByteArray.ReadUInt32();
@@ -38,7 +38,7 @@ namespace Monoamp.Common.Data.Standard.Riff.Wave
 		public readonly UInt32 length;
 		public readonly UInt32 loops;
 
-		public PlaySegment( ByteArray aByteArray, List<string> aInformationList )
+		public PlaySegment( AByteArray aByteArray, List<string> aInformationList )
 		{
 			name = aByteArray.ReadUInt32();
 			length = aByteArray.ReadUInt32();
