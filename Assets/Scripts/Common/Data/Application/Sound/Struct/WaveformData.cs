@@ -11,7 +11,7 @@ namespace Monoamp.Common.Data.Application.Sound
 	public struct WaveformData
 	{
 		private readonly WaweformFormat format;
-		private readonly sbyte[][] sampleByteArray;
+		public readonly sbyte[][] sampleByteArray;
 
 		public WaveformData( WaweformFormat aFormat, AByteArray aByteArray, int aBasePosition )
 		{
@@ -26,10 +26,11 @@ namespace Monoamp.Common.Data.Application.Sound
 			ReadSampleArray( aByteArray, aBasePosition );
 		}
 
+		/*
 		public sbyte GetSampleByte( int aChannel, int aPositionSample )
 		{
 			return sampleByteArray[aChannel % format.channels][aPositionSample];
-		}
+		}*/
 
 		private void ReadSampleArray( AByteArray aByteArray, int aBasePosition )
 		{

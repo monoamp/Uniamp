@@ -20,12 +20,12 @@ namespace Unity.View
 			meshFilter = aMeshFilter;
 		}
 
-		public void SetLoop( LoopInformation aLoopInformation, int aSampleLength )
+		public void SetLoop( LoopInformation aLoopInformation, int aSampleLength, double scale, double offset )
 		{
 			int[] lIndices = meshFilter.mesh.GetIndices( 0 );
 
-			int lStart = ( int )( aLoopInformation.start.sample / aSampleLength * Screen.width );
-			int lEnd = ( int )( aLoopInformation.end.sample / aSampleLength * Screen.width );
+			int lStart = ( int )( -Screen.width * scale * offset + aLoopInformation.start.sample / aSampleLength * Screen.width * scale );
+			int lEnd = ( int )( -Screen.width * scale * offset + aLoopInformation.end.sample / aSampleLength * Screen.width * scale );
 
 			for( int i = 0; i < lIndices.Length / 2; i++ )
 			{
@@ -45,9 +45,9 @@ namespace Unity.View
 			meshFilter.mesh.RecalculateBounds();
 		}
 		
-		public void SetPosition( double aPosition )
+		public void SetPosition( double aPosition, double scale, double offset )
 		{
-			int count = ( int )( aPosition * Screen.width );
+			int count = ( int )( -Screen.width * offset * scale + aPosition * Screen.width * scale );
 			float lBase = ( float )count * ( float )Screen.width / ( ( float )Screen.width + 1.0f );
 			transform.position = new Vector3( lBase, transform.position.y, transform.position.z );
 		}

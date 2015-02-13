@@ -39,24 +39,30 @@ namespace Unity.View
 		private int positionInBuffer;
 
 		private MeshFilter meshFilter;
-		private MeshFilter meshFilter2;
-		private MeshFilter meshFilter3;
+		private MeshFilter meshFilterLeft;
+		private MeshFilter meshFilterRight;
 		
 		private MeshRenderer meshRenderer;
-		private MeshRenderer meshRenderer2;
-		private MeshRenderer meshRenderer3;
+		private MeshRenderer meshRendererLeft;
+		private MeshRenderer meshRendererRight;
 
 		private sbyte[] waveform;
 		
 		private object objectLock;
-		private ObjectWaveform objectWaveformRight;
+
 		private ObjectWaveform objectWaveformLeft;
-		
+		private ObjectWaveform objectWaveformRight;
+
+		private bool isOnFrameLoopStart;
+		private bool isOnFrameLoopEnd;
 		private bool isOnFrameLoopRange;
-		private bool isOnFrameLoopPoint;
 		private Vector2 positionMousePrevious;
 		private Texture2D textureCursorMove;
 		private Texture2D textureCursorHorizontal;
+		
+		private float scale;
+		private float scaleRate;
+		private float positionWaveform;
 
 		private PlayMusicInformation playMusicInformation;
 
@@ -65,8 +71,9 @@ namespace Unity.View
 			objectLock = new object();
 
 			mouseButtonPrevious = false;
+			isOnFrameLoopStart = false;
+			isOnFrameLoopEnd = false;
 			isOnFrameLoopRange = false;
-			isOnFrameLoopPoint = false;
 			positionMousePrevious = Vector2.zero;
 
 			title = "";
@@ -78,8 +85,8 @@ namespace Unity.View
 			positionInBuffer = 0;
 			
 			Mesh lMesh = new Mesh();
-			Mesh lMesh2 = new Mesh();
-			Mesh lMesh3 = new Mesh();
+			Mesh lMeshRight = new Mesh();
+			Mesh lMeshLeft = new Mesh();
 
 			Vector3[] vertices = new Vector3[1281 * 2];
 			int[] lIndices = new int[1281 * 2];
@@ -93,44 +100,48 @@ namespace Unity.View
 			lMesh.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			lMesh.RecalculateBounds();
 			
-			lMesh2.vertices = vertices;
-			lMesh2.SetIndices( lIndices, MeshTopology.Lines, 0 );
-			lMesh2.RecalculateBounds();
+			lMeshRight.vertices = vertices;
+			lMeshRight.SetIndices( lIndices, MeshTopology.Lines, 0 );
+			lMeshRight.RecalculateBounds();
 			
-			lMesh3.vertices = vertices;
-			lMesh3.SetIndices( lIndices, MeshTopology.Lines, 0 );
-			lMesh3.RecalculateBounds();
+			lMeshLeft.vertices = vertices;
+			lMeshLeft.SetIndices( lIndices, MeshTopology.Lines, 0 );
+			lMeshLeft.RecalculateBounds();
 
 			GameObject gameObjectWaveform1 = GameObject.Find( "Waveform1" );
-			GameObject gameObjectWaveform2 = GameObject.Find( "Waveform2" );
-			GameObject gameObjectWaveform3 = GameObject.Find( "Waveform3" );
+			GameObject gameObjectWaveformLeft = GameObject.Find( "Waveform3" );
+			GameObject gameObjectWaveformRight = GameObject.Find( "Waveform2" );
 
 			meshFilter = gameObjectWaveform1.GetComponent<MeshFilter>();
-			meshFilter2 = gameObjectWaveform2.GetComponent<MeshFilter>();
-			meshFilter3 = gameObjectWaveform3.GetComponent<MeshFilter>();
+			meshFilterLeft = gameObjectWaveformLeft.GetComponent<MeshFilter>();
+			meshFilterRight = gameObjectWaveformRight.GetComponent<MeshFilter>();
 
 			meshFilter.sharedMesh = lMesh;
-			meshFilter2.sharedMesh = lMesh2;
-			meshFilter3.sharedMesh = lMesh3;
+			meshFilterLeft.sharedMesh = lMeshLeft;
+			meshFilterRight.sharedMesh = lMeshRight;
 			
 			meshFilter.sharedMesh.name = "Waveform1";
-			meshFilter2.sharedMesh.name = "Waveform2";
-			meshFilter3.sharedMesh.name = "Waveform3";
+			meshFilterLeft.sharedMesh.name = "Waveform3";
+			meshFilterRight.sharedMesh.name = "Waveform2";
 			
 			meshRenderer = gameObjectWaveform1.GetComponent<MeshRenderer>();
-			meshRenderer2 = gameObjectWaveform2.GetComponent<MeshRenderer>();
-			meshRenderer3 = gameObjectWaveform3.GetComponent<MeshRenderer>();
+			meshRendererLeft = gameObjectWaveformLeft.GetComponent<MeshRenderer>();
+			meshRendererRight = gameObjectWaveformRight.GetComponent<MeshRenderer>();
 
 			meshRenderer.material.color = new Color( 0.0f, 0.0f, 1.0f, 0.5f );
-			meshRenderer2.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.5f );
-			meshRenderer3.material.color = new Color( 0.0f, 0.1f, 0.0f, 0.5f );
+			meshRendererLeft.material.color = new Color( 0.0f, 0.1f, 0.0f, 0.5f );
+			meshRendererRight.material.color = new Color( 1.0f, 0.0f, 0.0f, 0.5f );
 			
-			objectWaveformLeft = new ObjectWaveform( gameObjectWaveform3.transform, meshFilter3 );
-			objectWaveformRight = new ObjectWaveform( gameObjectWaveform2.transform, meshFilter2 );
+			objectWaveformLeft = new ObjectWaveform( gameObjectWaveformLeft.transform, meshFilterLeft );
+			objectWaveformRight = new ObjectWaveform( gameObjectWaveformRight.transform, meshFilterRight );
 
 			componentLoopSelector = new ComponentLoopSelector( this );
 			textureCursorMove = ( Texture2D )Resources.Load( "Cursor/Move", typeof( Texture2D ) );
 			textureCursorHorizontal = ( Texture2D )Resources.Load( "Cursor/Horizontal", typeof( Texture2D ) );
+
+			scale = 1.0f;
+			scaleRate = 0.0f;
+			positionWaveform = 0.0f;
 		}
 		
 		public void SetPlayer( string aFilePath, PlayMusicInformation aMusicInformation )
@@ -162,52 +173,56 @@ namespace Unity.View
 			if( lMusicPcm != null )
 			{
 				Vector3[] vertices = meshFilter.mesh.vertices;
-				float[] lValueArray = new float[vertices.Length];
 
 				RiffWaveRiff lRiffWaveRiff = new RiffWaveRiff( player.GetFilePath() );
 				WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff );
 				waveform = new sbyte[lWaveform.format.samples];
-
-				int lIndexPre = 0;
-
-				for( int i = 0; i < lValueArray.Length; i++ )
-				{
-					lValueArray[i] = 0.0f;
-				}
-
+				
+				waveform = lWaveform.data.sampleByteArray[0];
+				/*
 				for( int i = 0; i < lWaveform.format.samples; i++ )
 				{
 					waveform[i] = lWaveform.data.GetSampleByte( 0, i );
-					
-					int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
-					float lValue = waveform[i];
-					
-					if( lValue > lValueArray[lIndex * 2 + 0] )
-					{
-						lValueArray[lIndex * 2 + 0] = lValue;
-					}
-					else if( lValue < lValueArray[lIndex * 2 + 1] )
-					{
-						lValueArray[lIndex * 2 + 1] = lValue;
-					}
+				}*/
+				
+				for( int i = 0; i < Screen.width; i++ )
+				{
+					sbyte lMax = 1;
+					sbyte lMin = -1;
 
-					if( lIndex != lIndexPre )
+					for( float j = 0; j < waveform.Length / Screen.width / scale; j += Screen.width / 100 / scale )
 					{
-						double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
-						double lY = Screen.height / 2.0d - 1.0d - 90.0d;
+						float lIndex = waveform.Length / Screen.width * i / scale + j;
 						
-						vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 0] / 4.0f ), 0.0f );
-						vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 1] / 4.0f ), 0.0f );
+						sbyte lValue = waveform[( int )lIndex];
 						
-						lIndexPre = lIndex;
+						if( lValue > lMax )
+						{
+							lMax = lValue;
+						}
+
+						if( lValue < lMin )
+						{
+							lMin = lValue;
+						}
 					}
+					
+					double lX = -Screen.width / 2.0d + i;
+					double lY = Screen.height / 2.0d - 1.0d - 90.0d;
+					
+					vertices[i * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lMax / 4.0f ), 0.0f );
+					vertices[i * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lMin / 4.0f ), 0.0f );
 				}
-				
+
 				meshFilter.mesh.vertices = vertices;
-				meshFilter3.mesh.vertices = vertices;
 				meshFilter.mesh.RecalculateBounds();
-				meshFilter3.mesh.RecalculateBounds();
+
+				meshFilterLeft.mesh.vertices = vertices;
+				meshFilterLeft.mesh.RecalculateBounds();
 				
+				meshFilterRight.mesh.vertices = vertices;
+				meshFilterRight.mesh.RecalculateBounds();
+
 				ChangeLoop( player.Loop );
 			}
 
@@ -231,12 +246,17 @@ namespace Unity.View
 
 		public void OnGUI()
 		{
-			if( GUI.Button( new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f ), new GUIContent( "", "StyleLoopTool.Frame" ), GuiStyleSet.StyleLoopTool.frame ) == true )
+			if( GUI.Button( new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ) - 8.0f, 46.0f, 16.0f, 16.0f ), new GUIContent( "", "StyleLoopTool.ButtonPoint" ), GuiStyleSet.StyleLoopTool.buttonPoint ) == true )
+			{
+				
+			}
+
+			if( GUI.Button( new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width * scale ), 60.0f ), new GUIContent( "", "StyleLoopTool.Frame" ), GuiStyleSet.StyleLoopTool.frame ) == true )
 			{
 
 			}
 			
-			if( GUI.Button( new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width ) - 8.0f, 46.0f, 16.0f, 16.0f ), new GUIContent( "", "StyleLoopTool.ButtonPoint" ), GuiStyleSet.StyleLoopTool.buttonPoint ) == true )
+			if( GUI.Button( new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ) - 8.0f, 46.0f, 16.0f, 16.0f ), new GUIContent( "", "StyleLoopTool.ButtonPoint" ), GuiStyleSet.StyleLoopTool.buttonPoint ) == true )
 			{
 				
 			}
@@ -245,62 +265,71 @@ namespace Unity.View
 			{
 				if( Input.GetMouseButton( 0 ) == true )
 				{
-					Rect lFrameLoopRange = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width ), 60.0f );
+					Rect lFrameLoopStart = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ) - 8.0f, 46.0f, 16.0f, 16.0f );
+					
+					if( lFrameLoopStart.Contains( Event.current.mousePosition ) == true )
+					{
+						isOnFrameLoopStart = true;
+						Cursor.SetCursor( textureCursorHorizontal, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
+					}
+
+					Rect lFrameLoopEnd = new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ) - 8.0f, 46.0f, 16.0f, 16.0f );
+					
+					if( lFrameLoopEnd.Contains( Event.current.mousePosition ) == true )
+					{
+						isOnFrameLoopEnd = true;
+						Cursor.SetCursor( textureCursorHorizontal, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
+					}
+
+					Rect lFrameLoopRange = new Rect( ( float )( player.Loop.start.sample / player.GetLength().sample * Screen.width * scale - positionWaveform * Screen.width * scale ), 60.0f, ( float )( player.Loop.length.sample / player.GetLength().sample * Screen.width * scale ), 60.0f );
 
 					if( lFrameLoopRange.Contains( Event.current.mousePosition ) == true )
 					{
 						isOnFrameLoopRange = true;
-						meshRenderer3.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
+						meshRendererLeft.material.color = new Color( 0.0f, 0.5f, 0.5f, 0.5f );
 						Cursor.SetCursor( textureCursorMove, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
-					}
-					
-					Rect lFrameLoopPoint = new Rect( ( float )( player.Loop.end.sample / player.GetLength().sample * Screen.width ) - 8.0f, 46.0f, 16.0f, 16.0f );
-					
-					if( lFrameLoopPoint.Contains( Event.current.mousePosition ) == true )
-					{
-						isOnFrameLoopPoint = true;
-						Cursor.SetCursor( textureCursorHorizontal, new Vector2( 16.0f, 16.0f ), CursorMode.Auto );
 					}
 				}
 				else
 				{
+					isOnFrameLoopStart = false;
+					isOnFrameLoopEnd = false;
 					isOnFrameLoopRange = false;
-					isOnFrameLoopPoint = false;
-					meshRenderer3.material.color = new Color( 0.0f, 1.0f, 0.0f, 0.5f );
+					meshRendererLeft.material.color = new Color( 0.0f, 1.0f, 0.0f, 0.5f );
 					Cursor.SetCursor( null, Vector2.zero, CursorMode.Auto );
 				}
 			}
-
-			if( isOnFrameLoopRange == true )
+			
+			if( isOnFrameLoopStart == true )
 			{
 				double lPositionStart = player.Loop.start.sample;
-
-				lPositionStart += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width;
 				
-				if( lPositionStart < 0.0d )
+				lPositionStart += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width / scale;
+				
+				if( lPositionStart < 0 )
 				{
-					lPositionStart = 0.0d;
+					lPositionStart = 0;
 				}
-
-				if( lPositionStart + player.Loop.length.sample > player.GetLength().sample + 2 )
+				
+				if( lPositionStart > player.Loop.end.sample )
 				{
-					lPositionStart = player.GetLength().sample - player.Loop.length.sample + 2;
+					lPositionStart = player.Loop.end.sample;
 				}
-
+				
 				if( lPositionStart != player.Loop.start.sample )
 				{
-					SetLoop( new LoopInformation( player.Loop.length.sampleRate, ( int )lPositionStart, ( int )lPositionStart + ( int )player.Loop.length.sample - 1 ) );
+					SetLoop( new LoopInformation( ( int )player.Loop.end.sampleRate, ( int )lPositionStart, ( int )player.Loop.end.sample ) );
 					playMusicInformation.loopPoint = player.Loop;
 					playMusicInformation.music.Loop = player.Loop;
 					playMusicInformation.isSelected = true;
 				}
 			}
 			
-			if( isOnFrameLoopPoint == true )
+			if( isOnFrameLoopEnd == true )
 			{
 				double lPositionEnd = player.Loop.end.sample;
 				
-				lPositionEnd += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width;
+				lPositionEnd += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width / scale;
 				
 				if( lPositionEnd < player.Loop.start.sample )
 				{
@@ -321,6 +350,31 @@ namespace Unity.View
 				}
 			}
 
+			if( isOnFrameLoopRange == true )
+			{
+				double lPositionStart = player.Loop.start.sample;
+
+				lPositionStart += ( Event.current.mousePosition.x - positionMousePrevious.x ) * player.GetLength().sample / Screen.width / scale;
+				
+				if( lPositionStart < 0.0d )
+				{
+					lPositionStart = 0.0d;
+				}
+
+				if( lPositionStart + player.Loop.length.sample > player.GetLength().sample + 2 )
+				{
+					lPositionStart = player.GetLength().sample - player.Loop.length.sample + 2;
+				}
+
+				if( lPositionStart != player.Loop.start.sample )
+				{
+					SetLoop( new LoopInformation( player.Loop.length.sampleRate, ( int )lPositionStart, ( int )lPositionStart + ( int )player.Loop.length.sample - 1 ) );
+					playMusicInformation.loopPoint = player.Loop;
+					playMusicInformation.music.Loop = player.Loop;
+					playMusicInformation.isSelected = true;
+				}
+			}
+
 			mouseButtonPrevious = Input.GetMouseButton( 0 );
 			positionMousePrevious = Event.current.mousePosition;
 			
@@ -332,6 +386,17 @@ namespace Unity.View
 				GUILayout.TextArea( title, GuiStyleSet.StylePlayer.labelTitle );
 				GUILayout.Label( new GUIContent( "", "StyleGeneral.None" ), GuiStyleSet.StyleGeneral.none, GUILayout.Height( 60.0f ) );
 				
+				float lPositionWaveformAfter = GUILayout.HorizontalScrollbar( positionWaveform, 1.0f / scale, 0.0f, 1.0f );
+
+				if( lPositionWaveformAfter != positionWaveform )
+				{
+					positionWaveform = lPositionWaveformAfter;
+					ChangeScale();
+					ChangeLoop( player.Loop );
+					UpdateVertex();
+					objectWaveformRight.SetPosition( ( player.Loop.length.sample ) / player.GetLength().sample, scale, positionWaveform );
+				}
+
 				float lPositionFloat = ( float )player.PositionRate;
 				float lPositionAfter = GUILayout.HorizontalSlider( lPositionFloat, 0.0f, 1.0f, GuiStyleSet.StylePlayer.seekbar, GuiStyleSet.StylePlayer.seekbarThumb );
 				
@@ -396,6 +461,28 @@ namespace Unity.View
 					GUILayout.Label( new GUIContent( player.GetLength().MMSS, "StylePlayer.LabelTime" ), GuiStyleSet.StylePlayer.labelTime );
 
 					componentLoopSelector.OnGUI();
+					
+					if( GUILayout.Button( new GUIContent ( "-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					{
+
+					}
+					
+					float lScaleRateAfter = GUILayout.HorizontalSlider( scaleRate, 0.0f, 1.0f, GuiStyleSet.StylePlayer.volumebarImage, GuiStyleSet.StyleSlider.horizontalbarThumb );
+
+					if( lScaleRateAfter != scaleRate )
+					{
+						scaleRate = lScaleRateAfter;
+						scale = ( float )( 1.0f + player.GetLength().sample * scaleRate * scaleRate * scaleRate * scaleRate / Screen.width );
+						ChangeScale();
+						ChangeLoop( player.Loop );
+						UpdateVertex();
+						objectWaveformRight.SetPosition( ( player.Loop.length.sample ) / player.GetLength().sample, scale, positionWaveform );
+					}
+
+					if( GUILayout.Button( new GUIContent ( "+", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					{
+						
+					}
 				}
 				GUILayout.EndHorizontal();
 			}
@@ -405,7 +492,7 @@ namespace Unity.View
 		public void OnRenderObject()
 		{
 			float lHeightTitle = GuiStyleSet.StylePlayer.labelTitle.CalcSize( new GUIContent( title ) ).y + GuiStyleSet.StylePlayer.labelTitle.margin.top + GuiStyleSet.StylePlayer.labelTitle.margin.bottom;
-			float lY = Rect.y + lHeightTitle + 60.0f;
+			float lY = Rect.y + lHeightTitle + 76.0f;
 
 			if( player != null && player.GetLength().Second != 0.0d )
 			{
@@ -465,59 +552,93 @@ namespace Unity.View
 
 			player.SetLoop( aLoopInformation );
 			UpdateVertex();
+			objectWaveformRight.SetPosition( ( aLoopInformation.length.sample ) / player.GetLength().sample, scale, positionWaveform );
 		}
 
 		private void UpdateVertex()
 		{
-			objectWaveformLeft.SetLoop( player.Loop, ( int )player.GetLength().sample );
-			objectWaveformRight.SetLoop( player.Loop, ( int )player.GetLength().sample );
+			objectWaveformLeft.SetLoop( player.Loop, ( int )player.GetLength().sample, scale, positionWaveform );
+			objectWaveformRight.SetLoop( player.Loop, ( int )player.GetLength().sample, scale, 0 );
+		}
+		
+		private void ChangeScale()
+		{
+			Vector3[] vertices = meshFilter.mesh.vertices;
+
+			for( int i = 1; i < Screen.width; i++ )
+			{
+				sbyte lMax = 1;
+				sbyte lMin = -1;
+
+				for( float j = 0; j < waveform.Length / Screen.width / scale; j += Screen.width / 100 / scale )
+				{
+					float lIndex = waveform.Length * positionWaveform + waveform.Length / Screen.width * i / scale + j;
+					
+					sbyte lValue = waveform[( int )lIndex];
+
+					if( lValue > lMax )
+					{
+						lMax = lValue;
+					}
+
+					if( lValue < lMin )
+					{
+						lMin = lValue;
+					}
+				}
+
+				double lX = -Screen.width / 2.0d + ( double )i;
+				double lY = Screen.height / 2.0d - 1.0d - 90.0d;
+				
+				vertices[i * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lMax / 4.0f ), 0.0f );
+				vertices[i * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lMin / 4.0f ), 0.0f );
+			}
+			
+			meshFilter.mesh.vertices = vertices;
+			meshFilter.mesh.RecalculateBounds();
+			
+			meshFilterLeft.mesh.vertices = vertices;
+			meshFilterLeft.mesh.RecalculateBounds();
 		}
 
 		private void ChangeLoop( LoopInformation aLoopInformation )
 		{
-			Vector3[] vertices = meshFilter2.mesh.vertices;
-			float[] lValueArray = new float[vertices.Length];
-			
-			int lIndexPre = 0;
-			
-			for( int i = 0; i < lValueArray.Length; i++ )
-			{
-				lValueArray[i] = 0.0f;
-			}
+			Vector3[] vertices = meshFilterRight.mesh.vertices;
 
 			int len = waveform.Length / Screen.width;
-			int diff = ( int )aLoopInformation.length.sample % len;
+			int diff = 0;//( int )aLoopInformation.length.sample % len;
 
-			for( int i = diff; i < waveform.Length; i++ )
+			for( int i = 1; i < Screen.width; i++ )
 			{
-				int lIndex = ( int )( ( float )i / waveform.Length * Screen.width );
-				float lValue = waveform[i - diff];
-				
-				if( lValue > lValueArray[lIndex * 2 + 0] )
+				sbyte lMax = 1;
+				sbyte lMin = -1;
+
+				for( float j = 0; j < waveform.Length / Screen.width / scale; j += Screen.width / 100 / scale )
 				{
-					lValueArray[lIndex * 2 + 0] = lValue;
-				}
-				else if( lValue < lValueArray[lIndex * 2 + 1] )
-				{
-					lValueArray[lIndex * 2 + 1] = lValue;
-				}
-				
-				if( lIndex != lIndexPre )
-				{
-					double lX = -Screen.width / 2.0d + ( double )lIndexPre * ( double )Screen.width / ( ( double )Screen.width + 1.0d );
-					double lY = Screen.height / 2.0d - 1.0d - 90.0d;
+					float lIndex = waveform.Length / Screen.width * i / scale + j;
 					
-					vertices[lIndexPre * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 0] / 4.0f ), 0.0f );
-					vertices[lIndexPre * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lValueArray[lIndexPre * 2 + 1] / 4.0f ), 0.0f );
-					
-					lIndexPre = lIndex;
+					sbyte lValue = waveform[( int )lIndex - diff];
+
+					if( lValue > lMax )
+					{
+						lMax = lValue;
+					}
+
+					if( lValue < lMin )
+					{
+						lMin = lValue;
+					}
 				}
+
+				double lX = -Screen.width / 2.0d + i;
+				double lY = Screen.height / 2.0d - 1.0d - 90.0d;
+				
+				vertices[i * 2 + 0] = new Vector3( ( float )lX, ( float )( lY + ( float )lMax / 4.0f ), 0.0f );
+				vertices[i * 2 + 1] = new Vector3( ( float )lX, ( float )( lY + ( float )lMin / 4.0f ), 0.0f );
 			}
 			
-			meshFilter2.mesh.vertices = vertices;
-			meshFilter2.mesh.RecalculateBounds();
-			
-			objectWaveformRight.SetPosition( ( aLoopInformation.length.sample ) / player.GetLength().sample );
+			meshFilterRight.mesh.vertices = vertices;
+			meshFilterRight.mesh.RecalculateBounds();
 		}
 	}
 }

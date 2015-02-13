@@ -5,11 +5,13 @@ namespace Monoamp.Common.system.io
 {
 	public class ByteArrayLittle : AByteArray
 	{
-		private Byte[] dataArray2;
-		private Byte[] dataArray3;
-		private Byte[] dataArray4;
-		private Byte[] dataArray8;
-		private Byte[] mask;
+		private readonly Byte[] dataArray2;
+		private readonly Byte[] dataArray3;
+		private readonly Byte[] dataArray4;
+		private readonly Byte[] dataArray8;
+		private readonly Byte[] mask;
+
+		private readonly BinaryReader binaryReader;
 
 		public ByteArrayLittle( Stream aStream )
 			: base( aStream )
@@ -19,6 +21,8 @@ namespace Monoamp.Common.system.io
 			dataArray4 = new Byte[4];
 			dataArray8 = new Byte[8];
 			mask = new Byte[]{ 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
+
+			binaryReader = new BinaryReader( aStream );
 		}
 
 		public override UInt16 ReadUInt16()
@@ -56,9 +60,11 @@ namespace Monoamp.Common.system.io
 
 		public override Int16 ReadInt16()
 		{
-			ReadBytes( dataArray2 );
+			return binaryReader.ReadInt16();
 
-			return BitConverter.ToInt16( dataArray2, 0 );
+			//ReadBytes( dataArray2 );
+
+			//return BitConverter.ToInt16( dataArray2, 0 );
 		}
 
 		public override Int32 ReadInt24()

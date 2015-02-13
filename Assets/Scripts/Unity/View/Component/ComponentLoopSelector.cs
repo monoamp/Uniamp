@@ -213,7 +213,7 @@ namespace Unity.View
 						lLoopCountY = 1;
 					}
 					
-					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ) ) == true )
+					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
 					{
 						lY--;
 					}
@@ -241,7 +241,7 @@ namespace Unity.View
 						isShow = true;
 					}
 					
-					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ) ) == true )
+					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
 					{
 						lY++;
 					}

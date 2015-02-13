@@ -15,16 +15,6 @@ namespace Monoamp.Common.system.io
 
 		private int start;
 
-		public int GetByInt( int len )
-		{
-			if( len < 0 || len >= 32 )
-			{
-				UnityEngine.Debug.LogError( "Out Range" + len );
-			}
-
-			return ( int )ReadBitsAsUInt32( len );
-		}
-
 		public bool AddByteArray( byte[] bytes )
 		{
 			stream.Seek( Length + start / 8, SeekOrigin.Begin );

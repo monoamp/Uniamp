@@ -24,11 +24,14 @@ namespace Monoamp.Common.Component.Sound.LoopTool
 			WaveformPcm lWaveform = new WaveformPcm( lRiffWaveRiff );
 
 			SByte[] lSampleArray = new SByte[lWaveform.format.samples];
+			
+			lSampleArray = lWaveform.data.sampleByteArray[0];
 
+			/*
 			for( int i = 0; i < lWaveform.format.samples; i++ )
 			{
 				lSampleArray[i] = lWaveform.data.GetSampleByte( 0, i );
-			}
+			}*/
 
 			List<LoopInformation> lLoopList = null;
 
