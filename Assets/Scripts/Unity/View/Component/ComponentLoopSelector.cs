@@ -198,8 +198,6 @@ namespace Unity.View
 					isShow = false;
 				}
 			}
-			
-			GUILayout.FlexibleSpace();
 
 			if( playMusicInformation != null )
 			{
@@ -212,39 +210,42 @@ namespace Unity.View
 					{
 						lLoopCountY = 1;
 					}
-					
-					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					/*
+					if( GUILayout.Button( new GUIContent ( "<-", "StyleGeneral.ButtonCircle" ), GuiStyleSet.StyleGeneral.buttonCircle ) == true )
 					{
 						lY--;
-					}
+					}*/
 					
 					GUILayout.BeginVertical();
 					{
-						GUILayout.BeginHorizontal();
-						{
-							GUILayout.Label( new GUIContent( "Loop Point", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-							GUILayout.TextField( componentLoopEditor.GetLoop().end.sample.ToString() );
-						}
-						GUILayout.EndHorizontal();
-
-						GUILayout.BeginHorizontal();
-						{
-							GUILayout.Label( new GUIContent( "Length", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
-							GUILayout.TextField( componentLoopEditor.GetLoop().length.sample.ToString() );
-						}
-						GUILayout.EndHorizontal();
+						GUILayout.Label( new GUIContent( "Start", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						GUILayout.TextField( componentLoopEditor.GetLoop().start.sample.ToString() );
 					}
 					GUILayout.EndVertical();
 					
+					GUILayout.BeginVertical();
+					{
+						GUILayout.Label( new GUIContent( "End", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						GUILayout.TextField( componentLoopEditor.GetLoop().end.sample.ToString() );
+					}
+					GUILayout.EndVertical();
+					
+					GUILayout.BeginVertical();
+					{
+						GUILayout.Label( new GUIContent( "Length", "StyleGeneral.Label" ), GuiStyleSet.StyleGeneral.label );
+						GUILayout.TextField( componentLoopEditor.GetLoop().length.sample.ToString() );
+					}
+					GUILayout.EndVertical();
+		
 					if( GUILayout.Button( new GUIContent( "", "StyleGeneral.ButtonPullDown" ), GuiStyleSet.StyleGeneral.buttonPullDown ) == true )
 					{
 						isShow = true;
 					}
-					
-					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.Button" ), GuiStyleSet.StyleGeneral.button ) == true )
+					/*
+					if( GUILayout.Button( new GUIContent ( "->", "StyleGeneral.ButtonCircle" ), GuiStyleSet.StyleGeneral.buttonCircle ) == true )
 					{
 						lY++;
-					}
+					}*/
 					
 					if( lY < 0 )
 					{

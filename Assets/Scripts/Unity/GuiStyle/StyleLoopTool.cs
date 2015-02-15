@@ -14,5 +14,13 @@ namespace Unity.GuiStyle
 		public GUIStyle labelInput;
 		public GUIStyle labelOutput;
 		public GUIStyle labelEdit;
+		public GUIStyle waveformbar;
+		public GUIStyle waveformbarThumb;
+		public GUIStyle waveformbarLeftButton;
+		public GUIStyle waveformbarRightButton;
+		public GUIStyle nullbar;
+		public GUIStyle nullbarThumb;
+		public GUIStyle nullbarLeftButton;
+		public GUIStyle nullbarRightButton;
 	}
 }

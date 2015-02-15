@@ -24,8 +24,8 @@ namespace Unity.View
 		{
 			int[] lIndices = meshFilter.mesh.GetIndices( 0 );
 
-			int lStart = ( int )( -Screen.width * scale * offset + aLoopInformation.start.sample / aSampleLength * Screen.width * scale );
-			int lEnd = ( int )( -Screen.width * scale * offset + aLoopInformation.end.sample / aSampleLength * Screen.width * scale );
+			int lStart = ( int )( ( aLoopInformation.start.sample / aSampleLength - offset ) * Screen.width * scale );
+			int lEnd = ( int )( ( aLoopInformation.end.sample / aSampleLength - offset ) * Screen.width * scale );
 
 			for( int i = 0; i < lIndices.Length / 2; i++ )
 			{
@@ -43,13 +43,6 @@ namespace Unity.View
 
 			meshFilter.mesh.SetIndices( lIndices, MeshTopology.Lines, 0 );
 			meshFilter.mesh.RecalculateBounds();
-		}
-		
-		public void SetPosition( double aPosition, double scale, double offset )
-		{
-			int count = ( int )( -Screen.width * offset * scale + aPosition * Screen.width * scale );
-			float lBase = ( float )count * ( float )Screen.width / ( ( float )Screen.width + 1.0f );
-			transform.position = new Vector3( lBase, transform.position.y, transform.position.z );
 		}
 	}
 }

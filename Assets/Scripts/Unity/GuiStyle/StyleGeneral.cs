@@ -9,6 +9,7 @@ namespace Unity.GuiStyle
 		public GUIStyle labelCenter;
 		public GUIStyle labelCaption;
 		public GUIStyle button;
+		public GUIStyle buttonCircle;
 		public GUIStyle toggleCheck;
 		public GUIStyle toggleRadio;
 		public GUIStyle box;

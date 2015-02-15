@@ -138,7 +138,7 @@ namespace Unity.View
 						GUILayout.BeginVertical( GuiStyleSet.StyleTable.labelHeader, GUILayout.Width( lWidthValue * 3 + lWidthPartition * 2 ) );
 						{
 							GUILayout.Label( new GUIContent( "Loop", "StyleTable.LabelHeader" ), GuiStyleSet.StyleTable.labelHeaderTop );
-							GUILayout.Label( new GUIContent( "", "StyleGeneral.partitionHorizontal" ), GuiStyleSet.StyleGeneral.partitionHorizontal );
+							GUILayout.Label( new GUIContent( "", "StyleGeneral.PartitionHorizontalHeader" ), GuiStyleSet.StyleTable.partitionHorizontalHeader );
 
 							GUILayout.BeginHorizontal();
 							{
